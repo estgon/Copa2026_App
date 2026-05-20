@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>🏆 🏆 🏆 Copa 2026🏆 🏆 🏆  • Estiva GO</title>
+  
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="styles.css">
+  
+  <meta name="theme-color" content="#667eea">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Estiva GO">
+  <meta name="description" content="Controle completo de figurinhas da Copa 2026">
+</head>
+
+<body>
+<div class="container">
+  <div class="content-wrapper">
+    <!-- Header -->
+    <div style="text-align: center; margin-bottom: 2rem; padding: 0 1rem;">
+      <h1 style="font-size: 32px; margin: 0 0 0.5rem; font-weight: 800; background: linear-gradient(135deg, #dcbf00 0%, #f2e20a 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">🏆 🏆 🏆  Copa 2026 🏆 🏆 🏆</h1>
+      <p style="margin: 0; font-size: 14px; color: #68a2ed; font-weight: 600; letter-spacing: 0.5px;"> ESTIVA GO☆★⭐️ </p>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmation-modal" class="modal">
+      <div class="modal-content">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 1rem;">
+          <div style="font-size: 24px;">⚠️</div>
+          <h2 style="margin: 0; font-size: 16px; font-weight: 600;">Desmarcar Figurinha?</h2>
+        </div>
+        <p id="modal-message" style="margin: 0 0 1.5rem; font-size: 14px; color: var(--color-text-secondary); line-height: 1.5;"></p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <button onclick="cancelUnmark()" style="padding: 12px 16px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--color-text-primary);">Cancelar</button>
+          <button onclick="confirmUnmark()" style="padding: 12px 16px; background: #E74C3C; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">Desmarcar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preview de Trocas -->
+    <div id="trade-modal" class="modal">
+      <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; padding: 2rem; max-width: 850px; box-shadow: 0 20px 60px rgba(0,0,0,0.4);">
+        <div style="background: white; border-radius: 16px; padding: 2rem;">
+          <div style="text-align: center; margin-bottom: 1.5rem;">
+            <h2 style="margin: 0 0 0.5rem; font-size: 24px; font-weight: 600; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Figurinhas para Troca</h2>
+            <p style="margin: 0; font-size: 13px; color: #666;">Visualize as figurinhas disponíveis para troca em um catálogo de cartões.</p>
+          </div>
+          <div id="trade-preview-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 1.5rem;"></div>
+          <div id="trade-preview-stats" style="background: #f8f9ff; border-radius: 12px; padding: 12px; margin-bottom: 1.5rem; border-left: 4px solid #667eea; font-size: 13px; color: #333; line-height: 1.6;"></div>
+          <div style="display: grid; grid-template-columns: repeat(2, minmax(120px, 1fr)); gap: 12px;">
+            <button onclick="copyTradePreviewImage()" style="padding: 12px 16px; background: linear-gradient(135deg, #27AE60 0%, #2ECC71 100%); color: white; border: none; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600;">📋 Copiar imagem</button>
+            <button onclick="closeTradePreview()" style="padding: 12px 16px; background: #f0f0f0; color: #333; border: none; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600;">Fechar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Report Modal -->
+    <div id="report-modal" class="modal" style="overflow-y: auto; padding: 2rem 0;">
+      <div class="modal-content full">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+          <h2 style="margin: 0; font-size: 18px; font-weight: 600;" id="report-title">Relatório</h2>
+          <button onclick="closeReport()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: var(--color-text-secondary);">✕</button>
+        </div>
+        <div id="report-content" style="font-size: 14px; line-height: 1.6; max-height: 500px; overflow-y: auto; margin-bottom: 1.5rem; padding: 1rem; background: var(--color-background-secondary); border-radius: 8px; white-space: pre-wrap;"></div>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+          <button onclick="exportToHTML()" style="padding: 12px 16px; background: #3498DB; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600;">🌐 Navegador</button>
+          <button onclick="exportToCSV()" style="padding: 12px 16px; background: #27AE60; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600;">📥 CSV</button>
+          <button onclick="closeReport()" style="padding: 12px 16px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 600; color: var(--color-text-primary);">Fechar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+      <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); box-shadow: 0 8px 24px rgba(102, 126, 234, 0.25);">
+        <small>🎯 Coletadas</small>
+        <div class="value" id="collected">0</div>
+        <div class="label">de 1047</div>
+      </div>
+      <div class="stat-card" style="background: linear-gradient(135deg, #4FACFE 0%, #00F2FE 100%); box-shadow: 0 8px 24px rgba(79, 172, 254, 0.25);">
+        <small>📈 Progresso</small>
+        <div class="value" id="percentage">0%</div>
+        <div class="label">concluído</div>
+      </div>
+      <div class="stat-card" style="background: linear-gradient(135deg, #F093FB 0%, #F5576C 100%); box-shadow: 0 8px 24px rgba(245, 87, 108, 0.25);">
+        <small>📋 Faltantes</small>
+        <div class="value" id="missing">1047</div>
+        <div class="label">a coletar</div>
+      </div>
+      <div class="stat-card" style="background: linear-gradient(135deg, #FA709A 0%, #FEE140 100%); box-shadow: 0 8px 24px rgba(250, 112, 154, 0.25);">
+        <small>🔄 Duplicatas</small>
+        <div class="value" id="duplicates">0</div>
+        <div class="label">para trocar</div>
+      </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+      <h2>Progresso Geral</h2>
+      <div class="progress-bar">
+        <div id="progress-bar" class="progress-fill"></div>
+      </div>
+    </div>
+
+    <!-- Dashboard View Toggle -->
+    <div style="display: flex; gap: 12px; margin-bottom: 1.5rem; padding: 1rem; background: var(--color-background-primary); border-radius: 12px; border: 1px solid var(--color-border-tertiary);">
+      <button onclick="switchDashboardView('groups')" style="flex: 1; padding: 12px 16px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 700;" id="btn-groups">📊 Por Grupos</button>
+      <button onclick="switchDashboardView('continents')" style="flex: 1; padding: 12px 16px; background: var(--color-background-secondary); color: var(--color-text-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 700;" id="btn-continents">🌍 Por Continente</button>
+    </div>
+
+    <!-- Dashboard Statistics -->
+    <div class="card">
+      <h2 id="view-title">Por Continente</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;" id="view-stats"></div>
+    </div>
+
+    <!-- Category Stats -->
+    <div class="card">
+      <h2>Por Categoria</h2>
+      <div class="category-grid">
+        <div class="category-card" style="background: linear-gradient(135deg, #667eea10 0%, #764ba210 100%); border-color: #667eea30;">
+          <div class="title" style="color: #667eea;">Países</div>
+          <div class="count" style="color: #667eea;" id="stats-paises">0/960</div>
+          <div class="bar"><div id="bar-paises" class="bar-fill" style="background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);"></div></div>
+        </div>
+        <div class="category-card" style="background: linear-gradient(135deg, #E74C3C10 0%, #C0392B10 100%); border-color: #E74C3C30;">
+          <div class="title" style="color: #E74C3C;">🥤 Refri</div>
+          <div class="count" style="color: #E74C3C;" id="stats-refri">0/14</div>
+          <div class="bar"><div id="bar-refri" class="bar-fill" style="background: linear-gradient(90deg, #E74C3C 0%, #C0392B 100%);"></div></div>
+        </div>
+        <div class="category-card" style="background: linear-gradient(135deg, #3498DB10 0%, #2980B910 100%); border-color: #3498DB30;">
+          <div class="title" style="color: #3498DB;">🏆 World Cup</div>
+          <div class="count" style="color: #3498DB;" id="stats-history">0/20</div>
+          <div class="bar"><div id="bar-history" class="bar-fill" style="background: linear-gradient(90deg, #3498DB 0%, #2980B9 100%);"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <div class="tab-container">
+      <button class="tab-button active" id="tab-dashboard" onclick="switchTab('dashboard')">Dashboard</button>
+      <button class="tab-button" id="tab-paises" onclick="switchTab('paises')">Países</button>
+      <button class="tab-button" id="tab-refri" onclick="switchTab('refri')">Refri</button>
+      <button class="tab-button" id="tab-history" onclick="switchTab('history')">World Cup</button>
+      <button class="tab-button" id="tab-trocas" onclick="switchTab('trocas')">Trocas</button>
+      <button class="tab-button" id="tab-relatorios" onclick="switchTab('relatorios')">Relatórios</button>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div id="dashboard-content" style="display: block;">
+      <div style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 1.5rem; border-radius: 16px; border: 1px solid #667eea30; text-align: center;">
+        <h3 style="margin: 0 0 0.5rem; font-size: 16px; font-weight: 700; color: #667eea;">🏆 Sua Jornada na Copa 2026</h3>
+        <p style="margin: 0; font-size: 13px; color: var(--color-text-secondary);">Colecione todas as figurinhas de todos os continentes</p>
+      </div>
+    </div>
+
+    <!-- Countries Content -->
+    <div id="paises-content" style="display: none; padding-bottom: 2rem;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 1rem;">
+        <input type="text" id="search-paises" placeholder="País ou código..." style="padding: 12px; border: 0.5px solid var(--color-border-tertiary); border-radius: 8px; font-size: 14px; box-sizing: border-box;">
+        <input type="number" id="search-number" placeholder="Número..." min="1" max="20" style="padding: 12px; border: 0.5px solid var(--color-border-tertiary); border-radius: 8px; font-size: 14px; box-sizing: border-box;">
+      </div>
+      <div id="paises-list"></div>
+    </div>
+
+    <!-- Refri Content -->
+    <div id="refri-content" style="display: none; padding-bottom: 2rem;">
+      <h2 style="font-size: 14px; font-weight: 700; background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%); color: white; padding: 12px 16px; border-radius: 12px; margin-bottom: 12px;">🥤 Refri (14)</h2>
+      <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px;" id="refri-list"></div>
+    </div>
+
+    <!-- History Content -->
+    <div id="history-content" style="display: none; padding-bottom: 2rem;">
+      <h2 style="font-size: 14px; font-weight: 700; background: linear-gradient(135deg, #3498DB 0%, #2980B9 100%); color: white; padding: 12px 16px; border-radius: 12px; margin-bottom: 12px;">🏆 World Cup History (20)</h2>
+      <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px;" id="history-list"></div>
+    </div>
+
+    <!-- Exchanges Content -->
+    <div id="trocas-content" style="display: none; padding-bottom: 2rem;">
+      <div style="display: flex; gap: 8px; margin-bottom: 1.5rem;">
+        <h2 style="margin: 0; font-size: 14px; font-weight: 700; background: var(--color-background-secondary); padding: 12px 16px; border-radius: 12px; flex: 1; text-transform: uppercase; letter-spacing: 0.5px;">Disponíveis para Troca</h2>
+        <button onclick="openTradePreview()" style="padding: 12px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 700; white-space: nowrap;">🔍 Ver Trocas</button>
+      </div>
+      <div id="trocas-list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;"></div>
+    </div>
+
+    <!-- Reports Content -->
+    <div id="relatorios-content" style="display: none; padding-bottom: 2rem;">
+      <h2 style="font-size: 16px; font-weight: 700; margin-bottom: 1.5rem;">Gerar Relatórios</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+        <div style="padding: 1.5rem; background: linear-gradient(135deg, #27AE6015 0%, #27AE6030 100%); border-radius: 16px; border: 1px solid #27AE6040; text-align: center;">
+          <div style="font-size: 36px; margin-bottom: 8px;">✅</div>
+          <h3 style="margin: 0 0 8px; font-size: 14px; font-weight: 700;">Obtidas</h3>
+          <button onclick="generateReport('obtained')" style="width: 100%; padding: 10px; background: linear-gradient(135deg, #27AE60 0%, #229954 100%); color: white; border: none; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 700;">Gerar</button>
+        </div>
+        <div style="padding: 1.5rem; background: linear-gradient(135deg, #E74C3C15 0%, #E74C3C30 100%); border-radius: 16px; border: 1px solid #E74C3C40; text-align: center;">
+          <div style="font-size: 36px; margin-bottom: 8px;">❌</div>
+          <h3 style="margin: 0 0 8px; font-size: 14px; font-weight: 700;">Faltantes</h3>
+          <button onclick="generateReport('missing')" style="width: 100%; padding: 10px; background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%); color: white; border: none; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 700;">Gerar</button>
+        </div>
+        <div style="padding: 1.5rem; background: linear-gradient(135deg, #3498DB15 0%, #3498DB30 100%); border-radius: 16px; border: 1px solid #3498DB40; text-align: center;">
+          <div style="font-size: 36px; margin-bottom: 8px;">🔄</div>
+          <h3 style="margin: 0 0 8px; font-size: 14px; font-weight: 700;">Para Troca</h3>
+          <button onclick="generateReport('duplicates')" style="width: 100%; padding: 10px; background: linear-gradient(135deg, #3498DB 0%, #2980B9 100%); color: white; border: none; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 700;">Gerar</button>
+        </div>
+        <div style="padding: 1.5rem; background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); border-radius: 16px; border: 1px solid #667eea40; text-align: center;">
+          <div style="font-size: 36px; margin-bottom: 8px;">📊</div>
+          <h3 style="margin: 0 0 8px; font-size: 14px; font-weight: 700;">Completo</h3>
+          <button onclick="generateReport('complete')" style="width: 100%; padding: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 700;">Gerar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; margin-top: 1.5rem;">
+      <button onclick="exportData()" style="padding: 10px 16px; background: #3498DB; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 600;">📤 Exportar dados</button>
+      <button onclick="importData()" style="padding: 10px 16px; background: #27AE60; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 600;">📥 Importar dados</button>
+    </div>
+    <div class="footer" style="margin-top: 1rem;">
+      <p>💾 Auto-salvo | 🌍 Cores oficiais | 📱 Instalável (PWA) | 🌙 Suporte Dark Mode</p>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="import-data-input" accept="application/json" style="display:none;" onchange="handleImportFile(event)">
+
+<!-- External Scripts -->
+<script src="app.js"></script>
+</body>
+</html>
+ize: 13px; font-weight: 600;">📥 Importar dados</button>
+    </div>
+    <div class="footer" style="margin-top: 1rem;">
+      <p>💾 Auto-salvo | 🌍 Cores oficiais | 📱 Instalável (PWA) | 🌙 Suporte Dark Mode</p>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="import-data-input" accept="application/json" style="display:none;" onchange="handleImportFile(event)">
+
+<!-- External Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
+ript>
+</body>
+</html>
