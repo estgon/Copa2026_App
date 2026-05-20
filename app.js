@@ -8,52 +8,60 @@
 // ============================================================================
 
 const countries = {
-  'A': [['México', 'MX'], ['África do Sul', 'ZA'], ['Coreia do Sul', 'KR'], ['Rep. Tcheca', 'CZ']],
-  'B': [['Canadá', 'CA'], ['Bósnia', 'BA'], ['Catar', 'QA'], ['Suíça', 'CH']],
-  'C': [['Brasil', 'BR'], ['Marrocos', 'MA'], ['Haiti', 'HT'], ['Escócia', 'GB']],
-  'D': [['Estados Unidos', 'US'], ['Paraguai', 'PY'], ['Austrália', 'AU'], ['Turquia', 'TR']],
-  'E': [['Alemanha', 'DE'], ['Curaçau', 'CW'], ['Costa do Marfim', 'CI'], ['Equador', 'EC']],
-  'F': [['Holanda', 'NL'], ['Japão', 'JP'], ['Suécia', 'SE'], ['Tunísia', 'TN']],
-  'G': [['Bélgica', 'BE'], ['Egito', 'EG'], ['Irã', 'IR'], ['Nova Zelândia', 'NZ']],
-  'H': [['Espanha', 'ES'], ['Cabo Verde', 'CV'], ['Arábia Saudita', 'SA'], ['Uruguai', 'UY']],
-  'I': [['França', 'FR'], ['Senegal', 'SN'], ['Iraque', 'IQ'], ['Noruega', 'NO']],
-  'J': [['Argentina', 'AR'], ['Argélia', 'DZ'], ['Áustria', 'AT'], ['Jordânia', 'JO']],
-  'K': [['Portugal', 'PT'], ['Congo', 'CD'], ['Uzbequistão', 'UZ'], ['Colômbia', 'CO']],
-  'L': [['Inglaterra', 'GB-ENG'], ['Croácia', 'HR'], ['Gana', 'GH'], ['Panamá', 'PA']]
+  'A': [['México', 'MEX'], ['África do Sul', 'ZAF'], ['Coreia do Sul', 'KOR'], ['Rep. Tcheca', 'CZE']],
+  'B': [['Canadá', 'CAN'], ['Bósnia', 'BIH'], ['Catar', 'QAT'], ['Suíça', 'CHE']],
+  'C': [['Brasil', 'BRA'], ['Marrocos', 'MAR'], ['Haiti', 'HTI'], ['Escócia', 'GBR']],
+  'D': [['Estados Unidos', 'USA'], ['Paraguai', 'PRY'], ['Austrália', 'AUS'], ['Turquia', 'TUR']],
+  'E': [['Alemanha', 'DEU'], ['Curaçau', 'CUW'], ['Costa do Marfim', 'CIV'], ['Equador', 'ECU']],
+  'F': [['Holanda', 'NLD'], ['Japão', 'JPN'], ['Suécia', 'SWE'], ['Tunísia', 'TUN']],
+  'G': [['Bélgica', 'BEL'], ['Egito', 'EGY'], ['Irã', 'IRN'], ['Nova Zelândia', 'NZL']],
+  'H': [['Espanha', 'ESP'], ['Cabo Verde', 'CPV'], ['Arábia Saudita', 'SAU'], ['Uruguai', 'URY']],
+  'I': [['França', 'FRA'], ['Senegal', 'SEN'], ['Iraque', 'IRQ'], ['Noruega', 'NOR']],
+  'J': [['Argentina', 'ARG'], ['Argélia', 'DZA'], ['Áustria', 'AUT'], ['Jordânia', 'JOR']],
+  'K': [['Portugal', 'PRT'], ['Congo', 'COD'], ['Uzbequistão', 'UZB'], ['Colômbia', 'COL']],
+  'L': [['Inglaterra', 'GB-ENG'], ['Croácia', 'HRV'], ['Gana', 'GHA'], ['Panamá', 'PAN']]
 };
 
 const countryColors = {
-  'BR': '#FFD700', 'AR': '#87CEEB', 'UY': '#87CEEB', 'CO': '#FFD700', 'EC': '#FFD700', 'PY': '#E74C3C',
-  'DE': '#DC241F', 'GB-ENG': '#E71930', 'FR': '#003DA5', 'ES': '#E74C3C', 'PT': '#E74C3C', 'NL': '#FF8C00',
-  'BE': '#8B0000', 'HR': '#DC143C', 'SE': '#FFD700', 'GB': '#003DA5', 'AT': '#E74C3C',
-  'CZ': '#E74C3C', 'TR': '#E60000', 'NO': '#E74C3C', 'BA': '#0055CC',
-  'US': '#B22234', 'MX': '#006C42', 'CA': '#FF0000', 'PA': '#FF0000', 'HT': '#0055CC', 'CW': '#0055CC',
-  'MA': '#E74C3C', 'SN': '#CE1126', 'CI': '#FF8C00', 'EG': '#E74C3C', 'GH': '#CE1126', 'DZ': '#CE1126',
-  'TN': '#E74C3C', 'ZA': '#FFD700', 'CD': '#87CEEB', 'CV': '#0055CC',
-  'JP': '#BC002D', 'KR': '#FF0000', 'AU': '#FFB800', 'SA': '#006C4E', 'IR': '#CE1126', 'QA': '#800020',
-  'IQ': '#228B22', 'UZ': '#1E90FF', 'JO': '#000000', 'NZ': '#002B7F', 'CH': '#E74C3C'
+  'BRA': '#FFD700', 'ARG': '#87CEEB', 'URY': '#87CEEB', 'COL': '#FFD700', 'ECU': '#FFD700', 'PRY': '#E74C3C',
+  'DEU': '#DC241F', 'GB-ENG': '#E71930', 'FRA': '#003DA5', 'ESP': '#E74C3C', 'PRT': '#E74C3C', 'NLD': '#FF8C00',
+  'BEL': '#8B0000', 'HRV': '#DC143C', 'SWE': '#FFD700', 'GBR': '#003DA5', 'AUT': '#E74C3C',
+  'CZE': '#E74C3C', 'TUR': '#E60000', 'NOR': '#E74C3C', 'BIH': '#0055CC',
+  'USA': '#B22234', 'MEX': '#006C42', 'CAN': '#FF0000', 'PAN': '#FF0000', 'HTI': '#0055CC', 'CUW': '#0055CC',
+  'MAR': '#E74C3C', 'SEN': '#CE1126', 'CIV': '#FF8C00', 'EGY': '#E74C3C', 'GHA': '#CE1126', 'DZA': '#CE1126',
+  'TUN': '#E74C3C', 'ZAF': '#FFD700', 'COD': '#87CEEB', 'CPV': '#0055CC',
+  'JPN': '#BC002D', 'KOR': '#FF0000', 'AUS': '#FFB800', 'SAU': '#006C4E', 'IRN': '#CE1126', 'QAT': '#800020',
+  'IRQ': '#228B22', 'UZB': '#1E90FF', 'JOR': '#000000', 'NZL': '#002B7F', 'CHE': '#E74C3C'
 };
 
 const flagEmojis = {
-  'MX': '🇲🇽', 'ZA': '🇿🇦', 'KR': '🇰🇷', 'CZ': '🇨🇿', 'CA': '🇨🇦', 'BA': '🇧🇦', 'QA': '🇶🇦', 'CH': '🇨🇭',
-  'BR': '🇧🇷', 'MA': '🇲🇦', 'HT': '🇭🇹', 'GB': '🇬🇧', 'GB-ENG': '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'US': '🇺🇸', 'PY': '🇵🇾', 'AU': '🇦🇺',
-  'TR': '🇹🇷', 'DE': '🇩🇪', 'CW': '🇨🇼', 'CI': '🇨🇮', 'EC': '🇪🇨', 'NL': '🇳🇱', 'JP': '🇯🇵', 'SE': '🇸🇪',
-  'TN': '🇹🇳', 'BE': '🇧🇪', 'EG': '🇪🇬', 'IR': '🇮🇷', 'NZ': '🇳🇿', 'ES': '🇪🇸', 'CV': '🇨🇻', 'SA': '🇸🇦',
-  'UY': '🇺🇾', 'FR': '🇫🇷', 'SN': '🇸🇳', 'IQ': '🇮🇶', 'NO': '🇳🇴', 'AR': '🇦🇷', 'DZ': '🇩🇿', 'AT': '🇦🇹',
-  'JO': '🇯🇴', 'PT': '🇵🇹', 'CD': '🇨🇩', 'UZ': '🇺🇿', 'CO': '🇨🇴', 'HR': '🇭🇷', 'GH': '🇬🇭', 'PA': '🇵🇦'
+  'MEX': '🇲🇽', 'ZAF': '🇿🇦', 'KOR': '🇰🇷', 'CZE': '🇨🇿', 'CAN': '🇨🇦', 'BIH': '🇧🇦', 'QAT': '🇶🇦', 'CHE': '🇨🇭',
+  'BRA': '🇧🇷', 'MAR': '🇲🇦', 'HTI': '🇭🇹', 'GBR': '🇬🇧', 'GB-ENG': '🏴', 'USA': '🇺🇸', 'PRY': '🇵🇾', 'AUS': '🇦🇺',
+  'TUR': '🇹🇷', 'DEU': '🇩🇪', 'CUW': '🇨🇼', 'CIV': '🇨🇮', 'ECU': '🇪🇨', 'NLD': '🇳🇱', 'JPN': '🇯🇵', 'SWE': '🇸🇪',
+  'TUN': '🇹🇳', 'BEL': '🇧🇪', 'EGY': '🇪🇬', 'IRN': '🇮🇷', 'NZL': '🇳🇿', 'ESP': '🇪🇸', 'CPV': '🇨🇻', 'SAU': '🇸🇦',
+  'URY': '🇺🇾', 'FRA': '🇫🇷', 'SEN': '🇸🇳', 'IRQ': '🇮🇶', 'NOR': '🇳🇴', 'ARG': '🇦🇷', 'DZA': '🇩🇿', 'AUT': '🇦🇹',
+  'JOR': '🇯🇴', 'PRT': '🇵🇹', 'COD': '🇨🇩', 'UZB': '🇺🇿', 'COL': '🇨🇴', 'HRV': '🇭🇷', 'GHA': '🇬🇭', 'PAN': '🇵🇦'
 };
-
 const continentMap = {
-  'BR': 'América do Sul', 'AR': 'América do Sul', 'UY': 'América do Sul', 'CO': 'América do Sul', 'EC': 'América do Sul', 'PY': 'América do Sul',
-  'DE': 'Europa', 'GB-ENG': 'Europa', 'FR': 'Europa', 'ES': 'Europa', 'PT': 'Europa', 'NL': 'Europa', 'BE': 'Europa', 'HR': 'Europa', 'SE': 'Europa', 'GB': 'Europa', 'AT': 'Europa', 'CZ': 'Europa', 'TR': 'Europa', 'NO': 'Europa', 'BA': 'Europa', 'CH': 'Europa',
-  'US': 'América do Norte', 'MX': 'América do Norte', 'CA': 'América do Norte', 'PA': 'América do Norte', 'HT': 'América do Norte', 'CW': 'América do Norte',
-  'MA': 'África', 'SN': 'África', 'CI': 'África', 'EG': 'África', 'GH': 'África', 'DZ': 'África', 'TN': 'África', 'ZA': 'África', 'CD': 'África', 'CV': 'África',
-  'JP': 'Ásia', 'KR': 'Ásia', 'AU': 'Ásia', 'SA': 'Ásia', 'IR': 'Ásia', 'QA': 'Ásia', 'IQ': 'Ásia', 'UZ': 'Ásia', 'JO': 'Ásia', 'NZ': 'Oceania'
+  'BRA': 'América do Sul', 'ARG': 'América do Sul', 'URY': 'América do Sul', 'COL': 'América do Sul', 'ECU': 'América do Sul', 'PRY': 'América do Sul',
+  'DEU': 'Europa', 'GB-ENG': 'Europa', 'FRA': 'Europa', 'ESP': 'Europa', 'PRT': 'Europa', 'NLD': 'Europa', 'BEL': 'Europa', 'HRV': 'Europa', 'SWE': 'Europa', 'GBR': 'Europa', 'AUT': 'Europa', 'CZE': 'Europa', 'TUR': 'Europa', 'NOR': 'Europa', 'BIH': 'Europa', 'CHE': 'Europa',
+  'USA': 'América do Norte', 'MEX': 'América do Norte', 'CAN': 'América do Norte', 'PAN': 'América do Norte', 'HTI': 'América do Norte', 'CUW': 'América do Norte',
+  'MAR': 'África', 'SEN': 'África', 'CIV': 'África', 'EGY': 'África', 'GHA': 'África', 'DZA': 'África', 'TUN': 'África', 'ZAF': 'África', 'COD': 'África', 'CPV': 'África',
+  'JPN': 'Ásia', 'KOR': 'Ásia', 'AUS': 'Ásia', 'SAU': 'Ásia', 'IRN': 'Ásia', 'QAT': 'Ásia', 'IRQ': 'Ásia', 'UZB': 'Ásia', 'JOR': 'Ásia', 'NZL': 'Oceania'
 };
 
 // ============================================================================
 // APPLICATION STATE
 // ============================================================================
+
+const legacyCountryCodeMap = {
+  MX: 'MEX', ZA: 'ZAF', KR: 'KOR', CZ: 'CZE', CA: 'CAN', BA: 'BIH', QA: 'QAT', CH: 'CHE',
+  BR: 'BRA', MA: 'MAR', HT: 'HTI', GB: 'GBR', 'GB-ENG': 'GB-ENG', US: 'USA', PY: 'PRY', AU: 'AUS', TR: 'TUR',
+  DE: 'DEU', CW: 'CUW', CI: 'CIV', EC: 'ECU', NL: 'NLD', JP: 'JPN', SE: 'SWE', TN: 'TUN',
+  BE: 'BEL', EG: 'EGY', IR: 'IRN', NZ: 'NZL', ES: 'ESP', CV: 'CPV', SA: 'SAU', UY: 'URY',
+  FR: 'FRA', SN: 'SEN', IQ: 'IRQ', NO: 'NOR', AR: 'ARG', DZ: 'DZA', AT: 'AUT', JO: 'JOR',
+  PT: 'PRT', CD: 'COD', UZ: 'UZB', CO: 'COL', HR: 'HRV', GH: 'GHA', PA: 'PAN'
+};
 
 let stickers = JSON.parse(localStorage.getItem('copaStickers') || '{}');
 let duplicates = JSON.parse(localStorage.getItem('copaDuplicates') || '{}');
@@ -62,6 +70,8 @@ let currentReportData = '';
 let currentReportTitle = '';
 let currentDashboardView = 'continents';
 let pendingUnmark = null;
+
+migrateLegacyData();
 
 // ============================================================================
 // UTILITY FUNCTIONS
@@ -74,6 +84,26 @@ function saveData() {
   localStorage.setItem('copaStickers', JSON.stringify(stickers));
   localStorage.setItem('copaDuplicates', JSON.stringify(duplicates));
   updateStats();
+}
+
+function migrateLegacyData() {
+  const migrateKeys = (source) => {
+    const result = {};
+    Object.entries(source).forEach(([key, value]) => {
+      if (Object.prototype.hasOwnProperty.call(legacyCountryCodeMap, key)) {
+        result[legacyCountryCodeMap[key]] = value;
+        return;
+      }
+
+      const [code, ...rest] = key.split('-');
+      const mappedCode = legacyCountryCodeMap[code] || code;
+      result[[mappedCode, ...rest].join('-')] = value;
+    });
+    return result;
+  };
+
+  stickers = migrateKeys(stickers);
+  duplicates = migrateKeys(duplicates);
 }
 
 /**
@@ -1196,3 +1226,4 @@ document.addEventListener('DOMContentLoaded', () => {
   updateStats();
   switchDashboardView('continents');
 });
+
