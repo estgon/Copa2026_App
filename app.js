@@ -372,7 +372,7 @@ function toggleWishlist(key, event) {
   if (btn) {
     const inWl = wishlist.has(key);
     btn.textContent = inWl ? '❤️' : '🤍';
-    btn.style.opacity = inWl ? '1' : '0.22';
+    btn.style.opacity = inWl ? '1' : '0.55';
     btn.title = inWl ? 'Remover da lista de desejos' : 'Adicionar à lista de desejos';
     const wrapper = btn.closest('[data-sticker-wrapper]');
     if (wrapper) wrapper.style.outline = inWl ? '1.5px solid #E74C3C60' : '';
@@ -841,7 +841,7 @@ function renderPaises() {
         groupHtml += `<div data-sticker-wrapper="1" style="position:relative;${inWishlist ? 'outline:1.5px solid #E74C3C60;border-radius:6px;' : ''}">
           <button onclick="toggleSticker('${code}', ${i}, 'country')" class="sticker-button ${checked ? 'checked' : ''}" style="${btnStyle}${borderPart}background:${btnBg};color:${btnColor};box-shadow:${btnShadow};">${btnContent}</button>
           ${legendPlayer ? `<div title="${escapeHtml(legendPlayer.name)} – Legend" style="position:absolute;top:-5px;left:-5px;background:linear-gradient(135deg,#F1C40F,#E67E22);color:#1a1200;border-radius:50%;width:14px;height:14px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;border:1.5px solid white;box-shadow:0 1px 6px #F1C40F80;pointer-events:none;z-index:2;">★</div>` : ''}
-          ${!checked ? `<button id="wl-${safeKey}" onclick="toggleWishlist('${key}', event)" title="${inWishlist ? 'Remover da lista de desejos' : 'Adicionar à lista de desejos'}" style="position:absolute;bottom:1px;right:1px;background:none;border:none;cursor:pointer;font-size:9px;padding:2px;line-height:1;z-index:3;opacity:${inWishlist ? '1' : '0.22'};">${inWishlist ? '❤️' : '🤍'}</button>` : ''}
+          ${!checked ? `<button id="wl-${safeKey}" onclick="toggleWishlist('${key}', event)" title="${inWishlist ? 'Remover da lista de desejos' : 'Adicionar à lista de desejos'}" style="position:absolute;bottom:1px;right:1px;background:none;border:none;cursor:pointer;font-size:9px;padding:2px;line-height:1;z-index:3;opacity:${inWishlist ? '1' : '0.55'};">${inWishlist ? '❤️' : '🤍'}</button>` : ''}
           ${checked ? `<div class="dup-indicator" onclick="event.stopPropagation(); document.getElementById('dup-${code}-${i}').classList.toggle('active');">+</div>${dupMenu}` : ''}
         </div>`;
       }
@@ -878,7 +878,7 @@ function renderRefri() {
         <div class="refri-card__flag">${flagHtml(player.code, { size: '1.8em' })}</div>
         <div class="refri-card__name" style="color: ${checked ? 'white' : 'var(--color-text-primary)'};">${escapeHtml(player.name)}</div>
       </button>
-      ${!checked ? `<button id="wl-${safeKey}" onclick="toggleWishlist('${key}', event)" title="${inWishlist ? 'Remover da lista de desejos' : 'Adicionar à lista de desejos'}" style="position:absolute;bottom:2px;right:2px;background:none;border:none;cursor:pointer;font-size:10px;padding:2px;line-height:1;z-index:3;opacity:${inWishlist ? '1' : '0.25'};">${inWishlist ? '❤️' : '🤍'}</button>` : ''}
+      ${!checked ? `<button id="wl-${safeKey}" onclick="toggleWishlist('${key}', event)" title="${inWishlist ? 'Remover da lista de desejos' : 'Adicionar à lista de desejos'}" style="position:absolute;bottom:2px;right:2px;background:none;border:none;cursor:pointer;font-size:10px;padding:2px;line-height:1;z-index:3;opacity:${inWishlist ? '1' : '0.55'};">${inWishlist ? '❤️' : '🤍'}</button>` : ''}
       ${checked ? `<div class="dup-indicator" style="background: #E74C3C;" onclick="event.stopPropagation(); document.getElementById('dup-refri-${i}').classList.toggle('active');">+</div>
       <div class="dup-menu" id="dup-refri-${i}">
         <button onclick="event.stopPropagation(); addDuplicate('', ${i}, 'refri')" style="padding: 4px 8px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 500;">+1</button>
@@ -903,7 +903,7 @@ function renderHistory() {
     const safeKey = key.replace(/[^a-zA-Z0-9]/g, '-');
     html += `<div data-sticker-wrapper="1" style="position:relative;${!checked && inWishlist ? 'outline:1.5px solid #E74C3C60;border-radius:6px;' : ''}">
       <button onclick="toggleSticker('', ${i}, 'history')" class="sticker-button ${checked ? 'checked' : ''}" style="background: ${checked ? '#3498DB' : 'var(--color-background-secondary)'}; color: ${checked ? 'white' : 'var(--color-text-primary)'}; box-shadow: ${checked ? '0 4px 12px #3498DB40' : 'none'};">FWC${i}</button>
-      ${!checked ? `<button id="wl-${safeKey}" onclick="toggleWishlist('${key}', event)" title="${inWishlist ? 'Remover da lista de desejos' : 'Adicionar à lista de desejos'}" style="position:absolute;bottom:1px;right:1px;background:none;border:none;cursor:pointer;font-size:9px;padding:2px;line-height:1;z-index:3;opacity:${inWishlist ? '1' : '0.22'};">${inWishlist ? '❤️' : '🤍'}</button>` : ''}
+      ${!checked ? `<button id="wl-${safeKey}" onclick="toggleWishlist('${key}', event)" title="${inWishlist ? 'Remover da lista de desejos' : 'Adicionar à lista de desejos'}" style="position:absolute;bottom:1px;right:1px;background:none;border:none;cursor:pointer;font-size:9px;padding:2px;line-height:1;z-index:3;opacity:${inWishlist ? '1' : '0.55'};">${inWishlist ? '❤️' : '🤍'}</button>` : ''}
       ${checked ? `<div class="dup-indicator" style="background: #3498DB;" onclick="event.stopPropagation(); document.getElementById('dup-history-${i}').classList.toggle('active');">+</div>
       <div class="dup-menu" id="dup-history-${i}">
         <button onclick="event.stopPropagation(); addDuplicate('', ${i}, 'history')" style="padding: 4px 8px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 500;">+1</button>
@@ -933,7 +933,7 @@ function renderLegends() {
       html += `<div data-sticker-wrapper="1" style="position:relative;${!checked && inWishlist ? 'outline:1.5px solid #E74C3C60;border-radius:8px;' : ''}">`;
       html += `<button onclick="toggleLegendSticker(${idx},'${rarity.id}')" style="width:100%;padding:10px 4px;border:2px solid ${rarity.color};border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;text-align:center;background:${checked ? rarity.color : 'var(--color-background-primary)'};color:${checked ? rarity.textColor : rarity.color};transition:all 0.2s;">${rarity.label}</button>`;
       if (!checked) {
-        html += `<button id="wl-${safeKey}" onclick="toggleWishlist('${key}', event)" title="${inWishlist ? 'Remover da lista de desejos' : 'Adicionar à lista de desejos'}" style="position:absolute;bottom:2px;right:2px;background:none;border:none;cursor:pointer;font-size:9px;padding:2px;line-height:1;z-index:3;opacity:${inWishlist ? '1' : '0.25'};">${inWishlist ? '❤️' : '🤍'}</button>`;
+        html += `<button id="wl-${safeKey}" onclick="toggleWishlist('${key}', event)" title="${inWishlist ? 'Remover da lista de desejos' : 'Adicionar à lista de desejos'}" style="position:absolute;bottom:2px;right:2px;background:none;border:none;cursor:pointer;font-size:9px;padding:2px;line-height:1;z-index:3;opacity:${inWishlist ? '1' : '0.55'};">${inWishlist ? '❤️' : '🤍'}</button>`;
       }
       if (checked && dupCount > 0) {
         html += `<span style="position:absolute;top:-6px;right:-6px;background:#E74C3C;color:white;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:2px solid white;pointer-events:none;">${dupCount}</span>`;
