@@ -184,6 +184,11 @@ let proposalSelection = new Set();
 let proposalSelectionActive = false;
 let currentDashboardView = 'continents';
 let pendingUnmark = null;
+let tradeCredits = parseInt(localStorage.getItem('copaCredits') || '0');
+let offerFilter = (() => {
+  try { const f = JSON.parse(localStorage.getItem('copaOfferFilter') || '{}'); return { paises: f.paises !== false, refri: f.refri !== false, history: f.history !== false, legends: f.legends !== false }; }
+  catch { return { paises: true, refri: true, history: true, legends: true }; }
+})();
 
 migrateLegacyData();
 
@@ -235,6 +240,107 @@ function migrateLegacyData() {
 /**
  * Escapa caracteres HTML para prevenir XSS
  */
+// ---- Rarity & Credits ----
+
+function getStickerRarity(key) {
+  if (key.startsWith('legend-'))  return { value: 3, stars: '★★★', label: 'Lendária', color: '#9B59B6' };
+  if (key.startsWith('refri-'))   return { value: 2, stars: '★★',  label: 'Especial',  color: '#E74C3C' };
+  if (key.startsWith('history-')) return { value: 2, stars: '★★',  label: 'Especial',  color: '#3498DB' };
+  const parts = key.split('-');
+  const code = parts.slice(0, -1).join('-');
+  let col = 0;
+  for (let i = 1; i <= 20; i++) { if (stickers[`${code}-${i}`]) col++; }
+  const pct = col / 20;
+  if (pct < 0.25) return { value: 3, stars: '★★★', label: 'Rara',     color: '#E74C3C' };
+  if (pct < 0.50) return { value: 2, stars: '★★',  label: 'Incomum',  color: '#E67E22' };
+  return                { value: 1, stars: '★',   label: 'Comum',    color: '#27AE60' };
+}
+
+function creditValueForKey(key) { return getStickerRarity(key).value; }
+
+// ---- Offer Filters ----
+
+function getFilteredOffersList() {
+  return getMyOffersList().filter(({ key }) => {
+    if (pendingTrades[key]) return false;
+    if (key.startsWith('refri-')   && !offerFilter.refri)   return false;
+    if (key.startsWith('history-') && !offerFilter.history) return false;
+    if (key.startsWith('legend-')  && !offerFilter.legends) return false;
+    if (!key.startsWith('refri-') && !key.startsWith('history-') && !key.startsWith('legend-') && !offerFilter.paises) return false;
+    return true;
+  });
+}
+
+function getFilteredNeedsList() {
+  return getMyNeedsList().filter(key => {
+    if (key.startsWith('refri-')   && !offerFilter.refri)   return false;
+    if (key.startsWith('history-') && !offerFilter.history) return false;
+    if (key.startsWith('legend-')  && !offerFilter.legends) return false;
+    if (!key.startsWith('refri-') && !key.startsWith('history-') && !key.startsWith('legend-') && !offerFilter.paises) return false;
+    return true;
+  });
+}
+
+function toggleOfferFilter(category) {
+  offerFilter[category] = !offerFilter[category];
+  localStorage.setItem('copaOfferFilter', JSON.stringify(offerFilter));
+  renderOfferFilterChips();
+  const previewEl = document.getElementById('community-offer-preview');
+  if (previewEl) previewEl.textContent = formatOfferText();
+}
+
+function renderOfferFilterChips() {
+  const el = document.getElementById('offer-filter-chips');
+  if (!el) return;
+  const cats = [
+    { key: 'paises',  label: '🌍 Países'    },
+    { key: 'refri',   label: '🥤 Refri'     },
+    { key: 'history', label: '🏆 World Cup' },
+    { key: 'legends', label: '⭐ Legends'   },
+  ];
+  el.innerHTML = cats.map(({ key, label }) => {
+    const on = offerFilter[key] !== false;
+    return `<button onclick="toggleOfferFilter('${key}')" style="padding:6px 12px;border-radius:20px;border:1.5px solid ${on ? '#667eea' : 'var(--color-border-tertiary)'};background:${on ? 'linear-gradient(135deg,#667eea,#764ba2)' : 'var(--color-background-secondary)'};color:${on ? 'white' : 'var(--color-text-secondary)'};cursor:pointer;font-size:12px;font-weight:600;transition:all 0.2s;">${label}</button>`;
+  }).join('');
+}
+
+// ---- Room Code ----
+
+function generateRoomCode() {
+  const offers = getMyOffersList().filter(({ key }) => !pendingTrades[key]);
+  if (offers.length === 0) { showToast('Nenhuma duplicata disponível'); return null; }
+  const payload = {
+    n: communityProfile.name || '',
+    c: communityProfile.contact || '',
+    o: offers.map(({ key, count }) => `${key}:${count}`).join(','),
+    w: getMyNeedsList().slice(0, 60).join(',')
+  };
+  return 'COPA-' + btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+}
+
+function copyRoomCode() {
+  const code = generateRoomCode();
+  if (!code) return;
+  const el = document.getElementById('room-code-display');
+  if (el) el.value = code;
+  copyToClipboard(code, 'Código copiado! Envie para seu amigo 🤝');
+}
+
+function applyRoomCode() {
+  const input = document.getElementById('room-code-input');
+  if (!input) return;
+  const code = input.value.trim();
+  if (!code) { showToast('Cole o código do seu amigo aqui'); return; }
+  const raw = code.startsWith('COPA-') ? code.slice(5) : code;
+  try {
+    const payload = JSON.parse(decodeURIComponent(escape(atob(raw))));
+    input.value = '';
+    showIncomingTradeOffer(payload);
+  } catch {
+    showToast('Código inválido ou corrompido');
+  }
+}
+
 function escapeHtml(text) {
   const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
   return text.replace(/[&<>"']/g, m => map[m]);
@@ -763,8 +869,13 @@ function renderTrocas() {
     const safeId = 'tcard-' + key.replace(/[^a-zA-Z0-9]/g, '-');
     const border = isSelected ? '2px solid #667eea' : `1px solid ${color}40`;
     const opacity = isPending ? 'opacity:0.65;' : '';
+    const rarity = getStickerRarity(key);
 
     html += `<div id="${safeId}" style="padding:12px;background:linear-gradient(135deg,${color}15 0%,${color}30 100%);border-radius:12px;border:${border};box-shadow:0 2px 8px ${color}20;${opacity}position:relative;${proposalSelectionActive ? 'cursor:pointer;' : ''}" ${proposalSelectionActive ? `onclick="toggleProposalItem('${key}')"` : ''}>`;
+
+    if (!proposalSelectionActive && rarity.value > 0) {
+      html += `<div title="${rarity.label}" style="position:absolute;top:6px;right:6px;font-size:10px;color:${rarity.color};font-weight:700;line-height:1;">${rarity.stars}</div>`;
+    }
 
     if (proposalSelectionActive) {
       html += `<div class="sel-dot" style="position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:50%;border:2px solid ${isSelected ? '#667eea' : color + '80'};background:${isSelected ? '#667eea' : 'transparent'};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;">${isSelected ? '✓' : ''}</div>`;
@@ -1725,6 +1836,9 @@ function saveTradeRecord() {
     sent, received,
     notes: (document.getElementById('trade-hist-notes')?.value || '').trim()
   };
+  const creditsEarned = sent.reduce((sum, { key }) => sum + creditValueForKey(key), 0) || sent.length;
+  tradeCredits += creditsEarned;
+  localStorage.setItem('copaCredits', String(tradeCredits));
   tradeHistory.unshift(record);
   localStorage.setItem('copaHistory', JSON.stringify(tradeHistory));
   sent.forEach(({ key }) => {
@@ -1736,7 +1850,9 @@ function saveTradeRecord() {
   localStorage.setItem('copaPending', JSON.stringify(pendingTrades));
   closeRegisterTradeModal();
   renderTrocas(); renderPaises(); updateStats(); renderTradeHistory();
-  showToast('Troca registrada! 🤝');
+  const credEl = document.getElementById('community-credits-count');
+  if (credEl) credEl.textContent = tradeCredits;
+  showToast(`Troca registrada! +${creditsEarned} crédito${creditsEarned !== 1 ? 's' : ''} 🪙`);
 }
 
 function deleteTradeRecord(id) {
@@ -1961,8 +2077,8 @@ function formatStickerLabel(key) {
 }
 
 function formatOfferText() {
-  const offers = getMyOffersList().filter(({ key }) => !pendingTrades[key]);
-  const needs = getMyNeedsList();
+  const offers = getFilteredOffersList();
+  const needs = getFilteredNeedsList();
   const name = communityProfile.name || 'Usuário';
   const collected = Object.values(stickers).filter(Boolean).length;
 
@@ -2024,8 +2140,8 @@ function nativeShare() {
 
 function copyTradeLink() {
   try {
-    const offers = getMyOffersList().map(({ key, count }) => `${key}:${count}`).join(',');
-    const needs = getMyNeedsList().slice(0, 60).join(',');
+    const offers = getFilteredOffersList().map(({ key, count }) => `${key}:${count}`).join(',');
+    const needs = getFilteredNeedsList().slice(0, 60).join(',');
     const payload = btoa(unescape(encodeURIComponent(JSON.stringify({
       n: communityProfile.name || '',
       c: communityProfile.contact || '',
@@ -2079,18 +2195,21 @@ let _qrGenerated = false;
 function renderComunidade() {
   renderProfileCard();
   renderTradeHistory();
+  renderOfferFilterChips();
 
-  const offers = getMyOffersList().filter(({ key }) => !pendingTrades[key]);
-  const needs = getMyNeedsList();
+  const offers = getFilteredOffersList();
+  const needs = getFilteredNeedsList();
 
   const offersCountEl = document.getElementById('community-offers-count');
   const needsCountEl = document.getElementById('community-needs-count');
   const previewEl = document.getElementById('community-offer-preview');
   const urlEl = document.getElementById('community-app-url');
+  const credEl = document.getElementById('community-credits-count');
 
   if (offersCountEl) offersCountEl.textContent = offers.length;
   if (needsCountEl) needsCountEl.textContent = needs.length;
   if (previewEl) previewEl.textContent = formatOfferText();
+  if (credEl) credEl.textContent = tradeCredits;
 
   const appUrl = location.origin + location.pathname;
   if (urlEl) urlEl.textContent = appUrl;

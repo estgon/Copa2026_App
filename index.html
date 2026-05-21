@@ -309,7 +309,7 @@
       </div>
 
       <!-- Meus Números -->
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 2rem;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
         <div style="background: linear-gradient(135deg, #27AE60 0%, #2ECC71 100%); border-radius: 16px; padding: 1.25rem; color: white; text-align: center; box-shadow: 0 8px 24px rgba(39,174,96,0.25);">
           <div style="font-size: 36px; font-weight: 800; line-height: 1;" id="community-offers-count">0</div>
           <div style="font-size: 12px; opacity: 0.9; margin-top: 6px; font-weight: 600;">Tenho para Trocar</div>
@@ -320,10 +320,26 @@
         </div>
       </div>
 
+      <!-- Créditos de Troca -->
+      <div style="background: linear-gradient(135deg, #F39C12 0%, #E67E22 100%); border-radius: 16px; padding: 1rem 1.25rem; color: white; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 2rem; box-shadow: 0 8px 24px rgba(243,156,18,0.28);">
+        <div>
+          <div style="font-size: 11px; font-weight: 700; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">🪙 Créditos de Troca</div>
+          <div style="font-size: 10px; opacity: 0.8;">Ganhos ao registrar trocas · stickers raros valem mais</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 38px; font-weight: 800; line-height: 1;" id="community-credits-count">0</div>
+          <div style="font-size: 10px; opacity: 0.85;">créditos</div>
+        </div>
+      </div>
+
       <!-- Oferta de Trocas -->
       <div class="card">
         <h2>🤝 Minha Oferta de Trocas</h2>
-        <p style="font-size: 13px; color: var(--color-text-secondary); margin-bottom: 12px; line-height: 1.5;">Mensagem pronta com suas duplicatas e desejos — envie para grupos ou amigos.</p>
+        <p style="font-size: 13px; color: var(--color-text-secondary); margin-bottom: 10px; line-height: 1.5;">Mensagem pronta com suas duplicatas e desejos — envie para grupos ou amigos.</p>
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 11px; font-weight: 700; color: var(--color-text-secondary); display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px;">Incluir categorias</label>
+          <div id="offer-filter-chips" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
+        </div>
         <pre id="community-offer-preview" style="font-size: 12px; line-height: 1.6; white-space: pre-wrap; color: var(--color-text-secondary); max-height: 180px; overflow-y: auto; background: var(--color-background-secondary); padding: 12px; border-radius: 8px; margin-bottom: 12px; font-family: var(--font-sans); border: 0.5px solid var(--color-border-tertiary);"></pre>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
           <button onclick="copyOfferText()" style="padding: 12px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--color-text-primary);">📋 Copiar texto</button>
@@ -346,6 +362,24 @@
         </div>
         <button onclick="copyTradeLink()" style="width: 100%; padding: 14px 16px; background: linear-gradient(135deg, #FA709A 0%, #FEE140 100%); color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 700; margin-bottom: 6px;">🔗 Gerar e Copiar Link de Trocas</button>
         <p style="font-size: 11px; color: var(--color-text-secondary); text-align: center; margin: 0; line-height: 1.5;">Seus dados ficam codificados no link — privado e offline</p>
+      </div>
+
+      <!-- Sala de Troca Virtual -->
+      <div class="card">
+        <h2>🏠 Sala de Troca Virtual</h2>
+        <p style="font-size: 13px; color: var(--color-text-secondary); margin-bottom: 14px; line-height: 1.5;">Gere um código com suas trocas. Seu amigo cola o código no app dele e vê o match na hora — sem link longo.</p>
+        <label style="font-size: 11px; font-weight: 700; color: var(--color-text-secondary); display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px;">Meu código de trocas</label>
+        <div style="display: flex; gap: 8px; margin-bottom: 14px;">
+          <input id="room-code-display" type="text" readonly placeholder="Clique em Gerar →" style="flex: 1; padding: 10px 12px; border: 0.5px solid var(--color-border-tertiary); border-radius: 8px; font-size: 10px; background: var(--color-background-secondary); color: var(--color-text-secondary); font-family: monospace; box-sizing: border-box; overflow: hidden; text-overflow: ellipsis;">
+          <button onclick="copyRoomCode()" style="padding: 10px 14px; background: linear-gradient(135deg, #FA709A 0%, #FEE140 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 700; white-space: nowrap;">Gerar e Copiar</button>
+        </div>
+        <div style="border-top: 0.5px solid var(--color-border-tertiary); padding-top: 12px;">
+          <label style="font-size: 11px; font-weight: 700; color: var(--color-text-secondary); display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px;">Entrar com código de um amigo</label>
+          <div style="display: flex; gap: 8px;">
+            <input id="room-code-input" type="text" placeholder="Cole o código COPA-..." style="flex: 1; padding: 10px 12px; border: 0.5px solid var(--color-border-tertiary); border-radius: 8px; font-size: 11px; background: var(--color-background-secondary); color: var(--color-text-primary); font-family: monospace; box-sizing: border-box;">
+            <button onclick="applyRoomCode()" style="padding: 10px 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 700; white-space: nowrap;">Ver Match</button>
+          </div>
+        </div>
       </div>
 
       <!-- Histórico de Trocas -->
