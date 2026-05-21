@@ -2,12 +2,18 @@
 
 ## ✨ Melhorias Implementadas
 
+### 0. **Migração para Códigos ISO3 + Migração de Dados Legados** 🌍
+- **Antes**: Códigos de país em ISO2 (2 letras: `BR`, `AR`, `US`...)
+- **Depois**: Códigos ISO3 (3 letras: `BRA`, `ARG`, `USA`...)
+- **Migração automática**: função `migrateLegacyData()` converte dados salvos em `localStorage` de ISO2 para ISO3 sem perda de dados
+- **Mapeamento completo**: `legacyCountryCodeMap` com todos os 48 países do álbum
+
 ### 1. **Arquitetura Refatorada** 🏗️
 - **Antes**: Todo código em um único arquivo HTML (inline CSS + JavaScript)
 - **Depois**: Separação em 3 arquivos principais:
   - `index.html` - Estrutura HTML limpa (350 linhas)
-  - `styles.css` - Estilos organizados (350+ linhas)
-  - `app.js` - Lógica de negócio modularizada (1000+ linhas)
+  - `styles.css` - Estilos organizados (400+ linhas)
+  - `app.js` - Lógica de negócio modularizada (1230+ linhas)
 
 ### 2. **CSS Profissionalizado** 🎨
 ✅ **Organização por seções:**
@@ -21,6 +27,29 @@
 - Redução de duplicação (~60% menos código repetido)
 - Manutenção centralizada de cores e espaçamento
 - Dark Mode suportado nativamente
+
+### 2.1 **Cards de Grupo Refatorados** 🃏
+- **Antes**: HTML com estilos inline (`style="..."`) embutidos no JavaScript
+- **Depois**: Estrutura BEM com classes CSS reutilizáveis
+
+```
+.group-card
+├── .group-card__header
+│   ├── .group-card__title
+│   │   ├── .group-card__label   (ex: "Grupo A")
+│   │   └── .group-card__flags  (emojis das bandeiras)
+│   └── .group-card__percent    (ex: "75% completo")
+└── .group-card__content
+    ├── .group-card__count       (ex: "12/16")
+    └── .group-card__progress
+        └── .group-card__progress-bar
+```
+
+✅ **Novas funcionalidades visuais:**
+- Bandeiras dos 4 países exibidas diretamente no card de cada grupo
+- Percentual de conclusão visível no cabeçalho do card
+- Hover com elevação suave (`translateY(-4px)`)
+- Barra de progresso animada com `cubic-bezier`
 
 ### 3. **JavaScript Modularizado** 📦
 ✅ **Estrutura clara com seções documentadas:**
@@ -92,12 +121,14 @@
 
 | Métrica | Antes | Depois | Melhoria |
 |---------|-------|--------|----------|
-| Linhas de CSS | 15 | 350+ | Mais organizado |
-| Linhas de JS | 1000+ (inline) | 1000+ (modular) | Documentado |
+| Linhas de CSS | 15 | 400+ | Mais organizado |
+| Linhas de JS | 1000+ (inline) | 1230+ (modular) | Documentado |
 | Arquivos | 3 | 4 | Separação clara |
 | Duplicação de código | ~60% | ~10% | Reduzida |
 | Documentação | 0% | 80%+ | Completa |
 | Testabilidade | Baixa | Alta | Melhorada |
+| Padrão de códigos de país | ISO2 (2 letras) | ISO3 (3 letras) | Padronizado |
+| Inline styles nos cards | Sim | Não (BEM CSS) | Manutenível |
 
 ---
 
@@ -140,12 +171,17 @@ Copa2026_App/
 
 ## 💡 Principais Funções
 
+### Inicialização & Migração
+```javascript
+migrateLegacyData()     // Converte chaves ISO2 → ISO3 no localStorage
+```
+
 ### State Management
 ```javascript
-toggleSticker()          // Marca/desmark figurinha
-addDuplicate()          // Adiciona duplicata
-removeDuplicate()       // Remove duplicata
-showConfirmation()      // Modal de confirmação
+toggleSticker()          // Marca/desmarca figurinha
+addDuplicate()           // Adiciona duplicata
+removeDuplicate()        // Remove duplicata
+showConfirmation()       // Modal de confirmação
 ```
 
 ### Rendering

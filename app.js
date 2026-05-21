@@ -42,6 +42,85 @@ const flagEmojis = {
   'URY': '🇺🇾', 'FRA': '🇫🇷', 'SEN': '🇸🇳', 'IRQ': '🇮🇶', 'NOR': '🇳🇴', 'ARG': '🇦🇷', 'DZA': '🇩🇿', 'AUT': '🇦🇹',
   'JOR': '🇯🇴', 'PRT': '🇵🇹', 'COD': '🇨🇩', 'UZB': '🇺🇿', 'COL': '🇨🇴', 'HRV': '🇭🇷', 'GHA': '🇬🇭', 'PAN': '🇵🇦'
 };
+
+const iso3ToIso2 = {
+  MEX: 'mx', ZAF: 'za', KOR: 'kr', CZE: 'cz', CAN: 'ca', BIH: 'ba', QAT: 'qa', CHE: 'ch',
+  BRA: 'br', MAR: 'ma', HTI: 'ht', GBR: 'gb', 'GB-ENG': 'gb-eng', USA: 'us', PRY: 'py', AUS: 'au',
+  TUR: 'tr', DEU: 'de', CUW: 'cw', CIV: 'ci', ECU: 'ec', NLD: 'nl', JPN: 'jp', SWE: 'se',
+  TUN: 'tn', BEL: 'be', EGY: 'eg', IRN: 'ir', NZL: 'nz', ESP: 'es', CPV: 'cv', SAU: 'sa',
+  URY: 'uy', FRA: 'fr', SEN: 'sn', IRQ: 'iq', NOR: 'no', ARG: 'ar', DZA: 'dz', AUT: 'at',
+  JOR: 'jo', PRT: 'pt', COD: 'cd', UZB: 'uz', COL: 'co', HRV: 'hr', GHA: 'gh', PAN: 'pa'
+};
+const refriPlayers = [
+  null,
+  { name: 'Lamine Yamal',      code: 'ESP'    }, // CC 01
+  { name: 'Federico Valverde', code: 'URY'    }, // CC 02
+  { name: 'Lautaro Martínez',  code: 'ARG'    }, // CC 03
+  { name: 'Gabriel Magalhães', code: 'BRA'    }, // CC 04
+  { name: 'Harry Kane',        code: 'GB-ENG' }, // CC 05
+  { name: 'Joško Gvardiol',    code: 'HRV'    }, // CC 06
+  { name: 'Alphonso Davies',   code: 'CAN'    }, // CC 07
+  { name: 'Joshua Kimmich',    code: 'DEU'    }, // CC 08
+  { name: 'Santiago Giménez',  code: 'MEX'    }, // CC 09
+  { name: 'Virgil van Dijk',   code: 'NLD'    }, // CC 10
+  { name: 'Emiliano Martínez', code: 'ARG'    }, // CC 11
+  { name: 'Jefferson Lerma',   code: 'COL'    }, // CC 12
+  { name: 'Raúl Jiménez',      code: 'MEX'    }, // CC 13
+  { name: 'Enner Valencia',    code: 'ECU'    }, // CC 14
+];
+
+// playerData[ISO3][número] = nome do jogador (1=badge país, 2-20 jogadores, sem #13)
+const playerData = {
+  MEX:{1:'México',2:'Luis Malagón',3:'Johan Vásquez',4:'Jorge Sánchez',5:'César Montes',6:'Jesús Gallardo',7:'Israel Reyes',8:'Diego Lainez',9:'Carlos Rodríguez',10:'Edson Álvarez',11:'Orbelín Pineda',12:'Marcel Ruiz',14:'Érick Sánchez',15:'Hirving Lozano',16:'Santiago Giménez',17:'Raúl Jiménez',18:'Alexis Vega',19:'Roberto Alvarado',20:'César Huerta'},
+  ZAF:{1:'África do Sul',2:'Ronwen Williams',3:'Sipho Chaine',4:'Aubrey Modiba',5:'Samukele Kabini',6:'Mbekezeli Mbokazi',7:'Khulumani Ndamane',8:'Siyabonga Ngezana',9:'Khuliso Mudau',10:'Nkosinathi Sibisi',11:'Teboho Mokoena',12:'Thalente Mbatha',14:'Bathuisi Aubaas',15:'Yaya Sithole',16:'Sipho Mbule',17:'Lyle Foster',18:'Ioraam Rayners',19:'Mohau Nkota',20:'Oswin Appolis'},
+  KOR:{1:'Coreia do Sul',2:'Hyeon-woo Jo',3:'Seung-Gyu Kim',4:'Min-jae Kim',5:'Yu-min Cho',6:'Young-woo Seol',7:'Han-beom Lee',8:'Tae-seok Lee',9:'Myung-jae Lee',10:'Jae-sung Lee',11:'In-beom Hwang',12:'Kang-in Lee',14:'Seung-ho Paik',15:'Jens Castrop',16:'Dong-gyeong Lee',17:'Gue-sung Cho',18:'Heung-min Son',19:'Hee-chan Hwang',20:'Hyeon-Gyu Oh'},
+  CZE:{1:'República Tcheca',2:'Matěj Kovář',3:'Jindřich Staněk',4:'Ladislav Krejčí',5:'Vladimír Coufal',6:'Jaroslav Zelený',7:'Tomáš Holeš',8:'David Zima',9:'Michal Sadílek',10:'Lukáš Provod',11:'Lukáš Červ',12:'Tomáš Souček',14:'Pavel Šulc',15:'Matěj Vydra',16:'Vasil Kušej',17:'Tomáš Chorý',18:'Václav Černý',19:'Adam Hložek',20:'Patrik Schick'},
+  CAN:{1:'Canadá',2:'Dayne St. Clair',3:'Alphonso Davies',4:'Alistair Johnston',5:'Samuel Adekugbe',6:'Richie Laryea',7:'Derek Cornelius',8:'Moïse Bombito',9:'Kamal Miller',10:'Stephen Eustáquio',11:'Ismaël Koné',12:'Jonathan Osorio',14:'Jacob Shaffelburg',15:'Mathieu Choinière',16:'Niko Sigur',17:'Tajon Buchanan',18:'Liam Millar',19:'Cyle Larin',20:'Jonathan David'},
+  BIH:{1:'Bósnia e Herzegovina',2:'Nikola Vasilj',3:'Amar Dedić',4:'Sead Kolašinac',5:'Tarik Muharemović',6:'Nihad Mujakić',7:'Nikola Katić',8:'Amir Hadžiahmetović',9:'Benjamin Tahirović',10:'Armin Gigović',11:'Ivan Šunjić',12:'Ivan Bašić',14:'Dženis Burnić',15:'Esmir Bajraktarević',16:'Amar Memić',17:'Ermedin Demirović',18:'Edin Džeko',19:'Samed Baždar',20:'Haris Tabaković'},
+  QAT:{1:'Catar',2:'Meshaal Barsham',3:'Sultan Albrake',4:'Lucas Mendes',5:'Homam Ahmed',6:'Boualem Khoukhi',7:'Pedro Miguel',8:'Tarek Salman',9:'Mohamed Al-Mannai',10:'Karim Boudiaf',11:'Assim Madibo',12:'Ahmed Fatehi',14:'Mohammed Waad',15:'Abdulaziz Hatem',16:'Hassan Al-Haydos',17:'Edmilson Junior',18:'Akram Hassan Afif',19:'Ahmed Al Ganehi',20:'Almoez Ali'},
+  CHE:{1:'Suíça',2:'Gregor Kobel',3:'Yvon Mvogo',4:'Manuel Akanji',5:'Ricardo Rodriguez',6:'Nico Elvedi',7:'Aurèle Amenda',8:'Silvan Widmer',9:'Granit Xhaka',10:'Denis Zakaria',11:'Remo Freuler',12:'Fabian Rieder',14:'Ardon Jashari',15:'Johan Manzambi',16:'Michel Aebischer',17:'Breel Embolo',18:'Ruben Vargas',19:'Dan Ndoye',20:'Zeki Amdouni'},
+  BRA:{1:'Brasil',2:'Alisson',3:'Bento',4:'Marquinhos',5:'Éder Militão',6:'Gabriel Magalhães',7:'Danilo',8:'Wesley',9:'Lucas Paquetá',10:'Casemiro',11:'Bruno Guimarães',12:'Luiz Henrique',14:'Vinícius Júnior',15:'Rodrygo',16:'João Pedro',17:'Matheus Cunha',18:'Gabriel Martinelli',19:'Raphinha',20:'Estêvão'},
+  MAR:{1:'Marrocos',2:'Yassine Bounou',3:'Munir El Kajoui',4:'Achraf Hakimi',5:'Noussair Mazraoui',6:'Nayef Aguerd',7:'Romain Saïss',8:'Jawad El Yamiq',9:'Adam Masina',10:'Sofyan Amrabat',11:'Azzedine Ounahi',12:'Eliesse Ben Seghir',14:'Bilal El Khannouss',15:'Ismael Saibari',16:'Youssef En-Nesyri',17:'Abde Ezzalzouli',18:'Soufiane Rahimi',19:'Brahim Díaz',20:'Ayoub El Kaabi'},
+  HTI:{1:'Haiti',2:'Johny Placide',3:'Carlens Arcus',4:'Martin Expérience',5:'Jean-Kevin Duverne',6:'Ricardo Adé',7:'Duke Lacroix',8:'Garven Metusala',9:'Hannes Delcroix',10:'Leverton Pierre',11:'Danley Jean Jacques',12:'Jean-Ricner Bellegarde',14:'Christopher Attys',15:'Derrick Etienne Jr.',16:'Josué Casimir',17:'Ruben Providence',18:'Duckens Nazon',19:'Louicius Deedson',20:'Frantzdy Pierrot'},
+  GBR:{1:'Escócia',2:'Angus Gunn',3:'Jack Hendry',4:'Kieran Tierney',5:'Aaron Hickey',6:'Andrew Robertson',7:'Scott McKenna',8:'John Souttar',9:'Anthony Ralston',10:'Grant Hanley',11:'Scott McTominay',12:'Billy Gilmour',14:'Lewis Ferguson',15:'Ryan Christie',16:'Kenny McLean',17:'John McGinn',18:'Lyndon Dykes',19:'Che Adams',20:'Ben Doak'},
+  USA:{1:'Estados Unidos',2:'Matt Freese',3:'Chris Richards',4:'Tim Ream',5:'Mark McKenzie',6:'Alex Freeman',7:'Antonee Robinson',8:'Tyler Adams',9:'Tanner Tessmann',10:'Weston McKennie',11:'Christian Roldan',12:'Timothy Weah',14:'Diego Luna',15:'Malik Tillman',16:'Christian Pulisic',17:'Brenden Aaronson',18:'Ricardo Pepi',19:'Haji Wright',20:'Folarin Balogun'},
+  PRY:{1:'Paraguai',2:'Roberto Fernández',3:'Orlando Gill',4:'Gustavo Gómez',5:'Fabián Balbuena',6:'Juan José Cáceres',7:'Omar Alderete',8:'Junior Alonso',9:'Mathías Villasanti',10:'Diego Gómez',11:'Damián Bobadilla',12:'Andrés Cubas',14:'Matías Galarza Fonda',15:'Julio Enciso'},
+  AUS:{1:'Austrália',2:'Mathew Ryan',3:'Joe Gauci',4:'Harry Souttar',5:'Alessandro Circati',6:'Jordan Bos',7:'Aziz Behich',8:'Cameron Burgess',9:'Lewis Miller',10:'Milos Degenek',11:'Jackson Irvine',12:'Riley McGree',14:"Aiden O'Neill",15:'Connor Metcalfe',16:'Patrick Yazbek',17:'Craig Goodwin',18:'Kusini Yengi',19:'Nestory Irankunda',20:'Mohamed Touré'},
+  TUR:{1:'Turquia',2:'Ugurcan Cakir',3:'Mert Muldur',4:'Zeki Celik',5:'Abdulkerim Bardakci',6:'Caglar Soyuncu',7:'Merih Demiral',8:'Ferdi Kadioglu',9:'Kaan Ayhan',10:'Ismail Yuksek',11:'Hakan Calhanoglu',12:'Orkun Kokcu',14:'Arda Güler',15:'Irfan Can Kahveci',16:'Yunus Akgun',17:'Can Uzun',18:'Baris Alper Yilmaz',19:'Kerem Akturkoglu',20:'Kenan Yildiz'},
+  DEU:{1:'Alemanha',2:'Marc-André ter Stegen',3:'Jonathan Tah',4:'David Raum',5:'Nico Schlotterbeck',6:'Antonio Rüdiger',7:'Waldemar Anton',8:'Ridle Baku',9:'Maximilian Mittelstädt',10:'Joshua Kimmich',11:'Florian Wirtz',12:'Felix Nmecha',14:'Leon Goretzka',15:'Jamal Musiala',16:'Serge Gnabry',17:'Kai Havertz',18:'Leroy Sané',19:'Karim Adeyemi',20:'Nick Woltemade'},
+  CUW:{1:'Curaçau',2:'Eloy Room',3:'Armando Obispo',4:'Sherel Floranus',5:'Jurien Gaari',6:'Joshua Brenet',7:'Roshon Van Eijma',8:'Shurandy Sambo',9:'Livano Comenencia',10:'Godfried Roemeratoe',11:'Juninho Bacuna',12:'Leandro Bacuna',14:'Tahith Chong',15:'Kenji Gorré',16:'Jearl Margaritha',17:'Jurgen Locadia',18:'Jeremy Antonisse',19:'Gervane Kastaneer',20:'Sontje Hansen'},
+  CIV:{1:'Costa do Marfim',2:'Yahia Fofana',3:'Ghislain Konan',4:'Wilfried Singo',5:'Odilon Kossounou',6:'Evan Ndicka',7:'Willy Boly',8:'Emmanuel Agbadou',9:'Ousmane Diomande',10:'Franck Kessié',11:'Seko Fofana',12:'Ibrahim Sangaré',14:'Jean-Philippe Gbamin',15:'Amad Diallo',16:'Sébastien Haller',17:'Simon Adingra',18:'Yan Diomande',19:'Evann Guessand',20:'Oumar Diakité'},
+  ECU:{1:'Equador',2:'Hernán Galíndez',3:'Gonzalo Valle',4:'Piero Hincapié',5:'Pervis Estupiñán',6:'Willian Pacho',7:'Ángelo Preciado',8:'Joel Ordóñez',9:'Moisés Caicedo',10:'Alan Franco',11:'Kendry Páez',12:'Pedro Vite',14:'John Yeboah',15:'Leonardo Campana',16:'Gonzalo Plata',17:'Nilson Angulo',18:'Alan Minda',19:'Kevin Rodríguez',20:'Enner Valencia'},
+  NLD:{1:'Holanda',2:'Bart Verbruggen',3:'Virgil van Dijk',4:'Micky van de Ven',5:'Jurriën Timber',6:'Denzel Dumfries',7:'Nathan Aké',8:'Jeremie Frimpong',9:'Jan Paul van Hecke',10:'Tijjani Reijnders',11:'Ryan Gravenberch',12:'Teun Koopmeiners',14:'Frenkie de Jong',15:'Xavi Simons',16:'Justin Kluivert',17:'Memphis Depay',18:'Donyell Malen',19:'Wout Weghorst',20:'Cody Gakpo'},
+  JPN:{1:'Japão',2:'Zion Suzuki',3:'Henry Heroki Mochizuki',4:'Ayumu Seko',5:'Junnosuke Suzuki',6:'Shogo Taniguchi',7:'Tsuyoshi Watanabe',8:'Kaishu Sano',9:'Yuki Soma',10:'Ao Tanaka',11:'Daichi Kamada',12:'Takefusa Kubo',14:'Ritsu Doan',15:'Keito Nakamura',16:'Takumi Minamino',17:'Shuto Machino',18:'Junya Ito',19:'Koki Ogawa',20:'Ayase Ueda'},
+  SWE:{1:'Suécia',2:'Victor Johansson',3:'Isak Hien',4:'Gabriel Gudmundsson',5:'Emil Holm',6:'Victor Nilsson Lindelöf',7:'Gustaf Lagerbielke',8:'Lucas Bergvall',9:'Hugo Larsson',10:'Jesper Karlström',11:'Yasin Ayari',12:'Mattias Svanberg',14:'Daniel Svensson',15:'Ken Sema',16:'Roony Bardghji',17:'Dejan Kulusevski',18:'Anthony Elanga',19:'Alexander Isak',20:'Viktor Gyökeres'},
+  TUN:{1:'Tunísia',2:'Bechir Ben Said',3:'Aymen Dahmen',4:'Van Valery',5:'Montassar Talbi',6:'Yassine Meriah',7:'Ali Abdi',8:'Dylan Bronn',9:'Ellyes Skhiri',10:'Aissa Laidouni',11:'Ferjani Sassi',12:'Mohamed Ali Ben Romdhane',14:'Hannibal Mejbri',15:'Elias Achouri',16:'Elias Saad',17:'Hazem Mastouri',18:'Ismael Gharbi',19:'Sayfallah Ltaief',20:'Naim Sliti'},
+  BEL:{1:'Bélgica',2:'Thibaut Courtois',3:'Arthur Theate',4:'Timothy Castagne',5:'Zeno Debast',6:'Brandon Mechele',7:'Maxim De Cuyper',8:'Thomas Meunier',9:'Youri Tielemans',10:'Amadou Onana',11:'Nicolas Raskin',12:'Alexis Saelemaekers',14:'Hans Vanaken',15:'Kevin De Bruyne',16:'Jérémy Doku',17:'Charles De Ketelaere',18:'Leandro Trossard',19:'Loïs Openda',20:'Romelu Lukaku'},
+  EGY:{1:'Egito',2:'Mohamed El Shenawy',3:'Mohamed Hany',4:'Mohamed Hamdy',5:'Yasser Ibrahim',6:'Khaled Sobhi',7:'Ramy Rabia',8:'Hossam Abdelmaguid',9:'Ahmed Fatouh',10:'Marwan Attia',11:'Zizo',12:'Hamdy Fathy',14:'Mohamed Lasheen',15:'Emam Ashour',16:'Osama Faisal',17:'Mohamed Salah',18:'Mostafa Mohamed',19:'Trezeguet',20:'Omar Marmoush'},
+  IRN:{1:'Irã',2:'Alireza Beiranvand',3:'Morteza Pouraliganji',4:'Ehsan Hajsafi',5:'Milad Mohammadi',6:'Shoja Khalilzadeh',7:'Ramin Rezaeian',8:'Hossein Kanaani',9:'Sadegh Moharrami',10:'Saleh Hardani',11:'Saeed Ezatolahi',12:'Saman Ghoddos',14:'Omid Noorafkan',15:'Roozbeh Cheshmi',16:'Mohammad Mohebi',17:'Sardar Azmoun',18:'Mehdi Taremi',19:'Alireza Jahanbakhsh',20:'Ali Gholizadeh'},
+  NZL:{1:'Nova Zelândia',2:'Max Crocombe-Payne',3:'Alex Paulsen',4:'Michael Boxall',5:'Liberato Cacace',6:'Tim Payne',7:'Tyler Bindon',8:'Francis de Vries',9:'Finn Surman',10:'Joe Bell',11:'Sarpreet Singh',12:'Ryan Thomas',14:'Matthew Garbett',15:'Marko Stamenić',16:'Ben Old',17:'Chris Wood',18:'Elijah Just',19:'Callum McCowatt',20:'Kosta Barbarouses'},
+  ESP:{1:'Espanha',2:'Unai Simón',3:'Robin Le Normand',4:'Aymeric Laporte',5:'Dean Huijsen',6:'Pedro Porro',7:'Dani Carvajal',8:'Marc Cucurella',9:'Martín Zubimendi',10:'Rodri',11:'Pedri',12:'Fabián Ruiz',14:'Mikel Merino',15:'Lamine Yamal',16:'Dani Olmo',17:'Nico Williams',18:'Ferran Torres',19:'Álvaro Morata',20:'Mikel Oyarzabal'},
+  CPV:{1:'Cabo Verde',2:'Vozinha',3:'Logan Costa',4:'Pico',5:'Diney',6:'Steven Moreira',7:'Wagner Pina',8:'João Paulo',9:'Yannick Semedo',10:'Kevin Pina',11:'Patrick Andrade',12:'Jamiro Monteiro',14:'Deroy Duarte',15:'Garry Rodrigues',16:'Jovane Cabral',17:'Ryan Mendes',18:'Dailon Livramento',19:'Willy Semedo',20:'Bebé'},
+  SAU:{1:'Arábia Saudita',2:'Nawaf Alaqidi',3:'Abdulrahman Al-Sanbi',4:'Saud Abdulhamid',5:'Nawaf Boushal',6:'Jihad Thakri',7:'Moteb Al-Harbi',8:'Hassan Altambakti',9:'Musab Aljuwayr',10:'Ziyad Aljohani',11:'Abdullah Alkhaibari',12:'Nasser Aldawsari',14:'Saleh Abu Alshamat',15:'Marwan Alsahafi',16:'Salem Aldawsari',17:'Abdulrahman Al-Aboud',18:'Feras Albrikan',19:'Saleh Alshehri',20:'Abdullah Al-Hamdan'},
+  URY:{1:'Uruguai',2:'Sergio Rochet',3:'Santiago Mele',4:'Ronald Araujo',5:'José María Giménez',6:'Sebastian Caceres',7:'Mathias Olivera',8:'Guillermo Varela',9:'Nahitan Nandez',10:'Federico Valverde',11:'Giorgian De Arrascaeta',12:'Rodrigo Bentancur',14:'Manuel Ugarte',15:'Nicolás de la Cruz',16:'Maxi Araujo',17:'Darwin Núñez',18:'Federico Viñas',19:'Rodrigo Aguirre',20:'Facundo Pellistri'},
+  FRA:{1:'França',2:'Mike Maignan',3:'Theo Hernández',4:'William Saliba',5:'Jules Koundé',6:'Ibrahima Konaté',7:'Dayot Upamecano',8:'Lucas Digne',9:'Aurélien Tchouaméni',10:'Eduardo Camavinga',11:'Manu Koné',12:'Adrien Rabiot',14:'Michael Olise',15:'Ousmane Dembélé',16:'Bradley Barcola',17:'Désiré Doué',18:'Kingsley Coman',19:'Hugo Ekitike',20:'Kylian Mbappé'},
+  SEN:{1:'Senegal',2:'Eduardo Mendy',3:'Yehvann Diouf',4:'Moussa Niakhaté',5:'Abdoulaye Seck',6:'Ismail Jakobs',7:'El Hadji Malick Diouf',8:'Kalidou Koulibaly',9:'Idrissa Gana Gueye',10:'Pape Matar Sarr',11:'Pape Gueye',12:'Habib Diarra',14:'Lamine Camara',15:'Sadio Mané',16:'Ismaïla Sarr',17:'Boulaye Dia',18:'Iliman Ndiaye',19:'Nicolas Jackson',20:'Krepin Diatta'},
+  IRQ:{1:'Iraque',2:'Jalal Hassan',3:'Rebin Sulaka',4:'Hussein Ali',5:'Akam Hashem',6:'Merchas Doski',7:'Zaid Tahseen',8:'Manaf Younis',9:'Zidane Iqbal',10:'Amir Al-Ammari',11:'Ibrahim Bayesh',12:'Ali Jasim',14:'Youssef Amyn',15:'Aimar Sher',16:'Marko Farji',17:'Osama Rashid',18:'Ali Al-Hamadi',19:'Aymen Hussein',20:'Mohanad Ali'},
+  NOR:{1:'Noruega',2:'Ørjan Nyland',3:'Julian Ryerson',4:'Leo Østigård',5:'Kristoffer Ajer',6:'Marcus Holmgren Pedersen',7:'David Møller Wolfe',8:'Torbjørn Heggem',9:'Morten Thorsby',10:'Martin Ødegaard',11:'Sander Berge',12:'Andreas Schjelderup',14:'Patrick Berg',15:'Erling Haaland',16:'Alexander Sørloth',17:'Aron Dønnum',18:'Jørgen Strand Larsen',19:'Antonio Nusa',20:'Oscar Bobb'},
+  ARG:{1:'Argentina',2:'Emiliano Martínez',3:'Nahuel Molina',4:'Cristian Romero',5:'Nicolás Otamendi',6:'Nicolás Tagliafico',7:'Leonardo Balerdi',8:'Enzo Fernández',9:'Alexis Mac Allister',10:'Rodrigo De Paul',11:'Exequiel Palacios',12:'Leandro Paredes',14:'Nico Paz',15:'Franco Mastantuono',16:'Nico González',17:'Lionel Messi',18:'Lautaro Martínez',19:'Julián Álvarez',20:'Giuliano Simeone'},
+  DZA:{1:'Argélia',2:'Alexis Guendouz',3:'Ramy Bensebaini',4:'Youcef Atal',5:'Rayan Aït-Nouri',6:'Mohamed Amine Tougai',7:'Aïssa Mandi',8:'Ismael Bennacer',9:'Houssem Aouar',10:'Hicham Boudaoui',11:'Ramiz Zerrouki',12:'Nabil Bentaleb',14:'Farés Chaibi',15:'Riyad Mahrez',16:'Said Benrahma',17:'Anis Hadj Moussa',18:'Amine Gouiri',19:'Baghdad Bounedjah',20:'Mohammed Amoura'},
+  AUT:{1:'Áustria',2:'Alexander Schlager',3:'Patrick Pentz',4:'David Alaba',5:'Kevin Danso',6:'Philipp Lienhart',7:'Stefan Posch',8:'Phillipp Mwene',9:'Alexander Prass',10:'Xaver Schlager',11:'Marcel Sabitzer',12:'Konrad Laimer',14:'Florian Grillitsch',15:'Nicolas Seiwald',16:'Romano Schmid',17:'Patrick Wimmer',18:'Christoph Baumgartner',19:'Michael Gregoritsch',20:'Marko Arnautović'},
+  JOR:{1:'Jordânia',2:'Yazeed Abulaila',3:'Ihsan Haddad',4:'Mohammad Abu Hashish',5:'Yazan Al-Arab',6:'Abdallah Nasib',7:'Saleem Obaid',8:'Mohammad Abualnadi',9:'Ibrahim Saadeh',10:'Nizar Al-Rashdan',11:'Noor Al-Rawabdeh',12:'Mohannad Abu Taha',14:'Amer Jamous',15:'Musa Al-Taamari',16:'Yazan Al-Naimat',17:'Mahmoud Al-Mardi',18:'Ali Olwan',19:'Mohammad Abu Zrayq',20:'Ibrahim Sabra'},
+  PRT:{1:'Portugal',2:'Diogo Costa',3:'José Sá',4:'Rúben Dias',5:'João Cancelo',6:'Diogo Dalot',7:'Nuno Mendes',8:'Gonçalo Inácio',9:'Bernardo Silva',10:'Bruno Fernandes',11:'Rúben Neves',12:'Vitinha',14:'João Neves',15:'Cristiano Ronaldo',16:'Francisco Trincão',17:'João Félix',18:'Gonçalo Ramos',19:'Pedro Neto',20:'Rafael Leão'},
+  COD:{1:'RD Congo',2:'Lionel Mpasi',3:'Aaron Wan-Bissaka',4:'Axel Tuanzebe',5:'Arthur Masuaku',6:'Chancel Mbemba',7:'Joris Kayembe',8:'Charles Pickel',9:"Ngal'ayel Mukau",10:'Edo Kayembe',11:'Samuel Moutoussamy',12:'Noah Sadiki',14:'Théo Bongonda',15:'Meschack Elia',16:'Yoane Wissa',17:'Brian Cipenga',18:'Fiston Mayele',19:'Cédric Bakambu',20:'Nathanaël Mbuku'},
+  UZB:{1:'Uzbequistão',2:'Utkir Yusupov',3:'Farrukh Savfiev',4:'Sherzod Nasrullaev',5:'Umar Eshmurodov',6:'Husniddin Aliqulov',7:'Rustamjon Ashurmatov',8:'Khojiakbar Alijonov',9:'Abdukodir Khusanov',10:'Odiljon Hamrobekov',11:'Otabek Shukurov',12:'Jamshid Iskanderov',14:'Azizbek Turgunboev',15:'Khojimat Erkinov',16:'Eldor Shomurodov',17:'Oston Urunov',18:'Jaloliddin Masharipov',19:'Igor Sergeev',20:'Abbosbek Fayzullaev'},
+  COL:{1:'Colômbia',2:'Camilo Vargas',3:'David Ospina',4:'Dávinson Sánchez',5:'Yerry Mina',6:'Daniel Muñoz',7:'Johan Mojica',8:'Jhon Lucumí',9:'Santiago Arias',10:'Jefferson Lerma',11:'Kevin Castaño',12:'Richard Ríos',14:'James Rodríguez',15:'Juan Fernando Quintero',16:'Jorge Carrascal',17:'Jhon Arias',18:'Jhon Córdoba',19:'Luis Suárez',20:'Luis Díaz'},
+  'GB-ENG':{1:'Inglaterra',2:'Jordan Pickford',3:'John Stones',4:'Marc Guéhi',5:'Ezri Konsa',6:'Trent Alexander-Arnold',7:'Reece James',8:'Dan Burn',9:'Jordan Henderson',10:'Declan Rice',11:'Jude Bellingham',12:'Cole Palmer',14:'Morgan Rogers',15:'Anthony Gordon',16:'Phil Foden',17:'Bukayo Saka',18:'Harry Kane',19:'Marcus Rashford',20:'Ollie Watkins'},
+  HRV:{1:'Croácia',2:'Dominik Livaković',3:'Duje Ćaleta-Car',4:'Joško Gvardiol',5:'Josip Stanišić',6:'Luka Vušković',7:'Josip Šutalo',8:'Kristijan Jakić',9:'Luka Modrić',10:'Mateo Kovačić',11:'Martin Baturina',12:'Lovro Majer',14:'Mario Pašalić',15:'Petar Sučić',16:'Ivan Perišić',17:'Marco Pašalić',18:'Ante Budimir',19:'Andrej Kramarić',20:'Franjo Ivanović'},
+  GHA:{1:'Gana',2:'Lawrence Ati Zigi',3:'Tariq Lamptey',4:'Mohammed Salisu',5:'Alidu Seidu',6:'Alexander Djiku',7:'Gideon Mensah',8:'Caleb Yirenkyi',9:'Abdul Fatawu Issahaku',10:'Thomas Partey',11:'Salis Abdul Samed',12:'Kamaldeen Sulemana',14:'Mohammed Kudus',15:'Iñaki Williams',16:'Jordan Ayew',17:'André Ayew',18:'Joseph Paintsil',19:'Osman Bukari',20:'Antoine Semenyo'},
+  PAN:{1:'Panamá',2:'Orlando Mosquera',3:'Luis Mejía',4:'Fidel Escobar',5:'Andrés Andrade',6:'Michael Amir Murillo',7:'Eric Davis',8:'José Córdoba',9:'César Blackman',10:'Cristian Martínez',11:'Aníbal Godoy',12:'Adalberto Carrasquilla',14:'Édgar Bárcenas',15:'Carlos Harvey',16:'Ismael Díaz',17:'José Fajardo',18:'Cecilio Waterman',19:'José Luis Rodríguez',20:'Alberto Quintero'},
+};
+
 const continentMap = {
   'BRA': 'América do Sul', 'ARG': 'América do Sul', 'URY': 'América do Sul', 'COL': 'América do Sul', 'ECU': 'América do Sul', 'PRY': 'América do Sul',
   'DEU': 'Europa', 'GB-ENG': 'Europa', 'FRA': 'Europa', 'ESP': 'Europa', 'PRT': 'Europa', 'NLD': 'Europa', 'BEL': 'Europa', 'HRV': 'Europa', 'SWE': 'Europa', 'GBR': 'Europa', 'AUT': 'Europa', 'CZE': 'Europa', 'TUR': 'Europa', 'NOR': 'Europa', 'BIH': 'Europa', 'CHE': 'Europa',
@@ -65,9 +144,10 @@ const legacyCountryCodeMap = {
 
 let stickers = JSON.parse(localStorage.getItem('copaStickers') || '{}');
 let duplicates = JSON.parse(localStorage.getItem('copaDuplicates') || '{}');
-let searchFilter = { group: null, country: null, number: null };
+let searchFilter = { group: null, country: null, number: null, playerMatches: null };
 let currentReportData = '';
 let currentReportTitle = '';
+let communityProfile = (() => { try { return JSON.parse(localStorage.getItem('copaProfile') || '{}'); } catch { return {}; } })();
 let currentDashboardView = 'continents';
 let pendingUnmark = null;
 
@@ -88,22 +168,34 @@ function saveData() {
 
 function migrateLegacyData() {
   const migrateKeys = (source) => {
+    let changed = false;
     const result = {};
     Object.entries(source).forEach(([key, value]) => {
       if (Object.prototype.hasOwnProperty.call(legacyCountryCodeMap, key)) {
         result[legacyCountryCodeMap[key]] = value;
+        changed = true;
         return;
       }
 
       const [code, ...rest] = key.split('-');
       const mappedCode = legacyCountryCodeMap[code] || code;
-      result[[mappedCode, ...rest].join('-')] = value;
+      const newKey = [mappedCode, ...rest].join('-');
+      result[newKey] = value;
+      if (newKey !== key) changed = true;
     });
-    return result;
+    return { result, changed };
   };
 
-  stickers = migrateKeys(stickers);
-  duplicates = migrateKeys(duplicates);
+  const s = migrateKeys(stickers);
+  const d = migrateKeys(duplicates);
+
+  stickers = s.result;
+  duplicates = d.result;
+
+  if (s.changed || d.changed) {
+    localStorage.setItem('copaStickers', JSON.stringify(stickers));
+    localStorage.setItem('copaDuplicates', JSON.stringify(duplicates));
+  }
 }
 
 /**
@@ -114,14 +206,22 @@ function escapeHtml(text) {
   return text.replace(/[&<>"']/g, m => map[m]);
 }
 
+function flagHtml(code, { size = '1.4em', square = false, title = '' } = {}) {
+  const iso2 = iso3ToIso2[code];
+  if (!iso2) return '🏳️';
+  const squareClass = square ? ' fis' : '';
+  const titleAttr = title ? ` title="${escapeHtml(title)}"` : '';
+  return `<span class="fi fi-${iso2}${squareClass}"${titleAttr} style="font-size:${size};"></span>`;
+}
+
 /**
  * Parse da busca de país e número
  */
 function parseSearch(countryQuery, numberQuery) {
-  if (!countryQuery && !numberQuery) return { group: null, country: null, number: null };
-  
-  let group = null, country = null, number = null;
-  
+  if (!countryQuery && !numberQuery) return { group: null, country: null, number: null, playerMatches: null };
+
+  let group = null, country = null, number = null, playerMatches = null;
+
   if (countryQuery) {
     const lower = countryQuery.toLowerCase().trim();
     for (const [g, countryList] of Object.entries(countries)) {
@@ -132,21 +232,37 @@ function parseSearch(countryQuery, numberQuery) {
           break;
         }
       }
+      if (country) break;
+    }
+
+    if (!country) {
+      playerMatches = new Set();
+      for (const [pCode, players] of Object.entries(playerData)) {
+        for (const [num, playerName] of Object.entries(players)) {
+          if (playerName.toLowerCase().includes(lower)) {
+            playerMatches.add(`${pCode}-${num}`);
+          }
+        }
+      }
+      if (playerMatches.size === 0) playerMatches = null;
     }
   }
-  
+
   if (numberQuery) {
     number = parseInt(numberQuery);
   }
-  
-  return { group, country, number };
+
+  return { group, country, number, playerMatches };
 }
 
 /**
  * Verifica se o país deve ser exibido baseado no filtro
  */
 function shouldShowCountry(group, code) {
-  if (!searchFilter.group && !searchFilter.country && !searchFilter.number) return true;
+  if (!searchFilter.group && !searchFilter.country && !searchFilter.number && !searchFilter.playerMatches) return true;
+  if (searchFilter.playerMatches) {
+    return [...searchFilter.playerMatches].some(key => key.startsWith(code + '-'));
+  }
   if (searchFilter.group && searchFilter.group !== group) return false;
   if (searchFilter.country && searchFilter.country !== code) return false;
   return true;
@@ -155,7 +271,10 @@ function shouldShowCountry(group, code) {
 /**
  * Verifica se o número deve ser exibido baseado no filtro
  */
-function shouldShowNumber(num) {
+function shouldShowNumber(num, code) {
+  if (searchFilter.playerMatches) {
+    return searchFilter.playerMatches.has(`${code}-${num}`);
+  }
   if (!searchFilter.number) return true;
   return searchFilter.number === num;
 }
@@ -236,7 +355,8 @@ function showConfirmation(country, num, type = 'country') {
       }
       itemLabel = `${countryName} #${num}`;
     } else if (type === 'refri') {
-      itemLabel = `Refri #${num}`;
+      const player = refriPlayers[num];
+      itemLabel = player ? `${player.name} (CC ${String(num).padStart(2, '0')})` : `CC ${String(num).padStart(2, '0')}`;
     } else if (type === 'history') {
       itemLabel = `World Cup #${num}`;
     }
@@ -344,17 +464,24 @@ function renderGroupsView() {
     const pct = Math.round((stats.collected / stats.total) * 100);
     const colors = ['#FFD700', '#FF8C00', '#27AE60', '#3498DB', '#E74C3C', '#9B59B6', '#F39C12', '#1ABC9C', '#E91E63', '#00BCD4', '#FF5722', '#673AB7'];
     const color = colors[group.charCodeAt(0) % colors.length];
-    
-    html += `<div style="padding: 1.25rem; background: linear-gradient(135deg, ${color}15 0%, ${color}30 100%); border-radius: 14px; border: 1px solid ${color}30; transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-      <div style="font-weight: 700; margin-bottom: 8px; font-size: 14px; color: ${color}; text-transform: uppercase; letter-spacing: 0.3px;">Grupo ${group}</div>
-      <div style="font-size: 24px; font-weight: 800; color: ${color}; margin-bottom: 8px;">${stats.collected}/${stats.total}</div>
-      <div style="height: 6px; background: rgba(0,0,0,0.1); border-radius: 3px; overflow: hidden; margin-bottom: 8px;">
-        <div style="height: 100%; width: ${pct}%; background: ${color}; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);"></div>
+    const flags = (countries[group] || []).map(([name, code]) => flagHtml(code, { size: '1.3em', title: name })).join(' ');
+
+    html += `<div class="group-card" style="border-color: ${color}30; background: linear-gradient(135deg, ${color}10 0%, ${color}15 100%);">
+      <div class="group-card__header">
+        <div class="group-card__title">
+          <span class="group-card__label" style="color: ${color};">Grupo ${group}</span>
+          <div class="group-card__flags">${flags}</div>
+        </div>
+        <div class="group-card__percent" style="color: ${color};">${pct}% completo</div>
       </div>
-      <div style="font-size: 12px; font-weight: 700; color: ${color};">${pct}% completo</div>
+      <div class="group-card__content">
+        <div class="group-card__count" style="color: ${color};">${stats.collected}/${stats.total}</div>
+        <div class="group-card__progress">
+          <div class="group-card__progress-bar" style="width: ${pct}%; background: ${color};"></div>
+        </div>
+      </div>
     </div>`;
   });
-  
   document.getElementById('view-stats').innerHTML = html;
 }
 
@@ -429,24 +556,29 @@ function renderPaises() {
         if (stickers[code + '-' + i]) collected++;
       }
       
-      const emoji = flagEmojis[code] || '🏳️';
       const countryColor = countryColors[code] || '#667eea';
       const textColor = ['#F5F5F5', '#FFFFFF'].includes(countryColor) ? '#000000' : 'white';
-      
+
       groupHtml += `<div style="margin-bottom: 12px;">
         <div style="font-size: 14px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; color: var(--color-text-primary);">
-          <span style="font-size: 20px;">${emoji}</span>
-          ${name} (${collected}/20)
+          ${flagHtml(code, { size: '1.5em', title: name })}
+          ${escapeHtml(name)} (${collected}/20)
         </div>
         <div class="sticker-grid">`;
       
       for (let i = 1; i <= 20; i++) {
-        if (!shouldShowNumber(i)) continue;
+        if (!shouldShowNumber(i, code)) continue;
         
         const checked = stickers[code + '-' + i];
         const dupCount = duplicates[code + '-' + i] || 0;
+        const playerName = playerData[code]?.[i];
+        const checkedWithName = checked && playerName;
+        const btnContent = checkedWithName
+          ? `<span style="display:block;font-size:11px;font-weight:800;line-height:1;">${i}</span><span style="display:block;font-size:7.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;opacity:0.92;margin-top:3px;line-height:1.1;">${escapeHtml(playerName)}</span>`
+          : `${i}`;
+        const checkedStyle = checkedWithName ? 'display:flex;flex-direction:column;align-items:center;justify-content:center;' : '';
         groupHtml += `<div style="position: relative;">
-          <button onclick="toggleSticker('${code}', ${i}, 'country')" class="sticker-button ${checked ? 'checked' : ''}" style="background: ${checked ? countryColor : 'var(--color-background-secondary)'}; color: ${checked ? textColor : 'var(--color-text-primary)'}; box-shadow: ${checked ? '0 4px 12px ' + countryColor + '40' : 'none'};">${i}</button>
+          <button onclick="toggleSticker('${code}', ${i}, 'country')" class="sticker-button ${checked ? 'checked' : ''}" style="${checkedStyle}background: ${checked ? countryColor : 'var(--color-background-secondary)'}; color: ${checked ? textColor : 'var(--color-text-primary)'}; box-shadow: ${checked ? '0 4px 12px ' + countryColor + '40' : 'none'};">${btnContent}</button>
           ${checked ? `<div class="dup-indicator" onclick="event.stopPropagation(); document.getElementById('dup-${code}-${i}').classList.toggle('active');">+</div>
           <div class="dup-menu" id="dup-${code}-${i}">
             <button onclick="event.stopPropagation(); addDuplicate('${code}', ${i}, 'country')" style="padding: 4px 8px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 500; color: var(--color-text-primary);">+1</button>
@@ -476,12 +608,19 @@ function renderRefri() {
   for (let i = 1; i <= 14; i++) {
     const checked = stickers['refri-' + i];
     const dupCount = duplicates['refri-' + i] || 0;
+    const player = refriPlayers[i];
+    const label = `CC ${String(i).padStart(2, '0')}`;
+
     html += `<div style="position: relative;">
-      <button onclick="toggleSticker('', ${i}, 'refri')" class="sticker-button ${checked ? 'checked' : ''}" style="background: ${checked ? '#E74C3C' : 'var(--color-background-secondary)'}; color: ${checked ? 'white' : 'var(--color-text-primary)'}; box-shadow: ${checked ? '0 4px 12px #E74C3C40' : 'none'};">R${i}</button>
+      <button onclick="toggleSticker('', ${i}, 'refri')" class="refri-card ${checked ? 'checked' : ''}" style="background: ${checked ? '#E74C3C' : 'var(--color-background-secondary)'}; box-shadow: ${checked ? '0 4px 14px #E74C3C50' : 'none'};">
+        <div class="refri-card__number" style="color: ${checked ? 'rgba(255,255,255,0.65)' : 'var(--color-text-secondary)'};">${label}</div>
+        <div class="refri-card__flag">${flagHtml(player.code, { size: '1.8em' })}</div>
+        <div class="refri-card__name" style="color: ${checked ? 'white' : 'var(--color-text-primary)'};">${escapeHtml(player.name)}</div>
+      </button>
       ${checked ? `<div class="dup-indicator" style="background: #E74C3C;" onclick="event.stopPropagation(); document.getElementById('dup-refri-${i}').classList.toggle('active');">+</div>
       <div class="dup-menu" id="dup-refri-${i}">
         <button onclick="event.stopPropagation(); addDuplicate('', ${i}, 'refri')" style="padding: 4px 8px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 500;">+1</button>
-        <div style="font-size: 11px; text-align: center; font-weight: 700;">${dupCount}</div>
+        <div style="font-size: 11px; text-align: center; font-weight: 700; color: var(--color-text-primary);">${dupCount}</div>
         <button onclick="event.stopPropagation(); removeDuplicate('', ${i}, 'refri')" style="padding: 4px 8px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 500;">-1</button>
       </div>` : ''}
     </div>`;
@@ -519,7 +658,9 @@ function renderTrocas() {
   for (let i = 1; i <= 14; i++) {
     const dupCount = duplicates['refri-' + i] || 0;
     if (stickers['refri-' + i] && dupCount > 0) {
-      html += `<div style="padding: 12px; background: linear-gradient(135deg, #FCE4EC 0%, #F8BBD0 100%); border-radius: 12px; border: 1px solid #F48FB1; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(244, 143, 177, 0.2);"><div style="display: flex; align-items: center; gap: 8px;"><span style="font-size: 24px;">🥤</span><div><div style="font-weight: 700; font-size: 13px; color: #E74C3C;">Refri #${i}</div><div style="font-size: 12px; color: #E74C3C; opacity: 0.8;">Disponíveis: ${dupCount}</div></div></div><div style="display: flex; gap: 4px;"><button onclick="removeDuplicate('', ${i}, 'refri')" style="padding: 4px 8px; background: #E74C3C; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600;">-1</button><button onclick="addDuplicate('', ${i}, 'refri')" style="padding: 4px 8px; background: #27AE60; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600;">+1</button></div></div>`;
+      const player = refriPlayers[i];
+      const label = `CC ${String(i).padStart(2, '0')}`;
+      html += `<div style="padding: 12px; background: linear-gradient(135deg, #FCE4EC 0%, #F8BBD0 100%); border-radius: 12px; border: 1px solid #F48FB1; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(244, 143, 177, 0.2);"><div style="display: flex; align-items: center; gap: 8px;">${flagHtml(player.code, { size: '1.6em' })}<div><div style="font-weight: 700; font-size: 13px; color: #E74C3C;">${escapeHtml(player.name)}</div><div style="font-size: 12px; color: #E74C3C; opacity: 0.8;">${label} · Disponíveis: ${dupCount}</div></div></div><div style="display: flex; gap: 4px;"><button onclick="removeDuplicate('', ${i}, 'refri')" style="padding: 4px 8px; background: #E74C3C; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600;">-1</button><button onclick="addDuplicate('', ${i}, 'refri')" style="padding: 4px 8px; background: #27AE60; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600;">+1</button></div></div>`;
     }
   }
   
@@ -535,9 +676,11 @@ function renderTrocas() {
       for (let i = 1; i <= 20; i++) {
         const dupCount = duplicates[code + '-' + i] || 0;
         if (stickers[code + '-' + i] && dupCount > 0) {
-          const emoji = flagEmojis[code] || '🏳️';
           const color = countryColors[code] || '#667eea';
-          html += `<div style="padding: 12px; background: linear-gradient(135deg, ${color}15 0%, ${color}30 100%); border-radius: 12px; border: 1px solid ${color}40; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px ${color}20;"><div style="display: flex; align-items: center; gap: 8px;"><span style="font-size: 24px;">${emoji}</span><div><div style="font-weight: 700; font-size: 13px; color: ${color};">${name} #${i}</div><div style="font-size: 12px; color: ${color}; opacity: 0.8;">Disponíveis: ${dupCount}</div></div></div><div style="display: flex; gap: 4px;"><button onclick="removeDuplicate('${code}', ${i}, 'country')" style="padding: 4px 8px; background: #E74C3C; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600;">-1</button><button onclick="addDuplicate('${code}', ${i}, 'country')" style="padding: 4px 8px; background: #27AE60; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600;">+1</button></div></div>`;
+          const pName = playerData[code]?.[i];
+          const mainLabel = pName ? escapeHtml(pName) : `${escapeHtml(name)} #${i}`;
+          const subLabel = pName ? `${escapeHtml(name)} #${i} · Disponíveis: ${dupCount}` : `Disponíveis: ${dupCount}`;
+          html += `<div style="padding: 12px; background: linear-gradient(135deg, ${color}15 0%, ${color}30 100%); border-radius: 12px; border: 1px solid ${color}40; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px ${color}20;"><div style="display: flex; align-items: center; gap: 8px;">${flagHtml(code, { size: '1.6em', title: name })}<div><div style="font-weight: 700; font-size: 13px; color: ${color};">${mainLabel}</div><div style="font-size: 12px; color: ${color}; opacity: 0.8;">${subLabel}</div></div></div><div style="display: flex; gap: 4px;"><button onclick="removeDuplicate('${code}', ${i}, 'country')" style="padding: 4px 8px; background: #E74C3C; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600;">-1</button><button onclick="addDuplicate('${code}', ${i}, 'country')" style="padding: 4px 8px; background: #27AE60; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600;">+1</button></div></div>`;
         }
       }
     });
@@ -610,15 +753,16 @@ function switchTab(tab) {
   document.getElementById('history-content').style.display = tab === 'history' ? 'block' : 'none';
   document.getElementById('trocas-content').style.display = tab === 'trocas' ? 'block' : 'none';
   document.getElementById('relatorios-content').style.display = tab === 'relatorios' ? 'block' : 'none';
-  
+  document.getElementById('comunidade-content').style.display = tab === 'comunidade' ? 'block' : 'none';
+
   document.querySelectorAll('[id^="tab-"]').forEach(btn => {
     btn.classList.remove('active');
   });
-  
+
   const activeBtn = document.getElementById('tab-' + tab);
-  if (activeBtn) {
-    activeBtn.classList.add('active');
-  }
+  if (activeBtn) activeBtn.classList.add('active');
+
+  if (tab === 'comunidade') renderComunidade();
 }
 
 // ============================================================================
@@ -628,14 +772,16 @@ function switchTab(tab) {
 function getTradePreviewItems() {
   let items = [];
 
-  const addItem = (title, emoji, color, dupCount, category) => {
-    items.push({ title, emoji, color, dupCount, category });
+  const addItem = (title, emoji, color, dupCount, category, code = null) => {
+    items.push({ title, emoji, color, dupCount, category, code });
   };
 
   for (let i = 1; i <= 14; i++) {
     const dupCount = duplicates['refri-' + i] || 0;
     if (stickers['refri-' + i] && dupCount > 0) {
-      addItem(`Refri #${i}`, '🥤', '#E74C3C', dupCount, 'Refri');
+      const player = refriPlayers[i];
+      const label = `CC ${String(i).padStart(2, '0')}`;
+      addItem(`${player.name} (${label})`, flagEmojis[player.code] || '🥤', '#E74C3C', dupCount, 'Refri', player.code);
     }
   }
 
@@ -648,12 +794,13 @@ function getTradePreviewItems() {
 
   Object.entries(countries).forEach(([group, countryList]) => {
     countryList.forEach(([name, code]) => {
-      const emoji = flagEmojis[code] || '🏳️';
       const color = countryColors[code] || '#667eea';
       for (let i = 1; i <= 20; i++) {
         const dupCount = duplicates[code + '-' + i] || 0;
         if (stickers[code + '-' + i] && dupCount > 0) {
-          addItem(`${name} #${i}`, emoji, color, dupCount, 'Países');
+          const pName = playerData[code]?.[i];
+          const itemTitle = pName ? pName : `${name} #${i}`;
+          addItem(itemTitle, flagEmojis[code] || '🏳️', color, dupCount, 'Países', code);
         }
       }
     });
@@ -675,10 +822,13 @@ function openTradePreview() {
   items.forEach((item) => {
     stats.total += item.dupCount;
     stats[item.category === 'Países' ? 'paises' : item.category === 'Refri' ? 'refri' : 'history']++;
+    const flagContent = item.code
+      ? flagHtml(item.code, { size: '46px', square: true })
+      : `<span style="font-size:32px;">${item.emoji}</span>`;
     html += `<div class="trade-card" style="border: 1px solid ${item.color}33; background: ${item.color}15;">
-      <div class="trade-image" style="background: ${item.color};">${item.emoji}</div>
+      <div class="trade-image" style="background: ${item.color};">${flagContent}</div>
       <div class="trade-info">
-        <div class="trade-title">${item.title}</div>
+        <div class="trade-title">${escapeHtml(item.title)}</div>
         <div class="trade-count">${item.dupCount} disponível${item.dupCount > 1 ? 's' : ''}</div>
       </div>
     </div>`;
@@ -989,17 +1139,18 @@ function generateDuplicatesReport() {
 function generateCompleteReport() {
   let report = `COPA 2026 - RELATÓRIO COMPLETO\nData: ${new Date().toLocaleDateString('pt-BR')}\n${'='.repeat(50)}\n`;
   
-  let totalCollected = 0, totalMissing = 0, totalDuplicates = 0;
-  
+  let totalCollected = 0, totalDuplicates = 0;
+
   Object.entries(stickers).forEach(([key, value]) => {
     if (value) totalCollected++;
-    else totalMissing++;
   });
-  
+
   Object.entries(duplicates).forEach(([key, qty]) => {
     if (stickers[key]) totalDuplicates += qty || 0;
   });
-  
+
+  const totalMissing = 1047 - totalCollected;
+
   report += `\n📊 ESTATÍSTICAS GERAIS\n${'-'.repeat(30)}\n`;
   report += `Figurinhas Coletadas: ${totalCollected}/1047 (${Math.round((totalCollected/1047)*100)}%)\n`;
   report += `Figurinhas Faltantes: ${totalMissing}/1047\n`;
@@ -1193,6 +1344,379 @@ function closeReport() {
 }
 
 // ============================================================================
+// COMMUNITY & SHARING
+// ============================================================================
+
+// --- Profile helpers ---
+
+function getAvatarColor(name) {
+  const palette = ['#667eea','#764ba2','#FA709A','#27AE60','#E74C3C','#3498DB','#F39C12','#16A085','#8E44AD','#D35400'];
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
+  return palette[Math.abs(h) % palette.length];
+}
+
+function getInitials(name) {
+  return name.trim().split(/\s+/).slice(0, 2).map(w => w[0].toUpperCase()).join('');
+}
+
+function updateProfileAvatar() {
+  const name = (document.getElementById('profile-name')?.value || '').trim();
+  const el = document.getElementById('profile-avatar-preview');
+  if (!el) return;
+  if (name) {
+    el.textContent = getInitials(name);
+    el.style.background = getAvatarColor(name);
+  } else {
+    el.textContent = '?';
+    el.style.background = 'linear-gradient(135deg,#667eea,#764ba2)';
+  }
+}
+
+function updateOnboardAvatar() {
+  const name = (document.getElementById('onboard-name')?.value || '').trim();
+  const el = document.getElementById('onboard-avatar');
+  if (!el) return;
+  if (name) {
+    el.textContent = getInitials(name);
+    el.style.background = getAvatarColor(name);
+  } else {
+    el.textContent = '🏆';
+    el.style.background = 'linear-gradient(135deg,#667eea,#764ba2)';
+  }
+}
+
+function renderProfileCard() {
+  const cardEl = document.getElementById('profile-card');
+  const formEl = document.getElementById('profile-form');
+  const cancelBtn = document.getElementById('profile-cancel-btn');
+  const saveBtn = document.getElementById('profile-save-btn');
+  if (!cardEl || !formEl) return;
+
+  if (communityProfile.name) {
+    const color = getAvatarColor(communityProfile.name);
+    const initials = getInitials(communityProfile.name);
+    cardEl.innerHTML = `
+      <div style="display:flex;align-items:center;gap:16px;">
+        <div style="width:56px;height:56px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:white;flex-shrink:0;box-shadow:0 4px 14px ${color}55;">${escapeHtml(initials)}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:16px;font-weight:700;color:var(--color-text-primary);margin-bottom:3px;">${escapeHtml(communityProfile.name)}</div>
+          ${communityProfile.email ? `<div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:1px;">✉️ ${escapeHtml(communityProfile.email)}</div>` : ''}
+          ${communityProfile.contact ? `<div style="font-size:12px;color:var(--color-text-secondary);">📱 ${escapeHtml(communityProfile.contact)}</div>` : ''}
+        </div>
+        <button onclick="startEditProfile()" style="flex-shrink:0;padding:8px 12px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;color:var(--color-text-primary);">✏️ Editar</button>
+      </div>`;
+    cardEl.style.display = 'block';
+    formEl.style.display = 'none';
+  } else {
+    cardEl.style.display = 'none';
+    formEl.style.display = 'block';
+    if (cancelBtn) cancelBtn.style.display = 'none';
+    if (saveBtn) saveBtn.style.gridColumn = '1 / -1';
+  }
+
+  // Pre-fill form fields
+  const nameEl = document.getElementById('profile-name');
+  const emailEl = document.getElementById('profile-email');
+  const contactEl = document.getElementById('profile-contact');
+  if (nameEl) nameEl.value = communityProfile.name || '';
+  if (emailEl) emailEl.value = communityProfile.email || '';
+  if (contactEl) contactEl.value = communityProfile.contact || '';
+  updateProfileAvatar();
+}
+
+function startEditProfile() {
+  const formEl = document.getElementById('profile-form');
+  const cardEl = document.getElementById('profile-card');
+  const cancelBtn = document.getElementById('profile-cancel-btn');
+  const saveBtn = document.getElementById('profile-save-btn');
+  if (formEl) formEl.style.display = 'block';
+  if (cardEl) cardEl.style.display = 'none';
+  if (cancelBtn) cancelBtn.style.display = 'block';
+  if (saveBtn) saveBtn.style.gridColumn = '2';
+}
+
+function cancelEditProfile() {
+  renderProfileCard();
+}
+
+function saveCommunityProfile() {
+  const name = (document.getElementById('profile-name')?.value || '').trim();
+  if (!name) { showToast('Por favor, informe seu nome'); return; }
+  communityProfile.name = name;
+  communityProfile.email = (document.getElementById('profile-email')?.value || '').trim();
+  communityProfile.contact = (document.getElementById('profile-contact')?.value || '').trim();
+  localStorage.setItem('copaProfile', JSON.stringify(communityProfile));
+  renderComunidade();
+  showToast('Perfil salvo! ✅');
+}
+
+// --- Onboarding ---
+
+function checkOnboarding() {
+  if (!communityProfile.name) {
+    document.getElementById('onboarding-modal')?.classList.add('active');
+  }
+}
+
+function saveOnboardingProfile() {
+  const name = (document.getElementById('onboard-name')?.value || '').trim();
+  if (!name) { showToast('Por favor, informe seu nome'); return; }
+  const raw = (document.getElementById('onboard-contact')?.value || '').trim();
+  communityProfile.name = name;
+  if (raw.includes('@')) { communityProfile.email = raw; }
+  else if (raw) { communityProfile.contact = raw; }
+  localStorage.setItem('copaProfile', JSON.stringify(communityProfile));
+  document.getElementById('onboarding-modal')?.classList.remove('active');
+  showToast('Perfil criado! 🎉');
+}
+
+function skipOnboarding() {
+  document.getElementById('onboarding-modal')?.classList.remove('active');
+}
+
+function getMyOffersList() {
+  return Object.entries(duplicates)
+    .filter(([, count]) => count > 0)
+    .map(([key, count]) => ({ key, count }));
+}
+
+function getMyNeedsList() {
+  const needs = [];
+  Object.values(countries).forEach(list => {
+    list.forEach(([, code]) => {
+      for (let i = 1; i <= 20; i++) {
+        if (!stickers[`${code}-${i}`]) needs.push(`${code}-${i}`);
+      }
+    });
+  });
+  for (let i = 1; i <= 14; i++) {
+    if (!stickers[`refri-${i}`]) needs.push(`refri-${i}`);
+  }
+  for (let i = 0; i <= 19; i++) {
+    if (!stickers[`history-${i}`]) needs.push(`history-${i}`);
+  }
+  return needs;
+}
+
+function formatStickerLabel(key) {
+  const parts = key.split('-');
+  if (parts[0] === 'refri') {
+    const n = parseInt(parts[1]);
+    const player = refriPlayers[n];
+    return `CC ${String(n).padStart(2, '0')}${player ? ' – ' + player.name : ''}`;
+  }
+  if (parts[0] === 'history') {
+    return `FWC ${String(parseInt(parts[1])).padStart(2, '0')}`;
+  }
+  const num = parts[parts.length - 1];
+  const code = parts.slice(0, -1).join('-');
+  const playerName = playerData[code]?.[parseInt(num)];
+  let countryName = '';
+  for (const list of Object.values(countries)) {
+    for (const [name, c] of list) {
+      if (c === code) { countryName = name; break; }
+    }
+    if (countryName) break;
+  }
+  return `${countryName || code} #${num}${playerName ? ' – ' + playerName : ''}`;
+}
+
+function formatOfferText() {
+  const offers = getMyOffersList();
+  const needs = getMyNeedsList();
+  const name = communityProfile.name || 'Usuário';
+  const collected = Object.values(stickers).filter(Boolean).length;
+
+  let text = `🎴 Copa 2026 – ${name}\n`;
+  text += `📊 ${collected} figurinhas coletadas\n\n`;
+
+  if (offers.length > 0) {
+    text += `✅ TENHO PARA TROCAR (${offers.length}):\n`;
+    offers.forEach(({ key, count }) => {
+      text += `• ${formatStickerLabel(key)}${count > 1 ? ` (×${count})` : ''}\n`;
+    });
+    text += '\n';
+  } else {
+    text += `✅ Sem duplicatas no momento\n\n`;
+  }
+
+  if (needs.length > 0) {
+    text += `❌ PRECISO (${needs.length}):\n`;
+    needs.slice(0, 20).forEach(key => { text += `• ${formatStickerLabel(key)}\n`; });
+    if (needs.length > 20) text += `... e mais ${needs.length - 20}\n`;
+  } else {
+    text += `🏆 Álbum completo!\n`;
+  }
+
+  if (communityProfile.contact) text += `\n📱 Contato: ${communityProfile.contact}`;
+  return text;
+}
+
+function copyOfferText() {
+  copyToClipboard(formatOfferText(), 'Oferta copiada!');
+}
+
+function shareOfferWhatsApp() {
+  shareViaWhatsApp(formatOfferText());
+}
+
+function shareAppWhatsApp() {
+  const appUrl = location.origin + location.pathname;
+  const name = communityProfile.name ? ` – ${communityProfile.name}` : '';
+  const text = `🏆 Copa 2026 – Controle de Figurinhas${name}\n\nAcompanhe sua coleção em tempo real! Marque o que tem, gerencie duplicatas e saiba o que falta para completar o álbum.\n\n📲 Acesse: ${appUrl}\n\n_Funciona offline! Instale como app no celular._`;
+  shareViaWhatsApp(text);
+}
+
+function copyAppLink() {
+  copyToClipboard(location.origin + location.pathname, 'Link copiado!');
+}
+
+function nativeShare() {
+  if (navigator.share) {
+    navigator.share({
+      title: 'Copa 2026 – Controle de Figurinhas',
+      text: 'Gerencie sua coleção de figurinhas da Copa 2026!',
+      url: location.origin + location.pathname
+    }).catch(() => {});
+  } else {
+    copyAppLink();
+  }
+}
+
+function copyTradeLink() {
+  try {
+    const offers = getMyOffersList().map(({ key, count }) => `${key}:${count}`).join(',');
+    const needs = getMyNeedsList().slice(0, 60).join(',');
+    const payload = btoa(unescape(encodeURIComponent(JSON.stringify({
+      n: communityProfile.name || '',
+      c: communityProfile.contact || '',
+      o: offers,
+      w: needs
+    }))));
+    copyToClipboard(`${location.origin}${location.pathname}#trade=${payload}`, 'Link de trocas copiado!');
+  } catch {
+    showToast('Erro ao gerar link');
+  }
+}
+
+function shareViaWhatsApp(text) {
+  window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+}
+
+function copyToClipboard(text, successMsg) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => showToast(successMsg)).catch(() => fallbackCopy(text, successMsg));
+  } else {
+    fallbackCopy(text, successMsg);
+  }
+}
+
+function fallbackCopy(text, successMsg) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;opacity:0;';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); showToast(successMsg); } catch {}
+  document.body.removeChild(ta);
+}
+
+function showToast(msg) {
+  let toast = document.getElementById('app-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'app-toast';
+    toast.style.cssText = 'position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:#fff;padding:10px 22px;border-radius:24px;font-size:13px;font-weight:600;z-index:9999;pointer-events:none;transition:opacity 0.3s;box-shadow:0 4px 16px rgba(0,0,0,0.3);opacity:0;';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.style.opacity = '1';
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => { toast.style.opacity = '0'; }, 2200);
+}
+
+let _qrGenerated = false;
+
+function renderComunidade() {
+  renderProfileCard();
+
+  const offers = getMyOffersList();
+  const needs = getMyNeedsList();
+
+  const offersCountEl = document.getElementById('community-offers-count');
+  const needsCountEl = document.getElementById('community-needs-count');
+  const previewEl = document.getElementById('community-offer-preview');
+  const urlEl = document.getElementById('community-app-url');
+
+  if (offersCountEl) offersCountEl.textContent = offers.length;
+  if (needsCountEl) needsCountEl.textContent = needs.length;
+  if (previewEl) previewEl.textContent = formatOfferText();
+
+  const appUrl = location.origin + location.pathname;
+  if (urlEl) urlEl.textContent = appUrl;
+
+  if (!_qrGenerated) {
+    const qrEl = document.getElementById('qr-container');
+    if (qrEl && typeof QRCode !== 'undefined') {
+      qrEl.innerHTML = '';
+      new QRCode(qrEl, {
+        text: appUrl,
+        width: 160,
+        height: 160,
+        colorDark: '#111827',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M
+      });
+      _qrGenerated = true;
+    }
+  }
+}
+
+function checkIncomingTradeLink() {
+  const hash = location.hash;
+  if (!hash.startsWith('#trade=')) return;
+  try {
+    const payload = JSON.parse(decodeURIComponent(escape(atob(hash.slice(7)))));
+    history.replaceState(null, '', location.pathname);
+    showIncomingTradeOffer(payload);
+  } catch {
+    // invalid hash, ignore
+  }
+}
+
+function showIncomingTradeOffer(payload) {
+  const name = payload.n || 'Usuário';
+  const offerKeys = payload.o ? payload.o.split(',').map(s => s.split(':')[0]).filter(Boolean) : [];
+  const needKeys = payload.w ? payload.w.split(',').filter(Boolean) : [];
+
+  const myNeeds = new Set(getMyNeedsList());
+  const myOfferKeys = new Set(getMyOffersList().map(o => o.key));
+
+  const theyHaveWhatINeed = offerKeys.filter(k => myNeeds.has(k));
+  const iHaveWhatTheyNeed = needKeys.filter(k => myOfferKeys.has(k));
+
+  let msg = `🎴 Proposta de troca de ${name}!\n\n`;
+  if (theyHaveWhatINeed.length > 0) {
+    msg += `✅ Eles TÊM ${theyHaveWhatINeed.length} que você PRECISA:\n`;
+    theyHaveWhatINeed.slice(0, 8).forEach(k => { msg += `  • ${formatStickerLabel(k)}\n`; });
+    if (theyHaveWhatINeed.length > 8) msg += `  ... e mais ${theyHaveWhatINeed.length - 8}\n`;
+    msg += '\n';
+  } else {
+    msg += `❌ Eles não têm figurinhas que você precisa no momento\n\n`;
+  }
+  if (iHaveWhatTheyNeed.length > 0) {
+    msg += `🔄 Você TEM ${iHaveWhatTheyNeed.length} que eles PRECISAM:\n`;
+    iHaveWhatTheyNeed.slice(0, 8).forEach(k => { msg += `  • ${formatStickerLabel(k)}\n`; });
+    if (iHaveWhatTheyNeed.length > 8) msg += `  ... e mais ${iHaveWhatTheyNeed.length - 8}\n`;
+    msg += '\n';
+  }
+  if (payload.c) msg += `📱 Contato: ${payload.c}`;
+
+  setTimeout(() => alert(msg), 600);
+}
+
+// ============================================================================
 // INITIALIZATION
 // ============================================================================
 
@@ -1225,5 +1749,6 @@ document.addEventListener('DOMContentLoaded', () => {
   renderTrocas();
   updateStats();
   switchDashboardView('continents');
+  checkIncomingTradeLink();
+  checkOnboarding();
 });
-

@@ -3,13 +3,16 @@
  * Gerencia cache e funcionalidade offline
  */
 
-const CACHE_NAME = 'estiva-go-copa-v2';
+const CACHE_NAME = 'estiva-go-copa-v5';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './styles.css',
   './app.js',
-  './manifest.json'
+  './manifest.json',
+  'https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css',
+  'https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap',
+  'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js'
 ];
 
 /**
@@ -18,20 +21,18 @@ const ASSETS_TO_CACHE = [
  */
 self.addEventListener('install', (event) => {
   console.log('Service Worker instalando...');
-  
+
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('Cache aberto:', CACHE_NAME);
-        return cache.addAll(ASSETS_TO_CACHE)
-          .catch((err) => {
-            console.warn('Alguns assets não foram cacheados:', err);
-            // Continua mesmo se alguns assets falharem
-            return cache.addAll(ASSETS_TO_CACHE.slice(0, 5));
-          });
+        return cache.addAll(ASSETS_TO_CACHE);
+      })
+      .catch((err) => {
+        console.warn('Alguns assets não foram cacheados:', err);
       })
   );
-  
+
   self.skipWaiting();
 });
 
@@ -41,7 +42,7 @@ self.addEventListener('install', (event) => {
  */
 self.addEventListener('activate', (event) => {
   console.log('Service Worker ativando...');
-  
+
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
@@ -54,7 +55,7 @@ self.addEventListener('activate', (event) => {
       );
     })
   );
-  
+
   self.clients.claim();
 });
 
@@ -63,16 +64,14 @@ self.addEventListener('activate', (event) => {
  * Estratégia: Network First, fallback para cache
  */
 self.addEventListener('fetch', (event) => {
-  // Ignorar requisições não-GET
   if (event.request.method !== 'GET') {
     return;
   }
-  
+
   event.respondWith(
     fetch(event.request)
       .then((response) => {
-        // Cache bem-sucedido
-        if (response.ok) {
+        if (response && response.ok) {
           const responseClone = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
             cache.put(event.request, responseClone);
@@ -81,20 +80,13 @@ self.addEventListener('fetch', (event) => {
         return response;
       })
       .catch(() => {
-        // Network falhou, tenta cache
         return caches.match(event.request)
-          .then((response) => {
-            return response || new Response('Offline - Recurso não disponível', {
+          .then((cachedResponse) => {
+            return cachedResponse || new Response('Offline - Recurso não disponível', {
               status: 503,
               statusText: 'Service Unavailable',
               headers: new Headers({
                 'Content-Type': 'text/plain'
-              })
-            });
-          });
-      })
-  );
-});t/plain'
               })
             });
           });

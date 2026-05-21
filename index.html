@@ -6,6 +6,9 @@
   <title>🏆 🏆 🏆🇺🇸🇨🇦🇲🇽 Copa 2026🇺🇸🇨🇦🇲🇽🏆 🏆 🏆  • Estiva GO</title>
   
   <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
   <link rel="stylesheet" href="styles.css">
   
   <meta name="theme-color" content="#667eea">
@@ -20,8 +23,40 @@
   <div class="content-wrapper">
     <!-- Header -->
     <div style="text-align: center; margin-bottom: 2rem; padding: 0 1rem;">
+      <!-- WE ARE 26 Logo -->
+      <div style="display: inline-flex; align-items: baseline; background: #111827; border-radius: 10px; padding: 7px 16px 7px 14px; margin-bottom: 14px; gap: 6px; box-shadow: 0 4px 16px rgba(0,0,0,0.35);">
+        <span style="font-family: 'Bebas Neue', Impact, 'Arial Black', sans-serif; font-size: 26px; letter-spacing: 4px; color: #ffffff; line-height: 1;">WE ARE</span>
+        <span style="font-family: 'Bebas Neue', Impact, 'Arial Black', sans-serif; font-size: 34px; letter-spacing: 1px; color: #ffffff; line-height: 1;">26</span><sup style="font-family: sans-serif; font-size: 10px; color: #cccccc; margin-left: 1px; vertical-align: super; line-height: 0;">™</sup>
+      </div>
       <h1 style="font-size: 32px; margin: 0 0 0.5rem; font-weight: 800; background: linear-gradient(135deg, #dcbf00 0%, #f2e20a 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">🏆 🏆 🏆Copa 2026🏆 🏆 🏆</h1>
       <p style="margin: 0; font-size: 14px; color: #68a2ed; font-weight: 600; letter-spacing: 0.5px;">🇺🇸🇨🇦🇲🇽 ESTIVA GO☆★⭐️🇺🇸🇨🇦🇲🇽 </p>
+    </div>
+
+    <!-- Onboarding Modal -->
+    <div id="onboarding-modal" class="modal">
+      <div class="modal-content" style="max-width: 360px; text-align: center;">
+        <div style="display: inline-flex; align-items: baseline; background: #111827; border-radius: 8px; padding: 5px 12px 5px 10px; margin-bottom: 16px; gap: 4px;">
+          <span style="font-family: 'Bebas Neue', Impact, sans-serif; font-size: 18px; letter-spacing: 3px; color: #fff; line-height: 1;">WE ARE</span>
+          <span style="font-family: 'Bebas Neue', Impact, sans-serif; font-size: 22px; color: #fff; line-height: 1;">26</span><sup style="font-size: 8px; color: #ccc;">™</sup>
+        </div>
+        <div id="onboard-avatar" style="width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 800; color: white; margin: 0 auto 12px; box-shadow: 0 6px 20px rgba(102,126,234,0.4); transition: background 0.3s;">🏆</div>
+        <h2 style="margin: 0 0 6px; font-size: 20px; font-weight: 800; color: var(--color-text-primary);">Bem-vindo!</h2>
+        <p style="margin: 0 0 20px; font-size: 13px; color: var(--color-text-secondary); line-height: 1.55;">Crie seu perfil para compartilhar suas trocas e convidar amigos para o app.</p>
+        <div style="display: grid; gap: 10px; text-align: left; margin-bottom: 16px;">
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: var(--color-text-secondary); display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.4px;">Nome ou Apelido *</label>
+            <input id="onboard-name" type="text" placeholder="Como te chamam?" oninput="updateOnboardAvatar()" style="width: 100%; padding: 12px; border: 1px solid var(--color-border-tertiary); border-radius: 8px; font-size: 14px; background: var(--color-background-secondary); color: var(--color-text-primary); box-sizing: border-box;">
+          </div>
+          <div>
+            <label style="font-size: 11px; font-weight: 700; color: var(--color-text-secondary); display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.4px;">E-mail ou Celular</label>
+            <input id="onboard-contact" type="text" placeholder="email@exemplo.com  ou  (00) 00000-0000" style="width: 100%; padding: 12px; border: 1px solid var(--color-border-tertiary); border-radius: 8px; font-size: 14px; background: var(--color-background-secondary); color: var(--color-text-primary); box-sizing: border-box;">
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <button onclick="skipOnboarding()" style="padding: 12px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--color-text-secondary);">Pular por agora</button>
+          <button onclick="saveOnboardingProfile()" style="padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 700;">Criar Perfil</button>
+        </div>
+      </div>
     </div>
 
     <!-- Confirmation Modal -->
@@ -147,6 +182,7 @@
       <button class="tab-button" id="tab-history" onclick="switchTab('history')">World Cup</button>
       <button class="tab-button" id="tab-trocas" onclick="switchTab('trocas')">Trocas</button>
       <button class="tab-button" id="tab-relatorios" onclick="switchTab('relatorios')">Relatórios</button>
+      <button class="tab-button" id="tab-comunidade" onclick="switchTab('comunidade')">Comunidade</button>
     </div>
 
     <!-- Dashboard Content -->
@@ -160,7 +196,7 @@
     <!-- Countries Content -->
     <div id="paises-content" style="display: none; padding-bottom: 2rem;">
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 1rem;">
-        <input type="text" id="search-paises" placeholder="País ou código..." style="padding: 12px; border: 0.5px solid var(--color-border-tertiary); border-radius: 8px; font-size: 14px; box-sizing: border-box;">
+        <input type="text" id="search-paises" placeholder="País, código ou jogador..." style="padding: 12px; border: 0.5px solid var(--color-border-tertiary); border-radius: 8px; font-size: 14px; box-sizing: border-box;">
         <input type="number" id="search-number" placeholder="Número..." min="1" max="20" style="padding: 12px; border: 0.5px solid var(--color-border-tertiary); border-radius: 8px; font-size: 14px; box-sizing: border-box;">
       </div>
       <div id="paises-list"></div>
@@ -169,7 +205,7 @@
     <!-- Refri Content -->
     <div id="refri-content" style="display: none; padding-bottom: 2rem;">
       <h2 style="font-size: 14px; font-weight: 700; background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%); color: white; padding: 12px 16px; border-radius: 12px; margin-bottom: 12px;">🥤 Refri (14)</h2>
-      <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px;" id="refri-list"></div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px;" id="refri-list"></div>
     </div>
 
     <!-- History Content -->
@@ -214,6 +250,97 @@
       </div>
     </div>
 
+    <!-- Comunidade Content -->
+    <div id="comunidade-content" style="display: none; padding-bottom: 2rem;">
+
+      <!-- Perfil -->
+      <div class="card">
+        <h2>👤 Meu Perfil</h2>
+
+        <!-- Card exibido quando perfil existe -->
+        <div id="profile-card" style="display: none;"></div>
+
+        <!-- Formulário de criação / edição -->
+        <div id="profile-form">
+          <div style="display: flex; justify-content: center; margin-bottom: 16px;">
+            <div id="profile-avatar-preview" style="width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 800; color: white; box-shadow: 0 6px 20px rgba(102,126,234,0.35); transition: background 0.3s;">?</div>
+          </div>
+          <div style="display: grid; gap: 12px;">
+            <div>
+              <label style="font-size: 11px; font-weight: 700; color: var(--color-text-secondary); display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.4px;">Nome ou Apelido *</label>
+              <input id="profile-name" type="text" placeholder="Como te chamam?" oninput="updateProfileAvatar()" style="width: 100%; padding: 12px; border: 0.5px solid var(--color-border-tertiary); border-radius: 8px; font-size: 14px; background: var(--color-background-secondary); color: var(--color-text-primary); box-sizing: border-box;">
+            </div>
+            <div>
+              <label style="font-size: 11px; font-weight: 700; color: var(--color-text-secondary); display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.4px;">E-mail</label>
+              <input id="profile-email" type="email" placeholder="seu@email.com" style="width: 100%; padding: 12px; border: 0.5px solid var(--color-border-tertiary); border-radius: 8px; font-size: 14px; background: var(--color-background-secondary); color: var(--color-text-primary); box-sizing: border-box;">
+            </div>
+            <div>
+              <label style="font-size: 11px; font-weight: 700; color: var(--color-text-secondary); display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.4px;">Celular / WhatsApp</label>
+              <input id="profile-contact" type="tel" placeholder="(00) 00000-0000" style="width: 100%; padding: 12px; border: 0.5px solid var(--color-border-tertiary); border-radius: 8px; font-size: 14px; background: var(--color-background-secondary); color: var(--color-text-primary); box-sizing: border-box;">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <button id="profile-cancel-btn" onclick="cancelEditProfile()" style="display:none; padding: 12px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--color-text-secondary);">Cancelar</button>
+              <button onclick="saveCommunityProfile()" id="profile-save-btn" style="grid-column: 1 / -1; padding: 12px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 700;">✅ Salvar Perfil</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Meus Números -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 2rem;">
+        <div style="background: linear-gradient(135deg, #27AE60 0%, #2ECC71 100%); border-radius: 16px; padding: 1.25rem; color: white; text-align: center; box-shadow: 0 8px 24px rgba(39,174,96,0.25);">
+          <div style="font-size: 36px; font-weight: 800; line-height: 1;" id="community-offers-count">0</div>
+          <div style="font-size: 12px; opacity: 0.9; margin-top: 6px; font-weight: 600;">Tenho para Trocar</div>
+        </div>
+        <div style="background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%); border-radius: 16px; padding: 1.25rem; color: white; text-align: center; box-shadow: 0 8px 24px rgba(231,76,60,0.25);">
+          <div style="font-size: 36px; font-weight: 800; line-height: 1;" id="community-needs-count">0</div>
+          <div style="font-size: 12px; opacity: 0.9; margin-top: 6px; font-weight: 600;">Preciso Coletar</div>
+        </div>
+      </div>
+
+      <!-- Oferta de Trocas -->
+      <div class="card">
+        <h2>🤝 Minha Oferta de Trocas</h2>
+        <p style="font-size: 13px; color: var(--color-text-secondary); margin-bottom: 12px; line-height: 1.5;">Mensagem pronta com suas duplicatas e desejos — envie para grupos ou amigos.</p>
+        <pre id="community-offer-preview" style="font-size: 12px; line-height: 1.6; white-space: pre-wrap; color: var(--color-text-secondary); max-height: 180px; overflow-y: auto; background: var(--color-background-secondary); padding: 12px; border-radius: 8px; margin-bottom: 12px; font-family: var(--font-sans); border: 0.5px solid var(--color-border-tertiary);"></pre>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <button onclick="copyOfferText()" style="padding: 12px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--color-text-primary);">📋 Copiar texto</button>
+          <button onclick="shareOfferWhatsApp()" style="padding: 12px; background: #25D366; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 700;">💬 Enviar WhatsApp</button>
+        </div>
+      </div>
+
+      <!-- Link de Troca P2P -->
+      <div class="card">
+        <h2>🔗 Link de Troca Pessoal</h2>
+        <p style="font-size: 13px; color: var(--color-text-secondary); margin-bottom: 12px; line-height: 1.5;">Gere um link com sua lista de trocas. Quando seu amigo abrir, o app compara automaticamente e mostra quais figurinhas vocês podem trocar — sem servidor!</p>
+        <div style="background: linear-gradient(135deg, #667eea10 0%, #764ba210 100%); border: 1px solid #667eea30; border-radius: 10px; padding: 12px; margin-bottom: 12px;">
+          <div style="font-size: 12px; color: var(--color-text-secondary); line-height: 1.6;">
+            <strong>Como funciona:</strong><br>
+            1. Salve seu perfil acima<br>
+            2. Clique em "Gerar Link" → link copiado<br>
+            3. Envie o link para um amigo<br>
+            4. Quando ele abrir, vê exatamente o que pode te oferecer!
+          </div>
+        </div>
+        <button onclick="copyTradeLink()" style="width: 100%; padding: 14px 16px; background: linear-gradient(135deg, #FA709A 0%, #FEE140 100%); color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 700; margin-bottom: 6px;">🔗 Gerar e Copiar Link de Trocas</button>
+        <p style="font-size: 11px; color: var(--color-text-secondary); text-align: center; margin: 0; line-height: 1.5;">Seus dados ficam codificados no link — privado e offline</p>
+      </div>
+
+      <!-- Convidar Amigos -->
+      <div class="card">
+        <h2>📲 Convidar Amigos para o App</h2>
+        <p style="font-size: 13px; color: var(--color-text-secondary); margin-bottom: 12px; line-height: 1.5;">Compartilhe o app com sua galera para todos acompanharem a coleção!</p>
+        <div id="community-app-url" style="background: var(--color-background-secondary); border-radius: 8px; padding: 10px 12px; margin-bottom: 12px; font-size: 12px; color: var(--color-text-secondary); word-break: break-all; border: 0.5px solid var(--color-border-tertiary);"></div>
+        <div id="qr-container" style="display: flex; justify-content: center; align-items: center; min-height: 170px; margin-bottom: 14px; background: var(--color-background-secondary); border-radius: 12px; border: 0.5px solid var(--color-border-tertiary); padding: 12px;"></div>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+          <button onclick="copyAppLink()" style="padding: 12px 4px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 10px; cursor: pointer; font-size: 12px; font-weight: 600; color: var(--color-text-primary);">🔗 Copiar Link</button>
+          <button onclick="shareAppWhatsApp()" style="padding: 12px 4px; background: #25D366; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 12px; font-weight: 700;">💬 WhatsApp</button>
+          <button onclick="nativeShare()" style="padding: 12px 4px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 12px; font-weight: 700;">📱 Compartilhar</button>
+        </div>
+      </div>
+
+    </div>
+
     <!-- Footer -->
     <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center; margin-top: 1.5rem;">
       <button onclick="exportData()" style="padding: 10px 16px; background: #3498DB; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 600;">📤 Exportar dados</button>
@@ -228,25 +355,7 @@
 <input type="file" id="import-data-input" accept="application/json" style="display:none;" onchange="handleImportFile(event)">
 
 <!-- External Scripts -->
-<script src="app.js"></script>
-</body>
-</html>
-ize: 13px; font-weight: 600;">📥 Importar dados</button>
-    </div>
-    <div class="footer" style="margin-top: 1rem;">
-      <p>💾 Auto-salvo | 🌍 Cores oficiais | 📱 Instalável (PWA) | 🌙 Suporte Dark Mode</p>
-    </div>
-  </div>
-</div>
-
-<input type="file" id="import-data-input" accept="application/json" style="display:none;" onchange="handleImportFile(event)">
-
-<!-- External Scripts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
-ript>
-</body>
-</html>
-l>
