@@ -1600,12 +1600,17 @@ function exportData() {
     duplicates
   };
   
-  const blob = new Blob([JSON.stringify(exportPayload, null, 2)], { type: 'application/json;charset=utf-8;' });
+  const blob = new Blob([JSON.stringify(exportPayload, null, 2)], { type: 'application/octet-stream;charset=utf-8;' });
   const link = document.createElement('a');
   const url = URL.createObjectURL(blob);
-  
+
   link.setAttribute('href', url);
-  link.setAttribute('download', `copa2026_dados_${new Date().toISOString().split('T')[0]}.json`);
+  const now = new Date();
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const dd = String(now.getDate()).padStart(2, '0');
+  const hh = String(now.getHours()).padStart(2, '0');
+  const user = (communityProfile.name || 'user').replace(/[^a-zA-Z0-9]/g, '').slice(0, 12) || 'user';
+  link.setAttribute('download', `${user}cup26_${mm}-${dd}-${hh}.est`);
   link.style.visibility = 'hidden';
   
   document.body.appendChild(link);
