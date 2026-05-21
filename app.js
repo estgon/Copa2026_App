@@ -1606,11 +1606,12 @@ function exportData() {
 
   link.setAttribute('href', url);
   const now = new Date();
-  const mm = String(now.getMonth() + 1).padStart(2, '0');
-  const dd = String(now.getDate()).padStart(2, '0');
-  const hh = String(now.getHours()).padStart(2, '0');
+  const nowStr = String(now.getMonth() + 1).padStart(2, '0')
+    + String(now.getDate()).padStart(2, '0')
+    + String(now.getHours()).padStart(2, '0')
+    + String(now.getMinutes()).padStart(2, '0');
   const user = (communityProfile.name || 'user').replace(/[^a-zA-Z0-9]/g, '').slice(0, 12) || 'user';
-  link.setAttribute('download', `${user}cup26_${mm}-${dd}-${hh}.est`);
+  link.setAttribute('download', `${user}cup26_${nowStr}.est`);
   link.style.visibility = 'hidden';
   
   document.body.appendChild(link);
