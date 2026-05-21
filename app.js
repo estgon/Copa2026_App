@@ -151,6 +151,19 @@ const legendRarities = [
   { id: 'ouro',   label: 'Ouro',   color: '#F1C40F', textColor: '#333'  },
 ];
 
+// Map 'CODE-NUM' → legendPlayer for fast lookup in renderPaises
+const legendStickerMap = (() => {
+  const m = new Map();
+  legendPlayers.forEach(lp => {
+    for (const [code, players] of Object.entries(playerData)) {
+      for (const [num, name] of Object.entries(players)) {
+        if (name === lp.name) m.set(`${code}-${parseInt(num)}`, lp);
+      }
+    }
+  });
+  return m;
+})();
+
 const continentMap = {
   'BRA': 'América do Sul', 'ARG': 'América do Sul', 'URY': 'América do Sul', 'COL': 'América do Sul', 'ECU': 'América do Sul', 'PRY': 'América do Sul',
   'DEU': 'Europa', 'GB-ENG': 'Europa', 'FRA': 'Europa', 'ESP': 'Europa', 'PRT': 'Europa', 'NLD': 'Europa', 'BEL': 'Europa', 'HRV': 'Europa', 'SWE': 'Europa', 'GBR': 'Europa', 'AUT': 'Europa', 'CZE': 'Europa', 'TUR': 'Europa', 'NOR': 'Europa', 'BIH': 'Europa', 'CHE': 'Europa',
@@ -707,35 +720,71 @@ function renderPaises() {
       const countryColor = countryColors[code] || '#667eea';
       const textColor = ['#F5F5F5', '#FFFFFF'].includes(countryColor) ? '#000000' : 'white';
 
-      groupHtml += `<div style="margin-bottom: 12px;">
-        <div style="font-size: 14px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; color: var(--color-text-primary);">
+      // Count legend players in this country
+      const legendsInCountry = [];
+      for (let i = 1; i <= 20; i++) {
+        const lp = legendStickerMap.get(`${code}-${i}`);
+        if (lp) legendsInCountry.push(i);
+      }
+      const hasLegends = legendsInCountry.length > 0;
+
+      groupHtml += `<div style="margin-bottom: 14px; border-radius: 14px; border: 1px solid ${hasLegends ? '#F1C40F40' : 'var(--color-border-tertiary)'}; background: ${hasLegends ? 'linear-gradient(135deg, #F1C40F06 0%, #9B59B606 100%)' : 'var(--color-background-primary)'}; padding: 10px;">
+        <div style="font-size: 14px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; color: var(--color-text-primary); flex-wrap: wrap;">
           ${flagHtml(code, { size: '1.5em', title: name })}
-          ${escapeHtml(name)} (${collected}/20)
+          <span>${escapeHtml(name)}</span>
+          <span style="font-size: 12px; font-weight: 600; color: var(--color-text-secondary);">(${collected}/20)</span>
+          ${hasLegends ? `<span style="display:inline-flex;align-items:center;gap:3px;background:linear-gradient(135deg,#F1C40F,#E67E22);color:#1a1200;border-radius:12px;padding:2px 8px;font-size:10px;font-weight:800;letter-spacing:0.3px;box-shadow:0 2px 6px #F1C40F40;">★ ${legendsInCountry.length} Legend${legendsInCountry.length > 1 ? 's' : ''}</span>` : ''}
         </div>
         <div class="sticker-grid">`;
-      
+
       for (let i = 1; i <= 20; i++) {
         if (!shouldShowNumber(i, code)) continue;
-        
+
         const checked = stickers[code + '-' + i];
         const dupCount = duplicates[code + '-' + i] || 0;
         const playerName = playerData[code]?.[i];
-        const checkedWithName = checked && playerName;
-        const btnContent = checkedWithName
-          ? `<span style="display:block;font-size:11px;font-weight:800;line-height:1;">${i}</span><span style="display:block;font-size:7.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;opacity:0.92;margin-top:3px;line-height:1.1;">${escapeHtml(playerName)}</span>`
-          : `${i}`;
-        const checkedStyle = checkedWithName ? 'display:flex;flex-direction:column;align-items:center;justify-content:center;' : '';
-        groupHtml += `<div style="position: relative;">
-          <button onclick="toggleSticker('${code}', ${i}, 'country')" class="sticker-button ${checked ? 'checked' : ''}" style="${checkedStyle}background: ${checked ? countryColor : 'var(--color-background-secondary)'}; color: ${checked ? textColor : 'var(--color-text-primary)'}; box-shadow: ${checked ? '0 4px 12px ' + countryColor + '40' : 'none'};">${btnContent}</button>
-          ${checked ? `<div class="dup-indicator" onclick="event.stopPropagation(); document.getElementById('dup-${code}-${i}').classList.toggle('active');">+</div>
+        const legendPlayer = legendStickerMap.get(`${code}-${i}`);
+
+        let btnBg, btnColor, btnBorder, btnShadow, btnContent, btnStyle;
+
+        if (legendPlayer) {
+          // ── Legend player ──────────────────────────────────────────
+          btnBg     = checked ? 'linear-gradient(135deg, #F1C40F 0%, #E67E22 100%)' : 'var(--color-background-secondary)';
+          btnColor  = checked ? '#1a1200' : 'var(--color-text-primary)';
+          btnBorder = `1.5px solid ${checked ? '#F1C40F' : '#F1C40F80'}`;
+          btnShadow = checked ? '0 4px 16px #F1C40F60' : '0 0 0 0 transparent';
+          const nameOpacity = checked ? '1' : '0.6';
+          btnContent = `<span style="display:block;font-size:11px;font-weight:800;line-height:1;">${i}</span>`
+                     + (playerName ? `<span style="display:block;font-size:7px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;opacity:${nameOpacity};margin-top:2px;line-height:1.1;">${escapeHtml(playerName)}</span>` : '');
+          btnStyle  = 'display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:46px;';
+        } else {
+          // ── Normal player ──────────────────────────────────────────
+          btnBg     = checked ? countryColor : 'var(--color-background-secondary)';
+          btnColor  = checked ? textColor : 'var(--color-text-primary)';
+          btnBorder = '';
+          btnShadow = checked ? `0 4px 12px ${countryColor}40` : 'none';
+          const showName = checked && playerName;
+          btnContent = showName
+            ? `<span style="display:block;font-size:11px;font-weight:800;line-height:1;">${i}</span><span style="display:block;font-size:7.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;opacity:0.92;margin-top:3px;line-height:1.1;">${escapeHtml(playerName)}</span>`
+            : `${i}`;
+          btnStyle  = showName ? 'display:flex;flex-direction:column;align-items:center;justify-content:center;' : '';
+        }
+
+        const borderPart = btnBorder ? `border:${btnBorder};` : '';
+        const dupMenu = `
           <div class="dup-menu" id="dup-${code}-${i}">
-            <button onclick="event.stopPropagation(); addDuplicate('${code}', ${i}, 'country')" style="padding: 4px 8px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 500; color: var(--color-text-primary);">+1</button>
-            <div style="font-size: 11px; text-align: center; font-weight: 700; color: var(--color-text-primary);">${dupCount}</div>
-            <button onclick="event.stopPropagation(); removeDuplicate('${code}', ${i}, 'country')" style="padding: 4px 8px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 500; color: var(--color-text-primary);">-1</button>
-          </div>` : ''}
+            <button onclick="event.stopPropagation(); addDuplicate('${code}', ${i}, 'country')" style="padding:4px 8px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:4px;cursor:pointer;font-size:11px;font-weight:500;color:var(--color-text-primary);">+1</button>
+            <div style="font-size:11px;text-align:center;font-weight:700;color:var(--color-text-primary);">${dupCount}</div>
+            <button onclick="event.stopPropagation(); removeDuplicate('${code}', ${i}, 'country')" style="padding:4px 8px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:4px;cursor:pointer;font-size:11px;font-weight:500;color:var(--color-text-primary);">-1</button>
+          </div>`;
+
+        groupHtml += `<div style="position:relative;">
+          <button onclick="toggleSticker('${code}', ${i}, 'country')" class="sticker-button ${checked ? 'checked' : ''}" style="${btnStyle}${borderPart}background:${btnBg};color:${btnColor};box-shadow:${btnShadow};">${btnContent}</button>
+          ${legendPlayer ? `<div title="${escapeHtml(legendPlayer.name)} – Legend" style="position:absolute;top:-5px;left:-5px;background:linear-gradient(135deg,#F1C40F,#E67E22);color:#1a1200;border-radius:50%;width:14px;height:14px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;border:1.5px solid white;box-shadow:0 1px 6px #F1C40F80;pointer-events:none;z-index:2;">★</div>` : ''}
+          ${checked ? `<div class="dup-indicator" onclick="event.stopPropagation(); document.getElementById('dup-${code}-${i}').classList.toggle('active');">+</div>${dupMenu}` : ''}
         </div>`;
       }
-      
+
       groupHtml += `</div></div>`;
       groupHasContent = true;
     });
