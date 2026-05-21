@@ -198,6 +198,7 @@ let proposalSelectionActive = false;
 let currentDashboardView = 'continents';
 let pendingUnmark = null;
 let tradeCredits = parseInt(localStorage.getItem('copaCredits') || '0');
+let wishlist = new Set((() => { try { return JSON.parse(localStorage.getItem('copaWishlist') || '[]'); } catch { return []; } })());
 let offerFilter = (() => {
   try { const f = JSON.parse(localStorage.getItem('copaOfferFilter') || '{}'); return { paises: f.paises !== false, refri: f.refri !== false, history: f.history !== false, legends: f.legends !== false }; }
   catch { return { paises: true, refri: true, history: true, legends: true }; }
@@ -354,6 +355,60 @@ function applyRoomCode() {
   }
 }
 
+// ---- Wishlist ----
+
+function saveWishlist() {
+  localStorage.setItem('copaWishlist', JSON.stringify([...wishlist]));
+}
+
+function toggleWishlist(key, event) {
+  if (event) event.stopPropagation();
+  if (wishlist.has(key)) wishlist.delete(key);
+  else wishlist.add(key);
+  saveWishlist();
+  // Targeted DOM update — avoids full re-render and scroll jump
+  const safeKey = key.replace(/[^a-zA-Z0-9]/g, '-');
+  const btn = document.getElementById('wl-' + safeKey);
+  if (btn) {
+    const inWl = wishlist.has(key);
+    btn.textContent = inWl ? '❤️' : '🤍';
+    btn.style.opacity = inWl ? '1' : '0.22';
+    btn.title = inWl ? 'Remover da lista de desejos' : 'Adicionar à lista de desejos';
+    const wrapper = btn.closest('[data-sticker-wrapper]');
+    if (wrapper) wrapper.style.outline = inWl ? '1.5px solid #E74C3C60' : '';
+  }
+  renderWishlist();
+}
+
+function renderWishlist() {
+  // Auto-remove collected stickers
+  const toRemove = [...wishlist].filter(k => stickers[k]);
+  if (toRemove.length) { toRemove.forEach(k => wishlist.delete(k)); saveWishlist(); }
+
+  const el = document.getElementById('wishlist-container');
+  if (!el) return;
+  const wlArr = [...wishlist].filter(k => !stickers[k]);
+  if (wlArr.length === 0) {
+    el.innerHTML = '<p style="font-size:13px;color:var(--color-text-secondary);text-align:center;padding:1rem 0;line-height:1.6;">Nenhuma figurinha na lista ainda.<br>Toque em ❤️ em qualquer figurinha que ainda não tem.</p>';
+    return;
+  }
+  el.innerHTML = wlArr.map(key => {
+    const label = formatStickerLabel(key);
+    let flagEl = '⭐';
+    if (key.startsWith('refri-')) flagEl = '🥤';
+    else if (key.startsWith('history-')) flagEl = '🏆';
+    else if (!key.startsWith('legend-')) {
+      const code = key.split('-').slice(0, -1).join('-');
+      flagEl = flagHtml(code, { size: '1.2em' });
+    }
+    return `<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--color-background-secondary);border-radius:8px;border:0.5px solid #E74C3C30;">
+      <span style="font-size:13px;">❤️</span><span>${flagEl}</span>
+      <span style="flex:1;font-size:12px;font-weight:600;color:var(--color-text-primary);line-height:1.3;">${label}</span>
+      <button onclick="toggleWishlist('${key}', event)" title="Remover" style="background:none;border:none;cursor:pointer;font-size:16px;color:var(--color-text-secondary);padding:2px;line-height:1;flex-shrink:0;">✕</button>
+    </div>`;
+  }).join('');
+}
+
 function escapeHtml(text) {
   const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
   return text.replace(/[&<>"']/g, m => map[m]);
@@ -446,10 +501,12 @@ function toggleSticker(country, num, type = 'country') {
     showConfirmation(country, num, type);
   } else {
     stickers[key] = true;
+    if (wishlist.has(key)) { wishlist.delete(key); saveWishlist(); }
     saveData();
     renderPaises();
     renderRefri();
     renderHistory();
+    renderLegends();
     renderTrocas();
   }
 }
@@ -771,6 +828,9 @@ function renderPaises() {
         }
 
         const borderPart = btnBorder ? `border:${btnBorder};` : '';
+        const key = `${code}-${i}`;
+        const inWishlist = wishlist.has(key);
+        const safeKey = key.replace(/[^a-zA-Z0-9]/g, '-');
         const dupMenu = `
           <div class="dup-menu" id="dup-${code}-${i}">
             <button onclick="event.stopPropagation(); addDuplicate('${code}', ${i}, 'country')" style="padding:4px 8px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:4px;cursor:pointer;font-size:11px;font-weight:500;color:var(--color-text-primary);">+1</button>
@@ -778,9 +838,10 @@ function renderPaises() {
             <button onclick="event.stopPropagation(); removeDuplicate('${code}', ${i}, 'country')" style="padding:4px 8px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:4px;cursor:pointer;font-size:11px;font-weight:500;color:var(--color-text-primary);">-1</button>
           </div>`;
 
-        groupHtml += `<div style="position:relative;">
+        groupHtml += `<div data-sticker-wrapper="1" style="position:relative;${inWishlist ? 'outline:1.5px solid #E74C3C60;border-radius:6px;' : ''}">
           <button onclick="toggleSticker('${code}', ${i}, 'country')" class="sticker-button ${checked ? 'checked' : ''}" style="${btnStyle}${borderPart}background:${btnBg};color:${btnColor};box-shadow:${btnShadow};">${btnContent}</button>
           ${legendPlayer ? `<div title="${escapeHtml(legendPlayer.name)} – Legend" style="position:absolute;top:-5px;left:-5px;background:linear-gradient(135deg,#F1C40F,#E67E22);color:#1a1200;border-radius:50%;width:14px;height:14px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;border:1.5px solid white;box-shadow:0 1px 6px #F1C40F80;pointer-events:none;z-index:2;">★</div>` : ''}
+          ${!checked ? `<button id="wl-${safeKey}" onclick="toggleWishlist('${key}', event)" title="${inWishlist ? 'Remover da lista de desejos' : 'Adicionar à lista de desejos'}" style="position:absolute;bottom:1px;right:1px;background:none;border:none;cursor:pointer;font-size:9px;padding:2px;line-height:1;z-index:3;opacity:${inWishlist ? '1' : '0.22'};">${inWishlist ? '❤️' : '🤍'}</button>` : ''}
           ${checked ? `<div class="dup-indicator" onclick="event.stopPropagation(); document.getElementById('dup-${code}-${i}').classList.toggle('active');">+</div>${dupMenu}` : ''}
         </div>`;
       }
@@ -803,17 +864,21 @@ function renderPaises() {
 function renderRefri() {
   let html = '';
   for (let i = 1; i <= 14; i++) {
-    const checked = stickers['refri-' + i];
-    const dupCount = duplicates['refri-' + i] || 0;
+    const key = 'refri-' + i;
+    const checked = stickers[key];
+    const dupCount = duplicates[key] || 0;
     const player = refriPlayers[i];
     const label = `CC ${String(i).padStart(2, '0')}`;
+    const inWishlist = wishlist.has(key);
+    const safeKey = key.replace(/[^a-zA-Z0-9]/g, '-');
 
-    html += `<div style="position: relative;">
+    html += `<div data-sticker-wrapper="1" style="position:relative;${!checked && inWishlist ? 'outline:1.5px solid #E74C3C60;border-radius:14px;' : ''}">
       <button onclick="toggleSticker('', ${i}, 'refri')" class="refri-card ${checked ? 'checked' : ''}" style="background: ${checked ? '#E74C3C' : 'var(--color-background-secondary)'}; box-shadow: ${checked ? '0 4px 14px #E74C3C50' : 'none'};">
         <div class="refri-card__number" style="color: ${checked ? 'rgba(255,255,255,0.65)' : 'var(--color-text-secondary)'};">${label}</div>
         <div class="refri-card__flag">${flagHtml(player.code, { size: '1.8em' })}</div>
         <div class="refri-card__name" style="color: ${checked ? 'white' : 'var(--color-text-primary)'};">${escapeHtml(player.name)}</div>
       </button>
+      ${!checked ? `<button id="wl-${safeKey}" onclick="toggleWishlist('${key}', event)" title="${inWishlist ? 'Remover da lista de desejos' : 'Adicionar à lista de desejos'}" style="position:absolute;bottom:2px;right:2px;background:none;border:none;cursor:pointer;font-size:10px;padding:2px;line-height:1;z-index:3;opacity:${inWishlist ? '1' : '0.25'};">${inWishlist ? '❤️' : '🤍'}</button>` : ''}
       ${checked ? `<div class="dup-indicator" style="background: #E74C3C;" onclick="event.stopPropagation(); document.getElementById('dup-refri-${i}').classList.toggle('active');">+</div>
       <div class="dup-menu" id="dup-refri-${i}">
         <button onclick="event.stopPropagation(); addDuplicate('', ${i}, 'refri')" style="padding: 4px 8px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 500;">+1</button>
@@ -831,10 +896,14 @@ function renderRefri() {
 function renderHistory() {
   let html = '';
   for (let i = 0; i <= 19; i++) {
-    const checked = stickers['history-' + i];
-    const dupCount = duplicates['history-' + i] || 0;
-    html += `<div style="position: relative;">
+    const key = 'history-' + i;
+    const checked = stickers[key];
+    const dupCount = duplicates[key] || 0;
+    const inWishlist = wishlist.has(key);
+    const safeKey = key.replace(/[^a-zA-Z0-9]/g, '-');
+    html += `<div data-sticker-wrapper="1" style="position:relative;${!checked && inWishlist ? 'outline:1.5px solid #E74C3C60;border-radius:6px;' : ''}">
       <button onclick="toggleSticker('', ${i}, 'history')" class="sticker-button ${checked ? 'checked' : ''}" style="background: ${checked ? '#3498DB' : 'var(--color-background-secondary)'}; color: ${checked ? 'white' : 'var(--color-text-primary)'}; box-shadow: ${checked ? '0 4px 12px #3498DB40' : 'none'};">FWC${i}</button>
+      ${!checked ? `<button id="wl-${safeKey}" onclick="toggleWishlist('${key}', event)" title="${inWishlist ? 'Remover da lista de desejos' : 'Adicionar à lista de desejos'}" style="position:absolute;bottom:1px;right:1px;background:none;border:none;cursor:pointer;font-size:9px;padding:2px;line-height:1;z-index:3;opacity:${inWishlist ? '1' : '0.22'};">${inWishlist ? '❤️' : '🤍'}</button>` : ''}
       ${checked ? `<div class="dup-indicator" style="background: #3498DB;" onclick="event.stopPropagation(); document.getElementById('dup-history-${i}').classList.toggle('active');">+</div>
       <div class="dup-menu" id="dup-history-${i}">
         <button onclick="event.stopPropagation(); addDuplicate('', ${i}, 'history')" style="padding: 4px 8px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 500;">+1</button>
@@ -859,8 +928,13 @@ function renderLegends() {
       const key = `legend-${idx}-${rarity.id}`;
       const checked = stickers[key];
       const dupCount = duplicates[key] || 0;
-      html += `<div style="position:relative;">`;
+      const inWishlist = wishlist.has(key);
+      const safeKey = key.replace(/[^a-zA-Z0-9]/g, '-');
+      html += `<div data-sticker-wrapper="1" style="position:relative;${!checked && inWishlist ? 'outline:1.5px solid #E74C3C60;border-radius:8px;' : ''}">`;
       html += `<button onclick="toggleLegendSticker(${idx},'${rarity.id}')" style="width:100%;padding:10px 4px;border:2px solid ${rarity.color};border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;text-align:center;background:${checked ? rarity.color : 'var(--color-background-primary)'};color:${checked ? rarity.textColor : rarity.color};transition:all 0.2s;">${rarity.label}</button>`;
+      if (!checked) {
+        html += `<button id="wl-${safeKey}" onclick="toggleWishlist('${key}', event)" title="${inWishlist ? 'Remover da lista de desejos' : 'Adicionar à lista de desejos'}" style="position:absolute;bottom:2px;right:2px;background:none;border:none;cursor:pointer;font-size:9px;padding:2px;line-height:1;z-index:3;opacity:${inWishlist ? '1' : '0.25'};">${inWishlist ? '❤️' : '🤍'}</button>`;
+      }
       if (checked && dupCount > 0) {
         html += `<span style="position:absolute;top:-6px;right:-6px;background:#E74C3C;color:white;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:2px solid white;pointer-events:none;">${dupCount}</span>`;
       }
@@ -883,6 +957,7 @@ function toggleLegendSticker(idx, rarityId) {
     showConfirmation(idx, rarityId, 'legend');
   } else {
     stickers[key] = true;
+    if (wishlist.has(key)) { wishlist.delete(key); saveWishlist(); }
     saveData();
     renderLegends();
     renderTrocas();
@@ -1017,7 +1092,6 @@ function switchTab(tab) {
   document.getElementById('refri-content').style.display = tab === 'refri' ? 'block' : 'none';
   document.getElementById('history-content').style.display = tab === 'history' ? 'block' : 'none';
   document.getElementById('legends-content').style.display = tab === 'legends' ? 'block' : 'none';
-  document.getElementById('trocas-content').style.display = tab === 'trocas' ? 'block' : 'none';
   document.getElementById('relatorios-content').style.display = tab === 'relatorios' ? 'block' : 'none';
   document.getElementById('comunidade-content').style.display = tab === 'comunidade' ? 'block' : 'none';
 
@@ -2144,6 +2218,14 @@ function formatOfferText() {
     text += `✅ Sem duplicatas no momento\n\n`;
   }
 
+  const wlArr = [...wishlist].filter(k => !stickers[k]);
+  if (wlArr.length > 0) {
+    text += `❤️ LISTA DE DESEJOS – prioridade (${wlArr.length}):\n`;
+    wlArr.slice(0, 15).forEach(k => { text += `• ${formatStickerLabel(k)}\n`; });
+    if (wlArr.length > 15) text += `... e mais ${wlArr.length - 15}\n`;
+    text += '\n';
+  }
+
   if (needs.length > 0) {
     text += `❌ PRECISO (${needs.length}):\n`;
     needs.slice(0, 20).forEach(key => { text += `• ${formatStickerLabel(key)}\n`; });
@@ -2243,6 +2325,8 @@ let _qrGenerated = false;
 
 function renderComunidade() {
   renderProfileCard();
+  renderTrocas();
+  renderWishlist();
   renderTradeHistory();
   renderOfferFilterChips();
 
