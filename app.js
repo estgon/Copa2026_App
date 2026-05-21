@@ -121,6 +121,36 @@ const playerData = {
   PAN:{1:'Panamá',2:'Orlando Mosquera',3:'Luis Mejía',4:'Fidel Escobar',5:'Andrés Andrade',6:'Michael Amir Murillo',7:'Eric Davis',8:'José Córdoba',9:'César Blackman',10:'Cristian Martínez',11:'Aníbal Godoy',12:'Adalberto Carrasquilla',14:'Édgar Bárcenas',15:'Carlos Harvey',16:'Ismael Díaz',17:'José Fajardo',18:'Cecilio Waterman',19:'José Luis Rodríguez',20:'Alberto Quintero'},
 };
 
+const legendPlayers = [
+  { name: 'Achraf Hakimi',       code: 'MAR'    },
+  { name: 'Alphonso Davies',     code: 'CAN'    },
+  { name: 'Christian Pulisic',   code: 'USA'    },
+  { name: 'Cody Gakpo',          code: 'NLD'    },
+  { name: 'Cristiano Ronaldo',   code: 'PRT'    },
+  { name: 'Erling Haaland',      code: 'NOR'    },
+  { name: 'Federico Valverde',   code: 'URY'    },
+  { name: 'Florian Wirtz',       code: 'DEU'    },
+  { name: 'Jérémy Doku',         code: 'BEL'    },
+  { name: 'Jude Bellingham',     code: 'GB-ENG' },
+  { name: 'Kevin De Bruyne',     code: 'BEL'    },
+  { name: 'Lamine Yamal',        code: 'ESP'    },
+  { name: 'Lautaro Martínez',    code: 'ARG'    },
+  { name: 'Lionel Messi',        code: 'ARG'    },
+  { name: 'Luis Díaz',           code: 'COL'    },
+  { name: 'Kylian Mbappé',       code: 'FRA'    },
+  { name: 'Mohamed Salah',       code: 'EGY'    },
+  { name: 'Santiago Giménez',    code: 'MEX'    },
+  { name: 'Son Heung-min',       code: 'KOR'    },
+  { name: 'Vinícius Júnior',     code: 'BRA'    },
+];
+
+const legendRarities = [
+  { id: 'lilas',  label: 'Lilás',  color: '#9B59B6', textColor: 'white' },
+  { id: 'bronze', label: 'Bronze', color: '#CD7F32', textColor: 'white' },
+  { id: 'prata',  label: 'Prata',  color: '#95A5A6', textColor: 'white' },
+  { id: 'ouro',   label: 'Ouro',   color: '#F1C40F', textColor: '#333'  },
+];
+
 const continentMap = {
   'BRA': 'América do Sul', 'ARG': 'América do Sul', 'URY': 'América do Sul', 'COL': 'América do Sul', 'ECU': 'América do Sul', 'PRY': 'América do Sul',
   'DEU': 'Europa', 'GB-ENG': 'Europa', 'FRA': 'Europa', 'ESP': 'Europa', 'PRT': 'Europa', 'NLD': 'Europa', 'BEL': 'Europa', 'HRV': 'Europa', 'SWE': 'Europa', 'GBR': 'Europa', 'AUT': 'Europa', 'CZE': 'Europa', 'TUR': 'Europa', 'NOR': 'Europa', 'BIH': 'Europa', 'CHE': 'Europa',
@@ -148,6 +178,10 @@ let searchFilter = { group: null, country: null, number: null, playerMatches: nu
 let currentReportData = '';
 let currentReportTitle = '';
 let communityProfile = (() => { try { return JSON.parse(localStorage.getItem('copaProfile') || '{}'); } catch { return {}; } })();
+let pendingTrades = (() => { try { return JSON.parse(localStorage.getItem('copaPending') || '{}'); } catch { return {}; } })();
+let tradeHistory = (() => { try { return JSON.parse(localStorage.getItem('copaHistory') || '[]'); } catch { return []; } })();
+let proposalSelection = new Set();
+let proposalSelectionActive = false;
 let currentDashboardView = 'continents';
 let pendingUnmark = null;
 
@@ -305,13 +339,14 @@ function toggleSticker(country, num, type = 'country') {
  * Adiciona uma duplicata
  */
 function addDuplicate(country, num, type = 'country') {
-  const key = type === 'country' ? country + '-' + num : type + '-' + num;
+  const key = type === 'country' ? `${country}-${num}` : type === 'legend' ? `legend-${country}-${num}` : `${type}-${num}`;
   if (!duplicates[key]) duplicates[key] = 0;
   duplicates[key]++;
   saveData();
   if (type === 'country') renderPaises();
   else if (type === 'refri') renderRefri();
   else if (type === 'history') renderHistory();
+  else if (type === 'legend') renderLegends();
   renderTrocas();
 }
 
@@ -319,7 +354,7 @@ function addDuplicate(country, num, type = 'country') {
  * Remove uma duplicata
  */
 function removeDuplicate(country, num, type = 'country') {
-  const key = type === 'country' ? country + '-' + num : type + '-' + num;
+  const key = type === 'country' ? `${country}-${num}` : type === 'legend' ? `legend-${country}-${num}` : `${type}-${num}`;
   if (duplicates[key] && duplicates[key] > 0) {
     duplicates[key]--;
     if (duplicates[key] === 0) delete duplicates[key];
@@ -328,6 +363,7 @@ function removeDuplicate(country, num, type = 'country') {
   if (type === 'country') renderPaises();
   else if (type === 'refri') renderRefri();
   else if (type === 'history') renderHistory();
+  else if (type === 'legend') renderLegends();
   renderTrocas();
 }
 
@@ -335,7 +371,7 @@ function removeDuplicate(country, num, type = 'country') {
  * Mostra modal de confirmação para desmarcar figurinha
  */
 function showConfirmation(country, num, type = 'country') {
-  const key = type === 'country' ? country + '-' + num : type + '-' + num;
+  const key = type === 'country' ? `${country}-${num}` : type === 'legend' ? `legend-${country}-${num}` : `${type}-${num}`;
   const dupCount = duplicates[key] || 0;
   
   if (dupCount > 0) {
@@ -359,8 +395,12 @@ function showConfirmation(country, num, type = 'country') {
       itemLabel = player ? `${player.name} (CC ${String(num).padStart(2, '0')})` : `CC ${String(num).padStart(2, '0')}`;
     } else if (type === 'history') {
       itemLabel = `World Cup #${num}`;
+    } else if (type === 'legend') {
+      const player = legendPlayers[country];
+      const rarity = legendRarities.find(r => r.id === num);
+      itemLabel = `${player ? player.name : `Legend #${country}`} – ${rarity ? rarity.label : num}`;
     }
-    
+
     const message = `Você tem <strong>${dupCount}</strong> cópia${dupCount > 1 ? 's' : ''} dessa figurinha registrada${dupCount > 1 ? 's' : ''} para troca.<br><br>Se desmarcar, <strong>${itemLabel}</strong> e suas duplicatas serão removidas.`;
     
     document.getElementById('modal-message').innerHTML = message;
@@ -390,20 +430,22 @@ function cancelUnmark() {
   renderPaises();
   renderRefri();
   renderHistory();
+  renderLegends();
 }
 
 /**
  * Executa o desmarcamento da figurinha
  */
 function performUnmark(country, num, type = 'country') {
-  const key = type === 'country' ? country + '-' + num : type + '-' + num;
+  const key = type === 'country' ? `${country}-${num}` : type === 'legend' ? `legend-${country}-${num}` : `${type}-${num}`;
   stickers[key] = false;
   delete duplicates[key];
-  
+
   saveData();
   renderPaises();
   renderRefri();
   renderHistory();
+  renderLegends();
   renderTrocas();
 }
 
@@ -649,48 +691,108 @@ function renderHistory() {
   document.getElementById('history-list').innerHTML = html;
 }
 
+function renderLegends() {
+  const container = document.getElementById('legends-list');
+  if (!container) return;
+  let html = '';
+  legendPlayers.forEach((player, idx) => {
+    const flag = flagHtml(player.code, { size: '1.4em', title: player.name });
+    html += `<div style="margin-bottom:14px;padding:10px;background:var(--color-background-primary);border-radius:12px;border:1px solid var(--color-border-tertiary);">`;
+    html += `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">${flag}<span style="font-size:13px;font-weight:700;color:var(--color-text-primary);">${escapeHtml(player.name)}</span></div>`;
+    html += `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">`;
+    legendRarities.forEach(rarity => {
+      const key = `legend-${idx}-${rarity.id}`;
+      const checked = stickers[key];
+      const dupCount = duplicates[key] || 0;
+      html += `<div style="position:relative;">`;
+      html += `<button onclick="toggleLegendSticker(${idx},'${rarity.id}')" style="width:100%;padding:10px 4px;border:2px solid ${rarity.color};border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;text-align:center;background:${checked ? rarity.color : 'var(--color-background-primary)'};color:${checked ? rarity.textColor : rarity.color};transition:all 0.2s;">${rarity.label}</button>`;
+      if (checked && dupCount > 0) {
+        html += `<span style="position:absolute;top:-6px;right:-6px;background:#E74C3C;color:white;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:2px solid white;pointer-events:none;">${dupCount}</span>`;
+      }
+      if (checked) {
+        html += `<div style="display:flex;gap:3px;margin-top:4px;">`;
+        html += `<button onclick="addDuplicate(${idx},'${rarity.id}','legend')" style="flex:1;padding:3px;background:#27AE60;color:white;border:none;border-radius:4px;cursor:pointer;font-size:10px;font-weight:600;">+1</button>`;
+        html += `<button onclick="removeDuplicate(${idx},'${rarity.id}','legend')" style="flex:1;padding:3px;background:#E74C3C;color:white;border:none;border-radius:4px;cursor:pointer;font-size:10px;font-weight:600;">-1</button>`;
+        html += `</div>`;
+      }
+      html += `</div>`;
+    });
+    html += `</div></div>`;
+  });
+  container.innerHTML = html;
+}
+
+function toggleLegendSticker(idx, rarityId) {
+  const key = `legend-${idx}-${rarityId}`;
+  if (stickers[key]) {
+    showConfirmation(idx, rarityId, 'legend');
+  } else {
+    stickers[key] = true;
+    saveData();
+    renderLegends();
+    renderTrocas();
+  }
+}
+
 /**
  * Renderiza lista de trocas (duplicatas)
  */
 function renderTrocas() {
+  const items = collectAllDuplicates();
+
+  // Update proposal mode button label
+  const modeBtn = document.getElementById('btn-proposal-mode');
+  if (modeBtn) {
+    modeBtn.textContent = proposalSelectionActive ? '✕ Cancelar' : '✅ Selecionar Proposta';
+    modeBtn.style.background = proposalSelectionActive ? '#E74C3C' : 'var(--color-background-secondary)';
+    modeBtn.style.color = proposalSelectionActive ? 'white' : 'var(--color-text-primary)';
+    modeBtn.style.border = proposalSelectionActive ? 'none' : '0.5px solid var(--color-border-tertiary)';
+  }
+
+  if (items.length === 0) {
+    document.getElementById('trocas-list').innerHTML =
+      '<div style="padding:24px;text-align:center;color:var(--color-text-secondary);grid-column:1/-1;">Nenhuma figurinha duplicada</div>';
+    updateProposalBar();
+    return;
+  }
+
   let html = '';
-  
-  for (let i = 1; i <= 14; i++) {
-    const dupCount = duplicates['refri-' + i] || 0;
-    if (stickers['refri-' + i] && dupCount > 0) {
-      const player = refriPlayers[i];
-      const label = `CC ${String(i).padStart(2, '0')}`;
-      html += `<div style="padding: 12px; background: linear-gradient(135deg, #FCE4EC 0%, #F8BBD0 100%); border-radius: 12px; border: 1px solid #F48FB1; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(244, 143, 177, 0.2);"><div style="display: flex; align-items: center; gap: 8px;">${flagHtml(player.code, { size: '1.6em' })}<div><div style="font-weight: 700; font-size: 13px; color: #E74C3C;">${escapeHtml(player.name)}</div><div style="font-size: 12px; color: #E74C3C; opacity: 0.8;">${label} · Disponíveis: ${dupCount}</div></div></div><div style="display: flex; gap: 4px;"><button onclick="removeDuplicate('', ${i}, 'refri')" style="padding: 4px 8px; background: #E74C3C; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600;">-1</button><button onclick="addDuplicate('', ${i}, 'refri')" style="padding: 4px 8px; background: #27AE60; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600;">+1</button></div></div>`;
+  items.forEach(({ key, mainLabel, subLabel, flag, color, dupCount }) => {
+    const isPending = !!pendingTrades[key];
+    const isSelected = proposalSelection.has(key);
+    const safeId = 'tcard-' + key.replace(/[^a-zA-Z0-9]/g, '-');
+    const border = isSelected ? '2px solid #667eea' : `1px solid ${color}40`;
+    const opacity = isPending ? 'opacity:0.65;' : '';
+
+    html += `<div id="${safeId}" style="padding:12px;background:linear-gradient(135deg,${color}15 0%,${color}30 100%);border-radius:12px;border:${border};box-shadow:0 2px 8px ${color}20;${opacity}position:relative;${proposalSelectionActive ? 'cursor:pointer;' : ''}" ${proposalSelectionActive ? `onclick="toggleProposalItem('${key}')"` : ''}>`;
+
+    if (proposalSelectionActive) {
+      html += `<div class="sel-dot" style="position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:50%;border:2px solid ${isSelected ? '#667eea' : color + '80'};background:${isSelected ? '#667eea' : 'transparent'};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;">${isSelected ? '✓' : ''}</div>`;
     }
-  }
-  
-  for (let i = 0; i <= 19; i++) {
-    const dupCount = duplicates['history-' + i] || 0;
-    if (stickers['history-' + i] && dupCount > 0) {
-      html += `<div style="padding: 12px; background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%); border-radius: 12px; border: 1px solid #64B5F6; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(100, 181, 246, 0.2);"><div style="display: flex; align-items: center; gap: 8px;"><span style="font-size: 24px;">🏆</span><div><div style="font-weight: 700; font-size: 13px; color: #3498DB;">World Cup #${i}</div><div style="font-size: 12px; color: #3498DB; opacity: 0.8;">Disponíveis: ${dupCount}</div></div></div><div style="display: flex; gap: 4px;"><button onclick="removeDuplicate('', ${i}, 'history')" style="padding: 4px 8px; background: #E74C3C; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600;">-1</button><button onclick="addDuplicate('', ${i}, 'history')" style="padding: 4px 8px; background: #27AE60; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600;">+1</button></div></div>`;
+
+    html += `<div style="display:flex;align-items:center;gap:8px;margin-bottom:${isPending || !proposalSelectionActive ? '8px' : '0'};">${flag}<div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:13px;color:${color};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${mainLabel}</div><div style="font-size:12px;color:${color};opacity:0.8;">${subLabel}</div></div></div>`;
+
+    if (isPending) {
+      html += `<div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:7px;">🔄 Em negociação com <strong>${escapeHtml(pendingTrades[key].partner)}</strong> · ${pendingTrades[key].date}</div>`;
     }
-  }
-  
-  Object.entries(countries).forEach(([group, countryList]) => {
-    countryList.forEach(([name, code]) => {
-      for (let i = 1; i <= 20; i++) {
-        const dupCount = duplicates[code + '-' + i] || 0;
-        if (stickers[code + '-' + i] && dupCount > 0) {
-          const color = countryColors[code] || '#667eea';
-          const pName = playerData[code]?.[i];
-          const mainLabel = pName ? escapeHtml(pName) : `${escapeHtml(name)} #${i}`;
-          const subLabel = pName ? `${escapeHtml(name)} #${i} · Disponíveis: ${dupCount}` : `Disponíveis: ${dupCount}`;
-          html += `<div style="padding: 12px; background: linear-gradient(135deg, ${color}15 0%, ${color}30 100%); border-radius: 12px; border: 1px solid ${color}40; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px ${color}20;"><div style="display: flex; align-items: center; gap: 8px;">${flagHtml(code, { size: '1.6em', title: name })}<div><div style="font-weight: 700; font-size: 13px; color: ${color};">${mainLabel}</div><div style="font-size: 12px; color: ${color}; opacity: 0.8;">${subLabel}</div></div></div><div style="display: flex; gap: 4px;"><button onclick="removeDuplicate('${code}', ${i}, 'country')" style="padding: 4px 8px; background: #E74C3C; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600;">-1</button><button onclick="addDuplicate('${code}', ${i}, 'country')" style="padding: 4px 8px; background: #27AE60; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600;">+1</button></div></div>`;
-        }
+
+    if (!proposalSelectionActive) {
+      html += `<div style="display:flex;gap:5px;flex-wrap:wrap;">`;
+      if (isPending) {
+        html += `<button onclick="releaseSticker('${key}')" style="flex:1;padding:5px 8px;background:#27AE60;color:white;border:none;border-radius:6px;cursor:pointer;font-size:11px;font-weight:600;">✅ Liberar</button>`;
+      } else {
+        html += `<button onclick="reserveSticker('${key}')" style="flex:1;padding:5px 8px;background:var(--color-background-secondary);border:0.5px solid ${color}50;border-radius:6px;cursor:pointer;font-size:11px;font-weight:600;color:var(--color-text-secondary);">🔄 Reservar</button>`;
       }
-    });
+      html += `<button onclick="removeDuplicate(${buildDupArgs(key)})" style="padding:5px 8px;background:#E74C3C;color:white;border:none;border-radius:6px;cursor:pointer;font-size:11px;font-weight:600;">-1</button>`;
+      html += `<button onclick="addDuplicate(${buildDupArgs(key)})" style="padding:5px 8px;background:#27AE60;color:white;border:none;border-radius:6px;cursor:pointer;font-size:11px;font-weight:600;">+1</button>`;
+      html += `</div>`;
+    }
+
+    html += `</div>`;
   });
-  
-  if (html === '') {
-    html = '<div style="padding: 24px; text-align: center; color: var(--color-text-secondary); grid-column: 1/-1;">Nenhuma figurinha duplicada</div>';
-  }
-  
+
   document.getElementById('trocas-list').innerHTML = html;
+  updateProposalBar();
 }
 
 // ============================================================================
@@ -701,40 +803,43 @@ function renderTrocas() {
  * Atualiza estatísticas gerais
  */
 function updateStats() {
-  let collected = 0, paises = 0, refri = 0, history = 0;
+  let collected = 0, paises = 0, refri = 0, history = 0, legends = 0;
   let totalDuplicates = 0;
-  
+
   Object.entries(stickers).forEach(([key, value]) => {
     if (!value) return;
     if (key.startsWith('refri-')) refri++;
     else if (key.startsWith('history-')) history++;
+    else if (key.startsWith('legend-')) legends++;
     else paises++;
   });
-  
+
   Object.entries(duplicates).forEach(([key, qty]) => {
     if (stickers[key]) {
       totalDuplicates += qty || 0;
     }
   });
-  
-  collected = paises + refri + history;
-  const total = 1047;
+
+  collected = paises + refri + history + legends;
+  const total = 1127;
   const missing = total - collected;
   const percentage = Math.round((collected / total) * 100);
-  
+
   document.getElementById('collected').textContent = collected;
   document.getElementById('missing').textContent = missing;
   document.getElementById('percentage').textContent = percentage + '%';
   document.getElementById('duplicates').textContent = totalDuplicates;
   document.getElementById('progress-bar').style.width = percentage + '%';
-  
+
   document.getElementById('stats-paises').textContent = paises + '/960';
   document.getElementById('stats-refri').textContent = refri + '/14';
   document.getElementById('stats-history').textContent = history + '/20';
-  
+  document.getElementById('stats-legends').textContent = legends + '/80';
+
   document.getElementById('bar-paises').style.width = (paises / 960 * 100) + '%';
   document.getElementById('bar-refri').style.width = (refri / 14 * 100) + '%';
   document.getElementById('bar-history').style.width = (history / 20 * 100) + '%';
+  document.getElementById('bar-legends').style.width = (legends / 80 * 100) + '%';
   
   updateDashboardView();
 }
@@ -751,6 +856,7 @@ function switchTab(tab) {
   document.getElementById('paises-content').style.display = tab === 'paises' ? 'block' : 'none';
   document.getElementById('refri-content').style.display = tab === 'refri' ? 'block' : 'none';
   document.getElementById('history-content').style.display = tab === 'history' ? 'block' : 'none';
+  document.getElementById('legends-content').style.display = tab === 'legends' ? 'block' : 'none';
   document.getElementById('trocas-content').style.display = tab === 'trocas' ? 'block' : 'none';
   document.getElementById('relatorios-content').style.display = tab === 'relatorios' ? 'block' : 'none';
   document.getElementById('comunidade-content').style.display = tab === 'comunidade' ? 'block' : 'none';
@@ -763,6 +869,7 @@ function switchTab(tab) {
   if (activeBtn) activeBtn.classList.add('active');
 
   if (tab === 'comunidade') renderComunidade();
+  if (tab === 'legends') renderLegends();
 }
 
 // ============================================================================
@@ -1015,7 +1122,15 @@ function generateObtainedReport() {
   if (historyObtained.length > 0) {
     report += `Figurinhas: ${historyObtained.join(', ')}\n`;
   }
-  
+
+  report += `\n\nLEGENDS\n${'-'.repeat(30)}\n`;
+  legendPlayers.forEach((player, idx) => {
+    const obtained = legendRarities.filter(r => stickers[`legend-${idx}-${r.id}`]).map(r => r.label);
+    if (obtained.length > 0) {
+      report += `${player.name}: ${obtained.join(', ')}\n`;
+    }
+  });
+
   return report;
 }
 
@@ -1063,7 +1178,15 @@ function generateMissingReport() {
   if (historyMissing.length > 0) {
     report += `Figurinhas: ${historyMissing.join(', ')}\n`;
   }
-  
+
+  report += `\n\nLEGENDS\n${'-'.repeat(30)}\n`;
+  legendPlayers.forEach((player, idx) => {
+    const missing = legendRarities.filter(r => !stickers[`legend-${idx}-${r.id}`]).map(r => r.label);
+    if (missing.length > 0) {
+      report += `${player.name}: ${missing.join(', ')}\n`;
+    }
+  });
+
   return report;
 }
 
@@ -1125,11 +1248,22 @@ function generateDuplicatesReport() {
       report += `${dup}\n`;
     });
   }
-  
+
+  report += `\n\nLEGENDS\n${'-'.repeat(30)}\n`;
+  legendPlayers.forEach((player, idx) => {
+    legendRarities.forEach(rarity => {
+      const dupCount = duplicates[`legend-${idx}-${rarity.id}`] || 0;
+      if (stickers[`legend-${idx}-${rarity.id}`] && dupCount > 0) {
+        report += `${player.name} (${rarity.label}): ${dupCount}\n`;
+        hasDuplicates = true;
+      }
+    });
+  });
+
   if (!hasDuplicates) {
     report += '\nNenhuma figurinha duplicada registrada para troca.\n';
   }
-  
+
   return report;
 }
 
@@ -1149,11 +1283,11 @@ function generateCompleteReport() {
     if (stickers[key]) totalDuplicates += qty || 0;
   });
 
-  const totalMissing = 1047 - totalCollected;
+  const totalMissing = 1127 - totalCollected;
 
   report += `\n📊 ESTATÍSTICAS GERAIS\n${'-'.repeat(30)}\n`;
-  report += `Figurinhas Coletadas: ${totalCollected}/1047 (${Math.round((totalCollected/1047)*100)}%)\n`;
-  report += `Figurinhas Faltantes: ${totalMissing}/1047\n`;
+  report += `Figurinhas Coletadas: ${totalCollected}/1127 (${Math.round((totalCollected/1127)*100)}%)\n`;
+  report += `Figurinhas Faltantes: ${totalMissing}/1127\n`;
   report += `Duplicatas Registradas: ${totalDuplicates}\n`;
   
   return report;
@@ -1344,6 +1478,298 @@ function closeReport() {
 }
 
 // ============================================================================
+// TROCAS AVANÇADAS
+// ============================================================================
+
+/** Coleta todos os itens duplicados normalizados */
+function collectAllDuplicates() {
+  const items = [];
+  for (let i = 1; i <= 14; i++) {
+    const key = 'refri-' + i;
+    const dupCount = duplicates[key] || 0;
+    if (stickers[key] && dupCount > 0) {
+      const player = refriPlayers[i];
+      items.push({ key, mainLabel: escapeHtml(player.name), subLabel: `CC ${String(i).padStart(2, '0')} · Disponíveis: ${dupCount}`, flag: flagHtml(player.code, { size: '1.6em' }), color: '#E74C3C', dupCount });
+    }
+  }
+  for (let i = 0; i <= 19; i++) {
+    const key = 'history-' + i;
+    const dupCount = duplicates[key] || 0;
+    if (stickers[key] && dupCount > 0) {
+      items.push({ key, mainLabel: `World Cup #${i}`, subLabel: `FWC ${String(i).padStart(2, '00')} · Disponíveis: ${dupCount}`, flag: '<span style="font-size:1.6em;">🏆</span>', color: '#3498DB', dupCount });
+    }
+  }
+  Object.values(countries).forEach(list => {
+    list.forEach(([name, code]) => {
+      for (let i = 1; i <= 20; i++) {
+        const key = `${code}-${i}`;
+        const dupCount = duplicates[key] || 0;
+        if (stickers[key] && dupCount > 0) {
+          const color = countryColors[code] || '#667eea';
+          const pName = playerData[code]?.[i];
+          items.push({ key, mainLabel: pName ? escapeHtml(pName) : `${escapeHtml(name)} #${i}`, subLabel: pName ? `${escapeHtml(name)} #${i} · Disponíveis: ${dupCount}` : `Disponíveis: ${dupCount}`, flag: flagHtml(code, { size: '1.6em', title: name }), color, dupCount });
+        }
+      }
+    });
+  });
+  legendPlayers.forEach((player, idx) => {
+    legendRarities.forEach(rarity => {
+      const key = `legend-${idx}-${rarity.id}`;
+      const dupCount = duplicates[key] || 0;
+      if (stickers[key] && dupCount > 0) {
+        items.push({ key, mainLabel: escapeHtml(player.name), subLabel: `${rarity.label} · Disponíveis: ${dupCount}`, flag: flagHtml(player.code, { size: '1.6em', title: player.name }), color: rarity.color, dupCount });
+      }
+    });
+  });
+  return items;
+}
+
+/** Retorna os args formatados para addDuplicate/removeDuplicate */
+function buildDupArgs(key) {
+  if (key.startsWith('refri-')) return `'', ${parseInt(key.split('-')[1])}, 'refri'`;
+  if (key.startsWith('history-')) return `'', ${parseInt(key.split('-')[1])}, 'history'`;
+  if (key.startsWith('legend-')) {
+    const rest = key.slice(7); // strip 'legend-'
+    const dash = rest.indexOf('-');
+    const idx = rest.slice(0, dash);
+    const rarityId = rest.slice(dash + 1);
+    return `${idx}, '${rarityId}', 'legend'`;
+  }
+  const parts = key.split('-');
+  const num = parts[parts.length - 1];
+  const code = parts.slice(0, -1).join('-');
+  return `'${code}', ${num}, 'country'`;
+}
+
+// --- Proposta selecionada ---
+
+function toggleProposalMode() {
+  proposalSelectionActive = !proposalSelectionActive;
+  proposalSelection.clear();
+  renderTrocas();
+}
+
+function toggleProposalItem(key) {
+  if (proposalSelection.has(key)) proposalSelection.delete(key);
+  else proposalSelection.add(key);
+  const safeId = 'tcard-' + key.replace(/[^a-zA-Z0-9]/g, '-');
+  const card = document.getElementById(safeId);
+  if (card) {
+    const items = collectAllDuplicates();
+    const item = items.find(it => it.key === key);
+    if (item) {
+      const isSelected = proposalSelection.has(key);
+      card.style.border = isSelected ? '2px solid #667eea' : `1px solid ${item.color}40`;
+      const dot = card.querySelector('.sel-dot');
+      if (dot) { dot.style.background = isSelected ? '#667eea' : 'transparent'; dot.textContent = isSelected ? '✓' : ''; dot.style.border = `2px solid ${isSelected ? '#667eea' : item.color + '80'}`; }
+    }
+  }
+  updateProposalBar();
+}
+
+function updateProposalBar() {
+  const bar = document.getElementById('proposal-bar');
+  if (!bar) return;
+  if (proposalSelectionActive) {
+    bar.style.display = 'flex';
+    const countEl = bar.querySelector('#proposal-count');
+    if (countEl) countEl.textContent = proposalSelection.size > 0 ? `${proposalSelection.size} selecionada${proposalSelection.size !== 1 ? 's' : ''}` : 'Selecione figurinhas';
+    const btn = bar.querySelector('#proposal-generate-btn');
+    if (btn) btn.style.opacity = proposalSelection.size > 0 ? '1' : '0.4';
+  } else {
+    bar.style.display = 'none';
+  }
+}
+
+function openProposalModal() {
+  if (proposalSelection.size === 0) { showToast('Selecione ao menos uma figurinha'); return; }
+  const items = collectAllDuplicates().filter(it => proposalSelection.has(it.key));
+  const listEl = document.getElementById('proposal-offer-list');
+  if (listEl) listEl.innerHTML = items.map(it => `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:0.5px solid var(--color-border-tertiary);">${it.flag}<span style="font-size:13px;color:var(--color-text-primary);">${it.mainLabel}</span><span style="font-size:11px;color:var(--color-text-secondary);margin-left:auto;">${it.subLabel.split('·')[0].trim()}</span></div>`).join('');
+  const wantEl = document.getElementById('proposal-want-input');
+  if (wantEl) wantEl.value = '';
+  document.getElementById('proposal-modal')?.classList.add('active');
+}
+
+function closeProposalModal() {
+  document.getElementById('proposal-modal')?.classList.remove('active');
+}
+
+function buildProposalMessage() {
+  const want = (document.getElementById('proposal-want-input')?.value || '').trim();
+  const name = communityProfile.name || 'Usuário';
+  const items = collectAllDuplicates().filter(it => proposalSelection.has(it.key));
+  let text = `🔄 Proposta de Troca – ${name}\n\n`;
+  text += `✅ Ofereço (${items.length}):\n`;
+  items.forEach(it => { text += `• ${it.mainLabel} (${it.subLabel.split('·')[0].trim()})\n`; });
+  if (want) text += `\n❓ Quero em troca:\n${want}`;
+  if (communityProfile.contact) text += `\n\n📱 Contato: ${communityProfile.contact}`;
+  return text;
+}
+
+function copyProposalText() { copyToClipboard(buildProposalMessage(), 'Proposta copiada!'); }
+function shareProposalWhatsApp() { shareViaWhatsApp(buildProposalMessage()); }
+
+// --- Em negociação ---
+
+function reserveSticker(key) {
+  const partner = prompt('Nome do parceiro desta troca:');
+  if (partner === null) return;
+  pendingTrades[key] = { partner: partner.trim() || 'Parceiro', date: new Date().toLocaleDateString('pt-BR') };
+  localStorage.setItem('copaPending', JSON.stringify(pendingTrades));
+  renderTrocas();
+  showToast('Reservado para ' + (partner.trim() || 'Parceiro') + ' 🔄');
+}
+
+function releaseSticker(key) {
+  delete pendingTrades[key];
+  localStorage.setItem('copaPending', JSON.stringify(pendingTrades));
+  renderTrocas();
+  showToast('Figurinha liberada ✅');
+}
+
+// --- Links compra / venda ---
+
+function openBuySearchModal() {
+  const searchEl = document.getElementById('buy-search-input');
+  if (searchEl) { searchEl.value = ''; }
+  renderBuyList('');
+  document.getElementById('buy-search-modal')?.classList.add('active');
+}
+
+function closeBuySearchModal() {
+  document.getElementById('buy-search-modal')?.classList.remove('active');
+}
+
+function renderBuyList(query) {
+  const container = document.getElementById('buy-search-results');
+  if (!container) return;
+  const q = query.toLowerCase().trim();
+
+  const missing = [];
+  Object.values(countries).forEach(list => {
+    list.forEach(([name, code]) => {
+      for (let i = 1; i <= 20; i++) {
+        if (!stickers[`${code}-${i}`]) {
+          const pName = playerData[code]?.[i] || '';
+          const label = `${name} #${i}${pName ? ' – ' + pName : ''}`;
+          if (!q || label.toLowerCase().includes(q) || code.toLowerCase().includes(q)) {
+            missing.push({ key: `${code}-${i}`, label, flag: flagHtml(code, { size: '1.2em' }), color: countryColors[code] || '#667eea' });
+          }
+        }
+      }
+    });
+  });
+  for (let i = 1; i <= 14; i++) {
+    if (!stickers[`refri-${i}`]) {
+      const player = refriPlayers[i];
+      const label = `CC ${String(i).padStart(2, '0')} – ${player.name}`;
+      if (!q || label.toLowerCase().includes(q)) missing.push({ key: `refri-${i}`, label, flag: flagHtml(player.code, { size: '1.2em' }), color: '#E74C3C' });
+    }
+  }
+
+  if (missing.length === 0) { container.innerHTML = '<p style="text-align:center;color:var(--color-text-secondary);padding:1rem;">Nenhuma figurinha faltante encontrada</p>'; return; }
+
+  const shown = missing.slice(0, 40);
+  container.innerHTML = shown.map(({ label, flag, color }) => {
+    const q2 = encodeURIComponent('figurinha panini copa 2026 ' + label.replace(/ – .+/, '').replace(/#/g, ''));
+    return `<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary);">${flag}<span style="font-size:12px;flex:1;color:var(--color-text-primary);">${escapeHtml(label)}</span><a href="https://lista.mercadolivre.com.br/${q2}" target="_blank" rel="noopener" style="padding:4px 8px;background:#FFE600;color:#333;border-radius:6px;font-size:11px;font-weight:700;text-decoration:none;flex-shrink:0;">ML</a><a href="https://www.olx.com.br/brasil?q=${q2}" target="_blank" rel="noopener" style="padding:4px 8px;background:#7B00D4;color:white;border-radius:6px;font-size:11px;font-weight:700;text-decoration:none;flex-shrink:0;margin-left:4px;">OLX</a></div>`;
+  }).join('') + (missing.length > 40 ? `<p style="text-align:center;font-size:12px;color:var(--color-text-secondary);padding-top:8px;">Refine a busca para ver mais (${missing.length - 40} ocultas)</p>` : '');
+}
+
+function openSellWhatsApp() {
+  const offers = collectAllDuplicates().filter(it => !pendingTrades[it.key]);
+  if (offers.length === 0) { showToast('Sem duplicatas para vender'); return; }
+  const name = communityProfile.name || 'Colecionador';
+  let text = `🎴 Vendo Figurinhas – Copa 2026\n${name}\n\n📦 Disponíveis (${offers.length}):\n`;
+  offers.slice(0, 30).forEach(it => { text += `• ${it.mainLabel}${it.dupCount > 1 ? ` (×${it.dupCount})` : ''}\n`; });
+  if (offers.length > 30) text += `... e mais ${offers.length - 30}\n`;
+  if (communityProfile.contact) text += `\n📱 WhatsApp: ${communityProfile.contact}`;
+  text += '\n\n_Figurinhas originais Panini_';
+  shareViaWhatsApp(text);
+}
+
+// --- Histórico de trocas ---
+
+function openRegisterTradeModal() {
+  document.getElementById('trade-hist-partner').value = '';
+  document.getElementById('trade-hist-contact').value = '';
+  document.getElementById('trade-hist-received').value = '';
+  document.getElementById('trade-hist-notes').value = '';
+  const sentContainer = document.getElementById('trade-hist-sent-list');
+  const offers = collectAllDuplicates().filter(it => !pendingTrades[it.key]);
+  if (sentContainer) {
+    sentContainer.innerHTML = offers.length > 0
+      ? offers.map(it => `<label style="display:flex;align-items:center;gap:8px;padding:5px 0;font-size:12px;cursor:pointer;border-bottom:0.5px solid var(--color-border-tertiary);">${it.flag}<input type="checkbox" value="${escapeHtml(it.key)}" style="accent-color:#667eea;flex-shrink:0;"> <span style="color:var(--color-text-primary);">${it.mainLabel}</span><span style="font-size:11px;color:var(--color-text-secondary);margin-left:auto;">${it.subLabel.split('·')[0].trim()}</span></label>`).join('')
+      : '<p style="font-size:13px;color:var(--color-text-secondary);text-align:center;padding:8px 0;">Sem duplicatas disponíveis</p>';
+  }
+  document.getElementById('trade-history-modal')?.classList.add('active');
+}
+
+function closeRegisterTradeModal() {
+  document.getElementById('trade-history-modal')?.classList.remove('active');
+}
+
+function saveTradeRecord() {
+  const partner = (document.getElementById('trade-hist-partner')?.value || '').trim();
+  if (!partner) { showToast('Informe o nome do parceiro'); return; }
+  const sentChecked = [...(document.querySelectorAll('#trade-hist-sent-list input[type=checkbox]:checked') || [])];
+  const sent = sentChecked.map(cb => ({ key: cb.value, label: formatStickerLabel(cb.value) }));
+  const receivedRaw = (document.getElementById('trade-hist-received')?.value || '').trim();
+  const received = receivedRaw ? receivedRaw.split('\n').map(l => l.trim()).filter(Boolean).map(l => ({ label: l })) : [];
+  const record = {
+    id: Date.now(),
+    date: new Date().toLocaleDateString('pt-BR'),
+    partnerName: partner,
+    partnerContact: (document.getElementById('trade-hist-contact')?.value || '').trim(),
+    sent, received,
+    notes: (document.getElementById('trade-hist-notes')?.value || '').trim()
+  };
+  tradeHistory.unshift(record);
+  localStorage.setItem('copaHistory', JSON.stringify(tradeHistory));
+  sent.forEach(({ key }) => {
+    if ((duplicates[key] || 0) > 1) duplicates[key]--;
+    else delete duplicates[key];
+    delete pendingTrades[key];
+  });
+  localStorage.setItem('copaDuplicates', JSON.stringify(duplicates));
+  localStorage.setItem('copaPending', JSON.stringify(pendingTrades));
+  closeRegisterTradeModal();
+  renderTrocas(); renderPaises(); updateStats(); renderTradeHistory();
+  showToast('Troca registrada! 🤝');
+}
+
+function deleteTradeRecord(id) {
+  if (!confirm('Remover este registro?')) return;
+  tradeHistory = tradeHistory.filter(r => r.id !== id);
+  localStorage.setItem('copaHistory', JSON.stringify(tradeHistory));
+  renderTradeHistory();
+  showToast('Registro removido');
+}
+
+function renderTradeHistory() {
+  const container = document.getElementById('trade-history-list');
+  if (!container) return;
+  if (tradeHistory.length === 0) {
+    container.innerHTML = '<p style="font-size:13px;color:var(--color-text-secondary);text-align:center;padding:1rem 0;">Nenhuma troca registrada ainda</p>';
+    return;
+  }
+  container.innerHTML = tradeHistory.slice(0, 30).map(r => `
+    <div style="background:var(--color-background-secondary);border-radius:12px;padding:12px;border:0.5px solid var(--color-border-tertiary);margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px;">
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--color-text-primary);">${escapeHtml(r.partnerName)}${r.partnerContact ? ` · <span style="font-weight:400;">${escapeHtml(r.partnerContact)}</span>` : ''}</div>
+          <div style="font-size:11px;color:var(--color-text-secondary);">${r.date}</div>
+        </div>
+        <button onclick="deleteTradeRecord(${r.id})" style="background:none;border:none;cursor:pointer;font-size:14px;color:var(--color-text-secondary);padding:2px 4px;">🗑️</button>
+      </div>
+      ${r.sent.length > 0 ? `<div style="font-size:11px;color:#27AE60;margin-bottom:2px;">✅ Enviou: ${r.sent.map(s => escapeHtml(s.label)).join(' · ')}</div>` : ''}
+      ${r.received.length > 0 ? `<div style="font-size:11px;color:#3498DB;margin-bottom:2px;">📥 Recebeu: ${r.received.map(s => escapeHtml(s.label)).join(' · ')}</div>` : ''}
+      ${r.notes ? `<div style="font-size:11px;font-style:italic;color:var(--color-text-secondary);margin-top:3px;">${escapeHtml(r.notes)}</div>` : ''}
+    </div>`).join('');
+}
+
+// ============================================================================
 // COMMUNITY & SHARING
 // ============================================================================
 
@@ -1496,6 +1922,11 @@ function getMyNeedsList() {
   for (let i = 0; i <= 19; i++) {
     if (!stickers[`history-${i}`]) needs.push(`history-${i}`);
   }
+  legendPlayers.forEach((_, idx) => {
+    legendRarities.forEach(r => {
+      if (!stickers[`legend-${idx}-${r.id}`]) needs.push(`legend-${idx}-${r.id}`);
+    });
+  });
   return needs;
 }
 
@@ -1508,6 +1939,13 @@ function formatStickerLabel(key) {
   }
   if (parts[0] === 'history') {
     return `FWC ${String(parseInt(parts[1])).padStart(2, '0')}`;
+  }
+  if (parts[0] === 'legend') {
+    const idx = parseInt(parts[1]);
+    const rarityId = parts.slice(2).join('-');
+    const player = legendPlayers[idx];
+    const rarity = legendRarities.find(r => r.id === rarityId);
+    return `Legend – ${player ? player.name : `#${idx}`}${rarity ? ` (${rarity.label})` : ''}`;
   }
   const num = parts[parts.length - 1];
   const code = parts.slice(0, -1).join('-');
@@ -1523,7 +1961,7 @@ function formatStickerLabel(key) {
 }
 
 function formatOfferText() {
-  const offers = getMyOffersList();
+  const offers = getMyOffersList().filter(({ key }) => !pendingTrades[key]);
   const needs = getMyNeedsList();
   const name = communityProfile.name || 'Usuário';
   const collected = Object.values(stickers).filter(Boolean).length;
@@ -1640,8 +2078,9 @@ let _qrGenerated = false;
 
 function renderComunidade() {
   renderProfileCard();
+  renderTradeHistory();
 
-  const offers = getMyOffersList();
+  const offers = getMyOffersList().filter(({ key }) => !pendingTrades[key]);
   const needs = getMyNeedsList();
 
   const offersCountEl = document.getElementById('community-offers-count');
@@ -1746,6 +2185,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderPaises();
   renderRefri();
   renderHistory();
+  renderLegends();
   renderTrocas();
   updateStats();
   switchDashboardView('continents');

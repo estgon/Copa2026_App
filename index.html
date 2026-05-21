@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>🏆 🏆 🏆🇺🇸🇨🇦🇲🇽 Copa 2026🇺🇸🇨🇦🇲🇽🏆 🏆 🏆  • Estiva GO</title>
+  <title>🏆 🏆 🏆🇺🇸🇨🇦🇲🇽🏆 🏆 🏆  • Estiva GO</title>
   
   <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,8 +28,8 @@
         <span style="font-family: 'Bebas Neue', Impact, 'Arial Black', sans-serif; font-size: 26px; letter-spacing: 4px; color: #ffffff; line-height: 1;">WE ARE</span>
         <span style="font-family: 'Bebas Neue', Impact, 'Arial Black', sans-serif; font-size: 34px; letter-spacing: 1px; color: #ffffff; line-height: 1;">26</span><sup style="font-family: sans-serif; font-size: 10px; color: #cccccc; margin-left: 1px; vertical-align: super; line-height: 0;">™</sup>
       </div>
-      <h1 style="font-size: 32px; margin: 0 0 0.5rem; font-weight: 800; background: linear-gradient(135deg, #dcbf00 0%, #f2e20a 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">🏆 🏆 🏆Copa 2026🏆 🏆 🏆</h1>
-      <p style="margin: 0; font-size: 14px; color: #68a2ed; font-weight: 600; letter-spacing: 0.5px;">🇺🇸🇨🇦🇲🇽 ESTIVA GO☆★⭐️🇺🇸🇨🇦🇲🇽 </p>
+      <h1 style="font-size: 32px; margin: 0 0 0.5rem; font-weight: 800; background: linear-gradient(135deg, #dcbf00 0%, #f2e20a 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">🏆 🏆 🏆🏆 🏆 🏆</h1>
+      <p style="margin: 0; font-size: 14px; color: #68a2ed; font-weight: 600; letter-spacing: 0.5px;">🇺🇸🇨🇦🇲🇽 ⭐️☆★Estiva GO★☆⭐️️</p>
     </div>
 
     <!-- Onboarding Modal -->
@@ -113,7 +113,7 @@
       <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); box-shadow: 0 8px 24px rgba(102, 126, 234, 0.25);">
         <small>🎯 Coletadas</small>
         <div class="value" id="collected">0</div>
-        <div class="label">de 1047</div>
+        <div class="label">de 1127</div>
       </div>
       <div class="stat-card" style="background: linear-gradient(135deg, #4FACFE 0%, #00F2FE 100%); box-shadow: 0 8px 24px rgba(79, 172, 254, 0.25);">
         <small>📈 Progresso</small>
@@ -122,7 +122,7 @@
       </div>
       <div class="stat-card" style="background: linear-gradient(135deg, #F093FB 0%, #F5576C 100%); box-shadow: 0 8px 24px rgba(245, 87, 108, 0.25);">
         <small>📋 Faltantes</small>
-        <div class="value" id="missing">1047</div>
+        <div class="value" id="missing">1127</div>
         <div class="label">a coletar</div>
       </div>
       <div class="stat-card" style="background: linear-gradient(135deg, #FA709A 0%, #FEE140 100%); box-shadow: 0 8px 24px rgba(250, 112, 154, 0.25);">
@@ -171,6 +171,11 @@
           <div class="count" style="color: #3498DB;" id="stats-history">0/20</div>
           <div class="bar"><div id="bar-history" class="bar-fill" style="background: linear-gradient(90deg, #3498DB 0%, #2980B9 100%);"></div></div>
         </div>
+        <div class="category-card" style="background: linear-gradient(135deg, #9B59B610 0%, #8E44AD10 100%); border-color: #9B59B630;">
+          <div class="title" style="color: #9B59B6;">⭐ Legends</div>
+          <div class="count" style="color: #9B59B6;" id="stats-legends">0/80</div>
+          <div class="bar"><div id="bar-legends" class="bar-fill" style="background: linear-gradient(90deg, #9B59B6 0%, #8E44AD 100%);"></div></div>
+        </div>
       </div>
     </div>
 
@@ -180,6 +185,7 @@
       <button class="tab-button" id="tab-paises" onclick="switchTab('paises')">Países</button>
       <button class="tab-button" id="tab-refri" onclick="switchTab('refri')">Refri</button>
       <button class="tab-button" id="tab-history" onclick="switchTab('history')">World Cup</button>
+      <button class="tab-button" id="tab-legends" onclick="switchTab('legends')">Legends</button>
       <button class="tab-button" id="tab-trocas" onclick="switchTab('trocas')">Trocas</button>
       <button class="tab-button" id="tab-relatorios" onclick="switchTab('relatorios')">Relatórios</button>
       <button class="tab-button" id="tab-comunidade" onclick="switchTab('comunidade')">Comunidade</button>
@@ -214,13 +220,29 @@
       <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px;" id="history-list"></div>
     </div>
 
+    <!-- Legends Content -->
+    <div id="legends-content" style="display: none; padding-bottom: 2rem;">
+      <h2 style="font-size: 14px; font-weight: 700; background: linear-gradient(135deg, #9B59B6 0%, #8E44AD 100%); color: white; padding: 12px 16px; border-radius: 12px; margin-bottom: 12px;">⭐ Legends (20 jogadores × 4 raridades = 80)</h2>
+      <div id="legends-list"></div>
+    </div>
+
     <!-- Exchanges Content -->
-    <div id="trocas-content" style="display: none; padding-bottom: 2rem;">
-      <div style="display: flex; gap: 8px; margin-bottom: 1.5rem;">
-        <h2 style="margin: 0; font-size: 14px; font-weight: 700; background: var(--color-background-secondary); padding: 12px 16px; border-radius: 12px; flex: 1; text-transform: uppercase; letter-spacing: 0.5px;">Disponíveis para Troca</h2>
-        <button onclick="openTradePreview()" style="padding: 12px 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 700; white-space: nowrap;">🔍 Ver Trocas</button>
+    <div id="trocas-content" style="display: none; padding-bottom: 5rem;">
+      <!-- Actions bar -->
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+        <button id="btn-proposal-mode" onclick="toggleProposalMode()" style="padding: 10px 14px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 10px; cursor: pointer; font-size: 12px; font-weight: 600; color: var(--color-text-primary);">✅ Selecionar Proposta</button>
+        <button onclick="openSellWhatsApp()" style="padding: 10px 14px; background: #25D366; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 12px; font-weight: 600;">📢 Anunciar Venda</button>
+        <button onclick="openBuySearchModal()" style="padding: 10px 14px; background: linear-gradient(135deg, #FFE600, #FFC200); color: #333; border: none; border-radius: 10px; cursor: pointer; font-size: 12px; font-weight: 700;">🛒 Buscar Faltantes</button>
+        <button onclick="openTradePreview()" style="padding: 10px 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 12px; font-weight: 600;">🔍 Visualizar</button>
+        <button onclick="openRegisterTradeModal()" style="padding: 10px 14px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 10px; cursor: pointer; font-size: 12px; font-weight: 600; color: var(--color-text-primary);">📋 Registrar Troca</button>
       </div>
-      <div id="trocas-list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;"></div>
+      <div id="trocas-list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px;"></div>
+    </div>
+
+    <!-- Proposal floating bar -->
+    <div id="proposal-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#667eea,#764ba2);padding:12px 16px;z-index:50;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 -4px 20px rgba(102,126,234,0.4);">
+      <span id="proposal-count" style="color:white;font-size:13px;font-weight:600;">Selecione figurinhas</span>
+      <button id="proposal-generate-btn" onclick="openProposalModal()" style="padding:10px 18px;background:white;color:#667eea;border:none;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700;opacity:0.4;">Gerar Proposta →</button>
     </div>
 
     <!-- Reports Content -->
@@ -326,6 +348,15 @@
         <p style="font-size: 11px; color: var(--color-text-secondary); text-align: center; margin: 0; line-height: 1.5;">Seus dados ficam codificados no link — privado e offline</p>
       </div>
 
+      <!-- Histórico de Trocas -->
+      <div class="card">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+          <h2 style="margin: 0;">📋 Histórico de Trocas</h2>
+          <button onclick="openRegisterTradeModal()" style="padding: 8px 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 700;">+ Registrar</button>
+        </div>
+        <div id="trade-history-list"></div>
+      </div>
+
       <!-- Convidar Amigos -->
       <div class="card">
         <h2>📲 Convidar Amigos para o App</h2>
@@ -354,8 +385,78 @@
 
 <input type="file" id="import-data-input" accept="application/json" style="display:none;" onchange="handleImportFile(event)">
 
+<!-- Proposal Modal -->
+<div id="proposal-modal" class="modal">
+  <div class="modal-content" style="max-width: 420px; width: 100%;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+      <h2 style="margin: 0; font-size: 17px; font-weight: 800;">🔄 Proposta de Troca</h2>
+      <button onclick="closeProposalModal()" style="background: none; border: none; font-size: 22px; cursor: pointer; color: var(--color-text-secondary);">✕</button>
+    </div>
+    <p style="font-size: 12px; font-weight: 700; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.4px; margin: 0 0 6px;">Ofereço</p>
+    <div id="proposal-offer-list" style="max-height: 160px; overflow-y: auto; margin-bottom: 14px; padding: 8px; background: var(--color-background-secondary); border-radius: 8px; border: 0.5px solid var(--color-border-tertiary);"></div>
+    <label style="font-size: 12px; font-weight: 700; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.4px; display: block; margin-bottom: 6px;">Quero em troca (descreva)</label>
+    <textarea id="proposal-want-input" placeholder="Ex: Brasil #3, Argentina #7 ou qualquer figurinha do Grupo C..." rows="3" style="width: 100%; padding: 10px; border: 0.5px solid var(--color-border-tertiary); border-radius: 8px; font-size: 13px; background: var(--color-background-secondary); color: var(--color-text-primary); resize: vertical; box-sizing: border-box; font-family: var(--font-sans); margin-bottom: 14px;"></textarea>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+      <button onclick="copyProposalText()" style="padding: 12px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--color-text-primary);">📋 Copiar</button>
+      <button onclick="shareProposalWhatsApp()" style="padding: 12px; background: #25D366; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 700;">💬 WhatsApp</button>
+    </div>
+  </div>
+</div>
+
+<!-- Buy Search Modal -->
+<div id="buy-search-modal" class="modal">
+  <div class="modal-content full" style="max-height: 85vh; display: flex; flex-direction: column;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <h2 style="margin: 0; font-size: 17px; font-weight: 800;">🛒 Buscar Faltantes</h2>
+      <button onclick="closeBuySearchModal()" style="background: none; border: none; font-size: 22px; cursor: pointer; color: var(--color-text-secondary);">✕</button>
+    </div>
+    <input id="buy-search-input" type="text" placeholder="Buscar por país ou jogador..." oninput="renderBuyList(this.value)" style="width: 100%; padding: 10px 12px; border: 0.5px solid var(--color-border-tertiary); border-radius: 8px; font-size: 14px; background: var(--color-background-secondary); color: var(--color-text-primary); box-sizing: border-box; margin-bottom: 12px;">
+    <div id="buy-search-results" style="overflow-y: auto; flex: 1;"></div>
+  </div>
+</div>
+
+<!-- Register Trade Modal -->
+<div id="trade-history-modal" class="modal">
+  <div class="modal-content" style="max-width: 420px; width: 100%; max-height: 88vh; overflow-y: auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+      <h2 style="margin: 0; font-size: 17px; font-weight: 800;">📋 Registrar Troca</h2>
+      <button onclick="closeRegisterTradeModal()" style="background: none; border: none; font-size: 22px; cursor: pointer; color: var(--color-text-secondary);">✕</button>
+    </div>
+    <div style="display: grid; gap: 12px;">
+      <div>
+        <label style="font-size: 11px; font-weight: 700; color: var(--color-text-secondary); display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.4px;">Parceiro *</label>
+        <input id="trade-hist-partner" type="text" placeholder="Nome da pessoa" style="width: 100%; padding: 10px; border: 0.5px solid var(--color-border-tertiary); border-radius: 8px; font-size: 14px; background: var(--color-background-secondary); color: var(--color-text-primary); box-sizing: border-box;">
+      </div>
+      <div>
+        <label style="font-size: 11px; font-weight: 700; color: var(--color-text-secondary); display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.4px;">Contato do parceiro</label>
+        <input id="trade-hist-contact" type="text" placeholder="WhatsApp ou e-mail (opcional)" style="width: 100%; padding: 10px; border: 0.5px solid var(--color-border-tertiary); border-radius: 8px; font-size: 14px; background: var(--color-background-secondary); color: var(--color-text-primary); box-sizing: border-box;">
+      </div>
+      <div>
+        <label style="font-size: 11px; font-weight: 700; color: var(--color-text-secondary); display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px;">Figurinhas enviadas</label>
+        <div id="trade-hist-sent-list" style="max-height: 150px; overflow-y: auto; padding: 6px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 8px;"></div>
+      </div>
+      <div>
+        <label style="font-size: 11px; font-weight: 700; color: var(--color-text-secondary); display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.4px;">Figurinhas recebidas (uma por linha)</label>
+        <textarea id="trade-hist-received" placeholder="Ex: Brasil #5&#10;Argentina #7" rows="3" style="width: 100%; padding: 10px; border: 0.5px solid var(--color-border-tertiary); border-radius: 8px; font-size: 13px; background: var(--color-background-secondary); color: var(--color-text-primary); resize: vertical; box-sizing: border-box; font-family: var(--font-sans);"></textarea>
+      </div>
+      <div>
+        <label style="font-size: 11px; font-weight: 700; color: var(--color-text-secondary); display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.4px;">Observações</label>
+        <input id="trade-hist-notes" type="text" placeholder="Opcional" style="width: 100%; padding: 10px; border: 0.5px solid var(--color-border-tertiary); border-radius: 8px; font-size: 14px; background: var(--color-background-secondary); color: var(--color-text-primary); box-sizing: border-box;">
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px;">
+        <button onclick="closeRegisterTradeModal()" style="padding: 12px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--color-text-secondary);">Cancelar</button>
+        <button onclick="saveTradeRecord()" style="padding: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 700;">✅ Salvar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- External Scripts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
+ript>
 <script src="app.js"></script>
 </body>
 </html>
