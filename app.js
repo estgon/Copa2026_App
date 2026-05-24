@@ -782,7 +782,7 @@ function renderGroupsView() {
     const color = colors[group.charCodeAt(0) % colors.length];
     const flags = (countries[group] || []).map(([name, code]) => flagHtml(code, { size: '1.3em', title: name })).join(' ');
 
-    html += `<div class="group-card" style="border-color: ${color}30; background: linear-gradient(135deg, ${color}10 0%, ${color}15 100%);">
+    html += `<div class="group-card" onclick="navigateToGroup('${group}')" style="cursor:pointer;border-color:${color}30;background:linear-gradient(135deg,${color}10 0%,${color}15 100%);">
       <div class="group-card__header">
         <div class="group-card__title">
           <span class="group-card__label" style="color: ${color};">Grupo ${group}</span>
@@ -864,6 +864,16 @@ function toggleGroup(group) {
   if (btn) btn.textContent = collapsed ? '▼' : '▶';
 }
 
+function navigateToGroup(group) {
+  switchTab('album');
+  const el = document.getElementById('group-countries-' + group);
+  if (el && el.style.display === 'none') toggleGroup(group);
+  requestAnimationFrame(() => {
+    const target = document.getElementById('group-' + group);
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+}
+
 /**
  * Renderiza lista de países
  */
@@ -918,7 +928,7 @@ function renderPaises() {
           btnBorder = `1.5px solid ${checked ? '#F1C40F' : '#F1C40F80'}`;
           btnShadow = checked ? '0 4px 16px #F1C40F60' : '0 0 0 0 transparent';
           const nameOpacity = checked ? '1' : '0.6';
-          btnContent = `<span style="display:block;font-size:11px;font-weight:800;line-height:1;">${i}</span>`
+          btnContent = `<span style="display:block;font-size:9px;opacity:0.75;font-weight:600;letter-spacing:0.3px;line-height:1;">${code} <strong style="font-size:11px;">${i}</strong></span>`
                      + (playerName ? `<span style="display:block;font-size:7px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;opacity:${nameOpacity};margin-top:2px;line-height:1.1;">${escapeHtml(playerName)}</span>` : '');
           btnStyle  = 'display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:46px;';
         } else {
@@ -929,8 +939,8 @@ function renderPaises() {
           btnShadow = checked ? `0 4px 12px ${countryColor}40` : 'none';
           const showName = checked && playerName;
           btnContent = showName
-            ? `<span style="display:block;font-size:11px;font-weight:800;line-height:1;">${i}</span><span style="display:block;font-size:7.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;opacity:0.92;margin-top:3px;line-height:1.1;">${escapeHtml(playerName)}</span>`
-            : `${i}`;
+            ? `<span style="display:block;font-size:9px;font-weight:600;letter-spacing:0.3px;line-height:1;opacity:0.85;">${code} <strong style="font-size:11px;">${i}</strong></span><span style="display:block;font-size:7.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;opacity:0.92;margin-top:3px;line-height:1.1;">${escapeHtml(playerName)}</span>`
+            : `<span style="font-size:8px;opacity:0.6;font-weight:600;letter-spacing:0.3px;">${code}</span> <strong style="font-size:12px;">${i}</strong>`;
           btnStyle  = showName ? 'display:flex;flex-direction:column;align-items:center;justify-content:center;' : '';
         }
 
@@ -960,7 +970,7 @@ function renderPaises() {
     });
     
     if (groupHasContent) {
-      html += `<div>
+      html += `<div id="group-${group}">
         <h2 onclick="toggleGroup('${group}')" style="font-size:14px;font-weight:700;background:#DAA520;color:white;padding:12px 16px;border-radius:12px;margin:1.5rem 0 0;text-transform:uppercase;letter-spacing:0.3px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;-webkit-user-select:none;user-select:none;">
           <span>Grupo ${group}</span>
           <span id="group-toggle-${group}" style="font-size:15px;line-height:1;opacity:0.85;">▼</span>
