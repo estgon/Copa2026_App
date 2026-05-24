@@ -8,61 +8,61 @@
 // ============================================================================
 
 const countries = {
-  'A': [['México', 'MEX'], ['África do Sul', 'ZAF'], ['Coreia do Sul', 'KOR'], ['Rep. Tcheca', 'CZE']],
-  'B': [['Canadá', 'CAN'], ['Bósnia', 'BIH'], ['Catar', 'QAT'], ['Suíça', 'CHE']],
-  'C': [['Brasil', 'BRA'], ['Marrocos', 'MAR'], ['Haiti', 'HTI'], ['Escócia', 'GBR']],
-  'D': [['Estados Unidos', 'USA'], ['Paraguai', 'PRY'], ['Austrália', 'AUS'], ['Turquia', 'TUR']],
-  'E': [['Alemanha', 'DEU'], ['Curaçau', 'CUW'], ['Costa do Marfim', 'CIV'], ['Equador', 'ECU']],
-  'F': [['Holanda', 'NLD'], ['Japão', 'JPN'], ['Suécia', 'SWE'], ['Tunísia', 'TUN']],
+  'A': [['México', 'MEX'], ['África do Sul', 'RSA'], ['Coreia do Sul', 'KOR'], ['Rep. Tcheca', 'CZE']],
+  'B': [['Canadá', 'CAN'], ['Bósnia', 'BIH'], ['Catar', 'QAT'], ['Suíça', 'SUI']],
+  'C': [['Brasil', 'BRA'], ['Marrocos', 'MAR'], ['Haiti', 'HTI'], ['Escócia', 'SCO']],
+  'D': [['Estados Unidos', 'USA'], ['Paraguai', 'PAR'], ['Austrália', 'AUS'], ['Turquia', 'TUR']],
+  'E': [['Alemanha', 'GER'], ['Curaçau', 'CUW'], ['Costa do Marfim', 'CIV'], ['Equador', 'ECU']],
+  'F': [['Holanda', 'NED'], ['Japão', 'JPN'], ['Suécia', 'SWE'], ['Tunísia', 'TUN']],
   'G': [['Bélgica', 'BEL'], ['Egito', 'EGY'], ['Irã', 'IRN'], ['Nova Zelândia', 'NZL']],
-  'H': [['Espanha', 'ESP'], ['Cabo Verde', 'CPV'], ['Arábia Saudita', 'SAU'], ['Uruguai', 'URY']],
+  'H': [['Espanha', 'ESP'], ['Cabo Verde', 'CPV'], ['Arábia Saudita', 'KSA'], ['Uruguai', 'URU']],
   'I': [['França', 'FRA'], ['Senegal', 'SEN'], ['Iraque', 'IRQ'], ['Noruega', 'NOR']],
-  'J': [['Argentina', 'ARG'], ['Argélia', 'DZA'], ['Áustria', 'AUT'], ['Jordânia', 'JOR']],
-  'K': [['Portugal', 'PRT'], ['Congo', 'COD'], ['Uzbequistão', 'UZB'], ['Colômbia', 'COL']],
-  'L': [['Inglaterra', 'GB-ENG'], ['Croácia', 'HRV'], ['Gana', 'GHA'], ['Panamá', 'PAN']]
+  'J': [['Argentina', 'ARG'], ['Argélia', 'ALG'], ['Áustria', 'AUT'], ['Jordânia', 'JOR']],
+  'K': [['Portugal', 'POR'], ['Congo', 'COD'], ['Uzbequistão', 'UZB'], ['Colômbia', 'COL']],
+  'L': [['Inglaterra', 'ENG'], ['Croácia', 'CRO'], ['Gana', 'GHA'], ['Panamá', 'PAN']]
 };
 
 const countryColors = {
-  'BRA': '#FFD700', 'ARG': '#87CEEB', 'URY': '#87CEEB', 'COL': '#FFD700', 'ECU': '#FFD700', 'PRY': '#E74C3C',
-  'DEU': '#DC241F', 'GB-ENG': '#E71930', 'FRA': '#003DA5', 'ESP': '#E74C3C', 'PRT': '#E74C3C', 'NLD': '#FF8C00',
-  'BEL': '#8B0000', 'HRV': '#DC143C', 'SWE': '#FFD700', 'GBR': '#003DA5', 'AUT': '#E74C3C',
+  'BRA': '#FFD700', 'ARG': '#87CEEB', 'URU': '#87CEEB', 'COL': '#FFD700', 'ECU': '#FFD700', 'PAR': '#E74C3C',
+  'GER': '#DC241F', 'ENG': '#E71930', 'FRA': '#003DA5', 'ESP': '#E74C3C', 'POR': '#E74C3C', 'NED': '#FF8C00',
+  'BEL': '#8B0000', 'CRO': '#DC143C', 'SWE': '#FFD700', 'SCO': '#003DA5', 'AUT': '#E74C3C',
   'CZE': '#E74C3C', 'TUR': '#E60000', 'NOR': '#E74C3C', 'BIH': '#0055CC',
   'USA': '#B22234', 'MEX': '#006C42', 'CAN': '#FF0000', 'PAN': '#FF0000', 'HTI': '#0055CC', 'CUW': '#0055CC',
-  'MAR': '#E74C3C', 'SEN': '#CE1126', 'CIV': '#FF8C00', 'EGY': '#E74C3C', 'GHA': '#CE1126', 'DZA': '#CE1126',
-  'TUN': '#E74C3C', 'ZAF': '#FFD700', 'COD': '#87CEEB', 'CPV': '#0055CC',
-  'JPN': '#BC002D', 'KOR': '#FF0000', 'AUS': '#FFB800', 'SAU': '#006C4E', 'IRN': '#CE1126', 'QAT': '#800020',
-  'IRQ': '#228B22', 'UZB': '#1E90FF', 'JOR': '#000000', 'NZL': '#002B7F', 'CHE': '#E74C3C'
+  'MAR': '#E74C3C', 'SEN': '#CE1126', 'CIV': '#FF8C00', 'EGY': '#E74C3C', 'GHA': '#CE1126', 'ALG': '#CE1126',
+  'TUN': '#E74C3C', 'RSA': '#FFD700', 'COD': '#87CEEB', 'CPV': '#0055CC',
+  'JPN': '#BC002D', 'KOR': '#FF0000', 'AUS': '#FFB800', 'KSA': '#006C4E', 'IRN': '#CE1126', 'QAT': '#800020',
+  'IRQ': '#228B22', 'UZB': '#1E90FF', 'JOR': '#000000', 'NZL': '#002B7F', 'SUI': '#E74C3C'
 };
 
 const flagEmojis = {
-  'MEX': '🇲🇽', 'ZAF': '🇿🇦', 'KOR': '🇰🇷', 'CZE': '🇨🇿', 'CAN': '🇨🇦', 'BIH': '🇧🇦', 'QAT': '🇶🇦', 'CHE': '🇨🇭',
-  'BRA': '🇧🇷', 'MAR': '🇲🇦', 'HTI': '🇭🇹', 'GBR': '🏴󠁧󠁢󠁳󠁣󠁴󠁿', 'GB-ENG': '🏴', 'USA': '🇺🇸', 'PRY': '🇵🇾', 'AUS': '🇦🇺',
-  'TUR': '🇹🇷', 'DEU': '🇩🇪', 'CUW': '🇨🇼', 'CIV': '🇨🇮', 'ECU': '🇪🇨', 'NLD': '🇳🇱', 'JPN': '🇯🇵', 'SWE': '🇸🇪',
-  'TUN': '🇹🇳', 'BEL': '🇧🇪', 'EGY': '🇪🇬', 'IRN': '🇮🇷', 'NZL': '🇳🇿', 'ESP': '🇪🇸', 'CPV': '🇨🇻', 'SAU': '🇸🇦',
-  'URY': '🇺🇾', 'FRA': '🇫🇷', 'SEN': '🇸🇳', 'IRQ': '🇮🇶', 'NOR': '🇳🇴', 'ARG': '🇦🇷', 'DZA': '🇩🇿', 'AUT': '🇦🇹',
-  'JOR': '🇯🇴', 'PRT': '🇵🇹', 'COD': '🇨🇩', 'UZB': '🇺🇿', 'COL': '🇨🇴', 'HRV': '🇭🇷', 'GHA': '🇬🇭', 'PAN': '🇵🇦'
+  'MEX': '🇲🇽', 'RSA': '🇿🇦', 'KOR': '🇰🇷', 'CZE': '🇨🇿', 'CAN': '🇨🇦', 'BIH': '🇧🇦', 'QAT': '🇶🇦', 'SUI': '🇨🇭',
+  'BRA': '🇧🇷', 'MAR': '🇲🇦', 'HTI': '🇭🇹', 'SCO': '🏴󠁧󠁢󠁳󠁣󠁴󠁿', 'ENG': '🏴', 'USA': '🇺🇸', 'PAR': '🇵🇾', 'AUS': '🇦🇺',
+  'TUR': '🇹🇷', 'GER': '🇩🇪', 'CUW': '🇨🇼', 'CIV': '🇨🇮', 'ECU': '🇪🇨', 'NED': '🇳🇱', 'JPN': '🇯🇵', 'SWE': '🇸🇪',
+  'TUN': '🇹🇳', 'BEL': '🇧🇪', 'EGY': '🇪🇬', 'IRN': '🇮🇷', 'NZL': '🇳🇿', 'ESP': '🇪🇸', 'CPV': '🇨🇻', 'KSA': '🇸🇦',
+  'URU': '🇺🇾', 'FRA': '🇫🇷', 'SEN': '🇸🇳', 'IRQ': '🇮🇶', 'NOR': '🇳🇴', 'ARG': '🇦🇷', 'ALG': '🇩🇿', 'AUT': '🇦🇹',
+  'JOR': '🇯🇴', 'POR': '🇵🇹', 'COD': '🇨🇩', 'UZB': '🇺🇿', 'COL': '🇨🇴', 'CRO': '🇭🇷', 'GHA': '🇬🇭', 'PAN': '🇵🇦'
 };
 
 const iso3ToIso2 = {
-  MEX: 'mx', ZAF: 'za', KOR: 'kr', CZE: 'cz', CAN: 'ca', BIH: 'ba', QAT: 'qa', CHE: 'ch',
-  BRA: 'br', MAR: 'ma', HTI: 'ht', GBR: 'gb-sct', 'GB-ENG': 'gb-eng', USA: 'us', PRY: 'py', AUS: 'au',
-  TUR: 'tr', DEU: 'de', CUW: 'cw', CIV: 'ci', ECU: 'ec', NLD: 'nl', JPN: 'jp', SWE: 'se',
-  TUN: 'tn', BEL: 'be', EGY: 'eg', IRN: 'ir', NZL: 'nz', ESP: 'es', CPV: 'cv', SAU: 'sa',
-  URY: 'uy', FRA: 'fr', SEN: 'sn', IRQ: 'iq', NOR: 'no', ARG: 'ar', DZA: 'dz', AUT: 'at',
-  JOR: 'jo', PRT: 'pt', COD: 'cd', UZB: 'uz', COL: 'co', HRV: 'hr', GHA: 'gh', PAN: 'pa'
+  MEX: 'mx', RSA: 'za', KOR: 'kr', CZE: 'cz', CAN: 'ca', BIH: 'ba', QAT: 'qa', SUI: 'ch',
+  BRA: 'br', MAR: 'ma', HTI: 'ht', SCO: 'gb-sct', ENG: 'gb-eng', USA: 'us', PAR: 'py', AUS: 'au',
+  TUR: 'tr', GER: 'de', CUW: 'cw', CIV: 'ci', ECU: 'ec', NED: 'nl', JPN: 'jp', SWE: 'se',
+  TUN: 'tn', BEL: 'be', EGY: 'eg', IRN: 'ir', NZL: 'nz', ESP: 'es', CPV: 'cv', KSA: 'sa',
+  URU: 'uy', FRA: 'fr', SEN: 'sn', IRQ: 'iq', NOR: 'no', ARG: 'ar', ALG: 'dz', AUT: 'at',
+  JOR: 'jo', POR: 'pt', COD: 'cd', UZB: 'uz', COL: 'co', CRO: 'hr', GHA: 'gh', PAN: 'pa'
 };
 const refriPlayers = [
   null,
   { name: 'Lamine Yamal',      code: 'ESP'    }, // CC 01
-  { name: 'Federico Valverde', code: 'URY'    }, // CC 02
+  { name: 'Federico Valverde', code: 'URU'    }, // CC 02
   { name: 'Lautaro Martínez',  code: 'ARG'    }, // CC 03
   { name: 'Gabriel Magalhães', code: 'BRA'    }, // CC 04
-  { name: 'Harry Kane',        code: 'GB-ENG', img: 'imgs/refri-cc05.png' }, // CC 05
-  { name: 'Joško Gvardiol',    code: 'HRV'    }, // CC 06
+  { name: 'Harry Kane',        code: 'ENG', img: 'imgs/refri-cc05.png' }, // CC 05
+  { name: 'Joško Gvardiol',    code: 'CRO'    }, // CC 06
   { name: 'Alphonso Davies',   code: 'CAN',    img: 'imgs/refri-cc07.png' }, // CC 07
-  { name: 'Joshua Kimmich',    code: 'DEU',    img: 'imgs/refri-cc08.png' }, // CC 08
+  { name: 'Joshua Kimmich',    code: 'GER',    img: 'imgs/refri-cc08.png' }, // CC 08
   { name: 'Santiago Giménez',  code: 'MEX'    }, // CC 09
-  { name: 'Virgil van Dijk',   code: 'NLD'    }, // CC 10
+  { name: 'Virgil van Dijk',   code: 'NED'    }, // CC 10
   { name: 'Emiliano Martínez', code: 'ARG'    }, // CC 11
   { name: 'Jefferson Lerma',   code: 'COL',    img: 'imgs/refri-cc12.png' }, // CC 12
   { name: 'Raúl Jiménez',      code: 'MEX'    }, // CC 13
@@ -72,26 +72,26 @@ const refriPlayers = [
 // playerData[ISO3][número] = nome do jogador (1=badge país, 2-20 jogadores, sem #13)
 const playerData = {
   MEX:{1:'México',2:'Luis Malagón',3:'Johan Vásquez',4:'Jorge Sánchez',5:'César Montes',6:'Jesús Gallardo',7:'Israel Reyes',8:'Diego Lainez',9:'Carlos Rodríguez',10:'Edson Álvarez',11:'Orbelín Pineda',12:'Marcel Ruiz',14:'Érick Sánchez',15:'Hirving Lozano',16:'Santiago Giménez',17:'Raúl Jiménez',18:'Alexis Vega',19:'Roberto Alvarado',20:'César Huerta'},
-  ZAF:{1:'África do Sul',2:'Ronwen Williams',3:'Sipho Chaine',4:'Aubrey Modiba',5:'Samukele Kabini',6:'Mbekezeli Mbokazi',7:'Khulumani Ndamane',8:'Siyabonga Ngezana',9:'Khuliso Mudau',10:'Nkosinathi Sibisi',11:'Teboho Mokoena',12:'Thalente Mbatha',14:'Bathuisi Aubaas',15:'Yaya Sithole',16:'Sipho Mbule',17:'Lyle Foster',18:'Ioraam Rayners',19:'Mohau Nkota',20:'Oswin Appolis'},
+  RSA:{1:'África do Sul',2:'Ronwen Williams',3:'Sipho Chaine',4:'Aubrey Modiba',5:'Samukele Kabini',6:'Mbekezeli Mbokazi',7:'Khulumani Ndamane',8:'Siyabonga Ngezana',9:'Khuliso Mudau',10:'Nkosinathi Sibisi',11:'Teboho Mokoena',12:'Thalente Mbatha',14:'Bathuisi Aubaas',15:'Yaya Sithole',16:'Sipho Mbule',17:'Lyle Foster',18:'Ioraam Rayners',19:'Mohau Nkota',20:'Oswin Appolis'},
   KOR:{1:'Coreia do Sul',2:'Hyeon-woo Jo',3:'Seung-Gyu Kim',4:'Min-jae Kim',5:'Yu-min Cho',6:'Young-woo Seol',7:'Han-beom Lee',8:'Tae-seok Lee',9:'Myung-jae Lee',10:'Jae-sung Lee',11:'In-beom Hwang',12:'Kang-in Lee',14:'Seung-ho Paik',15:'Jens Castrop',16:'Dong-gyeong Lee',17:'Gue-sung Cho',18:'Heung-min Son',19:'Hee-chan Hwang',20:'Hyeon-Gyu Oh'},
   CZE:{1:'República Tcheca',2:'Matěj Kovář',3:'Jindřich Staněk',4:'Ladislav Krejčí',5:'Vladimír Coufal',6:'Jaroslav Zelený',7:'Tomáš Holeš',8:'David Zima',9:'Michal Sadílek',10:'Lukáš Provod',11:'Lukáš Červ',12:'Tomáš Souček',14:'Pavel Šulc',15:'Matěj Vydra',16:'Vasil Kušej',17:'Tomáš Chorý',18:'Václav Černý',19:'Adam Hložek',20:'Patrik Schick'},
   CAN:{1:'Canadá',2:'Dayne St. Clair',3:'Alphonso Davies',4:'Alistair Johnston',5:'Samuel Adekugbe',6:'Richie Laryea',7:'Derek Cornelius',8:'Moïse Bombito',9:'Kamal Miller',10:'Stephen Eustáquio',11:'Ismaël Koné',12:'Jonathan Osorio',14:'Jacob Shaffelburg',15:'Mathieu Choinière',16:'Niko Sigur',17:'Tajon Buchanan',18:'Liam Millar',19:'Cyle Larin',20:'Jonathan David'},
   BIH:{1:'Bósnia e Herzegovina',2:'Nikola Vasilj',3:'Amar Dedić',4:'Sead Kolašinac',5:'Tarik Muharemović',6:'Nihad Mujakić',7:'Nikola Katić',8:'Amir Hadžiahmetović',9:'Benjamin Tahirović',10:'Armin Gigović',11:'Ivan Šunjić',12:'Ivan Bašić',14:'Dženis Burnić',15:'Esmir Bajraktarević',16:'Amar Memić',17:'Ermedin Demirović',18:'Edin Džeko',19:'Samed Baždar',20:'Haris Tabaković'},
   QAT:{1:'Catar',2:'Meshaal Barsham',3:'Sultan Albrake',4:'Lucas Mendes',5:'Homam Ahmed',6:'Boualem Khoukhi',7:'Pedro Miguel',8:'Tarek Salman',9:'Mohamed Al-Mannai',10:'Karim Boudiaf',11:'Assim Madibo',12:'Ahmed Fatehi',14:'Mohammed Waad',15:'Abdulaziz Hatem',16:'Hassan Al-Haydos',17:'Edmilson Junior',18:'Akram Hassan Afif',19:'Ahmed Al Ganehi',20:'Almoez Ali'},
-  CHE:{1:'Suíça',2:'Gregor Kobel',3:'Yvon Mvogo',4:'Manuel Akanji',5:'Ricardo Rodriguez',6:'Nico Elvedi',7:'Aurèle Amenda',8:'Silvan Widmer',9:'Granit Xhaka',10:'Denis Zakaria',11:'Remo Freuler',12:'Fabian Rieder',14:'Ardon Jashari',15:'Johan Manzambi',16:'Michel Aebischer',17:'Breel Embolo',18:'Ruben Vargas',19:'Dan Ndoye',20:'Zeki Amdouni'},
+  SUI:{1:'Suíça',2:'Gregor Kobel',3:'Yvon Mvogo',4:'Manuel Akanji',5:'Ricardo Rodriguez',6:'Nico Elvedi',7:'Aurèle Amenda',8:'Silvan Widmer',9:'Granit Xhaka',10:'Denis Zakaria',11:'Remo Freuler',12:'Fabian Rieder',14:'Ardon Jashari',15:'Johan Manzambi',16:'Michel Aebischer',17:'Breel Embolo',18:'Ruben Vargas',19:'Dan Ndoye',20:'Zeki Amdouni'},
   BRA:{1:'Brasil',2:'Alisson',3:'Bento',4:'Marquinhos',5:'Éder Militão',6:'Gabriel Magalhães',7:'Danilo',8:'Wesley',9:'Lucas Paquetá',10:'Casemiro',11:'Bruno Guimarães',12:'Luiz Henrique',14:'Vinícius Júnior',15:'Rodrygo',16:'João Pedro',17:'Matheus Cunha',18:'Gabriel Martinelli',19:'Raphinha',20:'Estêvão'},
   MAR:{1:'Marrocos',2:'Yassine Bounou',3:'Munir El Kajoui',4:'Achraf Hakimi',5:'Noussair Mazraoui',6:'Nayef Aguerd',7:'Romain Saïss',8:'Jawad El Yamiq',9:'Adam Masina',10:'Sofyan Amrabat',11:'Azzedine Ounahi',12:'Eliesse Ben Seghir',14:'Bilal El Khannouss',15:'Ismael Saibari',16:'Youssef En-Nesyri',17:'Abde Ezzalzouli',18:'Soufiane Rahimi',19:'Brahim Díaz',20:'Ayoub El Kaabi'},
   HTI:{1:'Haiti',2:'Johny Placide',3:'Carlens Arcus',4:'Martin Expérience',5:'Jean-Kevin Duverne',6:'Ricardo Adé',7:'Duke Lacroix',8:'Garven Metusala',9:'Hannes Delcroix',10:'Leverton Pierre',11:'Danley Jean Jacques',12:'Jean-Ricner Bellegarde',14:'Christopher Attys',15:'Derrick Etienne Jr.',16:'Josué Casimir',17:'Ruben Providence',18:'Duckens Nazon',19:'Louicius Deedson',20:'Frantzdy Pierrot'},
-  GBR:{1:'Escócia',2:'Angus Gunn',3:'Jack Hendry',4:'Kieran Tierney',5:'Aaron Hickey',6:'Andrew Robertson',7:'Scott McKenna',8:'John Souttar',9:'Anthony Ralston',10:'Grant Hanley',11:'Scott McTominay',12:'Billy Gilmour',14:'Lewis Ferguson',15:'Ryan Christie',16:'Kenny McLean',17:'John McGinn',18:'Lyndon Dykes',19:'Che Adams',20:'Ben Doak'},
+  SCO:{1:'Escócia',2:'Angus Gunn',3:'Jack Hendry',4:'Kieran Tierney',5:'Aaron Hickey',6:'Andrew Robertson',7:'Scott McKenna',8:'John Souttar',9:'Anthony Ralston',10:'Grant Hanley',11:'Scott McTominay',12:'Billy Gilmour',14:'Lewis Ferguson',15:'Ryan Christie',16:'Kenny McLean',17:'John McGinn',18:'Lyndon Dykes',19:'Che Adams',20:'Ben Doak'},
   USA:{1:'Estados Unidos',2:'Matt Freese',3:'Chris Richards',4:'Tim Ream',5:'Mark McKenzie',6:'Alex Freeman',7:'Antonee Robinson',8:'Tyler Adams',9:'Tanner Tessmann',10:'Weston McKennie',11:'Christian Roldan',12:'Timothy Weah',14:'Diego Luna',15:'Malik Tillman',16:'Christian Pulisic',17:'Brenden Aaronson',18:'Ricardo Pepi',19:'Haji Wright',20:'Folarin Balogun'},
-  PRY:{1:'Paraguai',2:'Roberto Fernández',3:'Orlando Gill',4:'Gustavo Gómez',5:'Fabián Balbuena',6:'Juan José Cáceres',7:'Omar Alderete',8:'Junior Alonso',9:'Mathías Villasanti',10:'Diego Gómez',11:'Damián Bobadilla',12:'Andrés Cubas',14:'Matías Galarza Fonda',15:'Julio Enciso'},
+  PAR:{1:'Paraguai',2:'Roberto Fernández',3:'Orlando Gill',4:'Gustavo Gómez',5:'Fabián Balbuena',6:'Juan José Cáceres',7:'Omar Alderete',8:'Junior Alonso',9:'Mathías Villasanti',10:'Diego Gómez',11:'Damián Bobadilla',12:'Andrés Cubas',14:'Matías Galarza Fonda',15:'Julio Enciso'},
   AUS:{1:'Austrália',2:'Mathew Ryan',3:'Joe Gauci',4:'Harry Souttar',5:'Alessandro Circati',6:'Jordan Bos',7:'Aziz Behich',8:'Cameron Burgess',9:'Lewis Miller',10:'Milos Degenek',11:'Jackson Irvine',12:'Riley McGree',14:"Aiden O'Neill",15:'Connor Metcalfe',16:'Patrick Yazbek',17:'Craig Goodwin',18:'Kusini Yengi',19:'Nestory Irankunda',20:'Mohamed Touré'},
   TUR:{1:'Turquia',2:'Ugurcan Cakir',3:'Mert Muldur',4:'Zeki Celik',5:'Abdulkerim Bardakci',6:'Caglar Soyuncu',7:'Merih Demiral',8:'Ferdi Kadioglu',9:'Kaan Ayhan',10:'Ismail Yuksek',11:'Hakan Calhanoglu',12:'Orkun Kokcu',14:'Arda Güler',15:'Irfan Can Kahveci',16:'Yunus Akgun',17:'Can Uzun',18:'Baris Alper Yilmaz',19:'Kerem Akturkoglu',20:'Kenan Yildiz'},
-  DEU:{1:'Alemanha',2:'Marc-André ter Stegen',3:'Jonathan Tah',4:'David Raum',5:'Nico Schlotterbeck',6:'Antonio Rüdiger',7:'Waldemar Anton',8:'Ridle Baku',9:'Maximilian Mittelstädt',10:'Joshua Kimmich',11:'Florian Wirtz',12:'Felix Nmecha',14:'Leon Goretzka',15:'Jamal Musiala',16:'Serge Gnabry',17:'Kai Havertz',18:'Leroy Sané',19:'Karim Adeyemi',20:'Nick Woltemade'},
+  GER:{1:'Alemanha',2:'Marc-André ter Stegen',3:'Jonathan Tah',4:'David Raum',5:'Nico Schlotterbeck',6:'Antonio Rüdiger',7:'Waldemar Anton',8:'Ridle Baku',9:'Maximilian Mittelstädt',10:'Joshua Kimmich',11:'Florian Wirtz',12:'Felix Nmecha',14:'Leon Goretzka',15:'Jamal Musiala',16:'Serge Gnabry',17:'Kai Havertz',18:'Leroy Sané',19:'Karim Adeyemi',20:'Nick Woltemade'},
   CUW:{1:'Curaçau',2:'Eloy Room',3:'Armando Obispo',4:'Sherel Floranus',5:'Jurien Gaari',6:'Joshua Brenet',7:'Roshon Van Eijma',8:'Shurandy Sambo',9:'Livano Comenencia',10:'Godfried Roemeratoe',11:'Juninho Bacuna',12:'Leandro Bacuna',14:'Tahith Chong',15:'Kenji Gorré',16:'Jearl Margaritha',17:'Jurgen Locadia',18:'Jeremy Antonisse',19:'Gervane Kastaneer',20:'Sontje Hansen'},
   CIV:{1:'Costa do Marfim',2:'Yahia Fofana',3:'Ghislain Konan',4:'Wilfried Singo',5:'Odilon Kossounou',6:'Evan Ndicka',7:'Willy Boly',8:'Emmanuel Agbadou',9:'Ousmane Diomande',10:'Franck Kessié',11:'Seko Fofana',12:'Ibrahim Sangaré',14:'Jean-Philippe Gbamin',15:'Amad Diallo',16:'Sébastien Haller',17:'Simon Adingra',18:'Yan Diomande',19:'Evann Guessand',20:'Oumar Diakité'},
   ECU:{1:'Equador',2:'Hernán Galíndez',3:'Gonzalo Valle',4:'Piero Hincapié',5:'Pervis Estupiñán',6:'Willian Pacho',7:'Ángelo Preciado',8:'Joel Ordóñez',9:'Moisés Caicedo',10:'Alan Franco',11:'Kendry Páez',12:'Pedro Vite',14:'John Yeboah',15:'Leonardo Campana',16:'Gonzalo Plata',17:'Nilson Angulo',18:'Alan Minda',19:'Kevin Rodríguez',20:'Enner Valencia'},
-  NLD:{1:'Holanda',2:'Bart Verbruggen',3:'Virgil van Dijk',4:'Micky van de Ven',5:'Jurriën Timber',6:'Denzel Dumfries',7:'Nathan Aké',8:'Jeremie Frimpong',9:'Jan Paul van Hecke',10:'Tijjani Reijnders',11:'Ryan Gravenberch',12:'Teun Koopmeiners',14:'Frenkie de Jong',15:'Xavi Simons',16:'Justin Kluivert',17:'Memphis Depay',18:'Donyell Malen',19:'Wout Weghorst',20:'Cody Gakpo'},
+  NED:{1:'Holanda',2:'Bart Verbruggen',3:'Virgil van Dijk',4:'Micky van de Ven',5:'Jurriën Timber',6:'Denzel Dumfries',7:'Nathan Aké',8:'Jeremie Frimpong',9:'Jan Paul van Hecke',10:'Tijjani Reijnders',11:'Ryan Gravenberch',12:'Teun Koopmeiners',14:'Frenkie de Jong',15:'Xavi Simons',16:'Justin Kluivert',17:'Memphis Depay',18:'Donyell Malen',19:'Wout Weghorst',20:'Cody Gakpo'},
   JPN:{1:'Japão',2:'Zion Suzuki',3:'Henry Heroki Mochizuki',4:'Ayumu Seko',5:'Junnosuke Suzuki',6:'Shogo Taniguchi',7:'Tsuyoshi Watanabe',8:'Kaishu Sano',9:'Yuki Soma',10:'Ao Tanaka',11:'Daichi Kamada',12:'Takefusa Kubo',14:'Ritsu Doan',15:'Keito Nakamura',16:'Takumi Minamino',17:'Shuto Machino',18:'Junya Ito',19:'Koki Ogawa',20:'Ayase Ueda'},
   SWE:{1:'Suécia',2:'Victor Johansson',3:'Isak Hien',4:'Gabriel Gudmundsson',5:'Emil Holm',6:'Victor Nilsson Lindelöf',7:'Gustaf Lagerbielke',8:'Lucas Bergvall',9:'Hugo Larsson',10:'Jesper Karlström',11:'Yasin Ayari',12:'Mattias Svanberg',14:'Daniel Svensson',15:'Ken Sema',16:'Roony Bardghji',17:'Dejan Kulusevski',18:'Anthony Elanga',19:'Alexander Isak',20:'Viktor Gyökeres'},
   TUN:{1:'Tunísia',2:'Bechir Ben Said',3:'Aymen Dahmen',4:'Van Valery',5:'Montassar Talbi',6:'Yassine Meriah',7:'Ali Abdi',8:'Dylan Bronn',9:'Ellyes Skhiri',10:'Aissa Laidouni',11:'Ferjani Sassi',12:'Mohamed Ali Ben Romdhane',14:'Hannibal Mejbri',15:'Elias Achouri',16:'Elias Saad',17:'Hazem Mastouri',18:'Ismael Gharbi',19:'Sayfallah Ltaief',20:'Naim Sliti'},
@@ -101,22 +101,22 @@ const playerData = {
   NZL:{1:'Nova Zelândia',2:'Max Crocombe-Payne',3:'Alex Paulsen',4:'Michael Boxall',5:'Liberato Cacace',6:'Tim Payne',7:'Tyler Bindon',8:'Francis de Vries',9:'Finn Surman',10:'Joe Bell',11:'Sarpreet Singh',12:'Ryan Thomas',14:'Matthew Garbett',15:'Marko Stamenić',16:'Ben Old',17:'Chris Wood',18:'Elijah Just',19:'Callum McCowatt',20:'Kosta Barbarouses'},
   ESP:{1:'Espanha',2:'Unai Simón',3:'Robin Le Normand',4:'Aymeric Laporte',5:'Dean Huijsen',6:'Pedro Porro',7:'Dani Carvajal',8:'Marc Cucurella',9:'Martín Zubimendi',10:'Rodri',11:'Pedri',12:'Fabián Ruiz',14:'Mikel Merino',15:'Lamine Yamal',16:'Dani Olmo',17:'Nico Williams',18:'Ferran Torres',19:'Álvaro Morata',20:'Mikel Oyarzabal'},
   CPV:{1:'Cabo Verde',2:'Vozinha',3:'Logan Costa',4:'Pico',5:'Diney',6:'Steven Moreira',7:'Wagner Pina',8:'João Paulo',9:'Yannick Semedo',10:'Kevin Pina',11:'Patrick Andrade',12:'Jamiro Monteiro',14:'Deroy Duarte',15:'Garry Rodrigues',16:'Jovane Cabral',17:'Ryan Mendes',18:'Dailon Livramento',19:'Willy Semedo',20:'Bebé'},
-  SAU:{1:'Arábia Saudita',2:'Nawaf Alaqidi',3:'Abdulrahman Al-Sanbi',4:'Saud Abdulhamid',5:'Nawaf Boushal',6:'Jihad Thakri',7:'Moteb Al-Harbi',8:'Hassan Altambakti',9:'Musab Aljuwayr',10:'Ziyad Aljohani',11:'Abdullah Alkhaibari',12:'Nasser Aldawsari',14:'Saleh Abu Alshamat',15:'Marwan Alsahafi',16:'Salem Aldawsari',17:'Abdulrahman Al-Aboud',18:'Feras Albrikan',19:'Saleh Alshehri',20:'Abdullah Al-Hamdan'},
-  URY:{1:'Uruguai',2:'Sergio Rochet',3:'Santiago Mele',4:'Ronald Araujo',5:'José María Giménez',6:'Sebastian Caceres',7:'Mathias Olivera',8:'Guillermo Varela',9:'Nahitan Nandez',10:'Federico Valverde',11:'Giorgian De Arrascaeta',12:'Rodrigo Bentancur',14:'Manuel Ugarte',15:'Nicolás de la Cruz',16:'Maxi Araujo',17:'Darwin Núñez',18:'Federico Viñas',19:'Rodrigo Aguirre',20:'Facundo Pellistri'},
+  KSA:{1:'Arábia Saudita',2:'Nawaf Alaqidi',3:'Abdulrahman Al-Sanbi',4:'Saud Abdulhamid',5:'Nawaf Boushal',6:'Jihad Thakri',7:'Moteb Al-Harbi',8:'Hassan Altambakti',9:'Musab Aljuwayr',10:'Ziyad Aljohani',11:'Abdullah Alkhaibari',12:'Nasser Aldawsari',14:'Saleh Abu Alshamat',15:'Marwan Alsahafi',16:'Salem Aldawsari',17:'Abdulrahman Al-Aboud',18:'Feras Albrikan',19:'Saleh Alshehri',20:'Abdullah Al-Hamdan'},
+  URU:{1:'Uruguai',2:'Sergio Rochet',3:'Santiago Mele',4:'Ronald Araujo',5:'José María Giménez',6:'Sebastian Caceres',7:'Mathias Olivera',8:'Guillermo Varela',9:'Nahitan Nandez',10:'Federico Valverde',11:'Giorgian De Arrascaeta',12:'Rodrigo Bentancur',14:'Manuel Ugarte',15:'Nicolás de la Cruz',16:'Maxi Araujo',17:'Darwin Núñez',18:'Federico Viñas',19:'Rodrigo Aguirre',20:'Facundo Pellistri'},
   FRA:{1:'França',2:'Mike Maignan',3:'Theo Hernández',4:'William Saliba',5:'Jules Koundé',6:'Ibrahima Konaté',7:'Dayot Upamecano',8:'Lucas Digne',9:'Aurélien Tchouaméni',10:'Eduardo Camavinga',11:'Manu Koné',12:'Adrien Rabiot',14:'Michael Olise',15:'Ousmane Dembélé',16:'Bradley Barcola',17:'Désiré Doué',18:'Kingsley Coman',19:'Hugo Ekitike',20:'Kylian Mbappé'},
   SEN:{1:'Senegal',2:'Eduardo Mendy',3:'Yehvann Diouf',4:'Moussa Niakhaté',5:'Abdoulaye Seck',6:'Ismail Jakobs',7:'El Hadji Malick Diouf',8:'Kalidou Koulibaly',9:'Idrissa Gana Gueye',10:'Pape Matar Sarr',11:'Pape Gueye',12:'Habib Diarra',14:'Lamine Camara',15:'Sadio Mané',16:'Ismaïla Sarr',17:'Boulaye Dia',18:'Iliman Ndiaye',19:'Nicolas Jackson',20:'Krepin Diatta'},
   IRQ:{1:'Iraque',2:'Jalal Hassan',3:'Rebin Sulaka',4:'Hussein Ali',5:'Akam Hashem',6:'Merchas Doski',7:'Zaid Tahseen',8:'Manaf Younis',9:'Zidane Iqbal',10:'Amir Al-Ammari',11:'Ibrahim Bayesh',12:'Ali Jasim',14:'Youssef Amyn',15:'Aimar Sher',16:'Marko Farji',17:'Osama Rashid',18:'Ali Al-Hamadi',19:'Aymen Hussein',20:'Mohanad Ali'},
   NOR:{1:'Noruega',2:'Ørjan Nyland',3:'Julian Ryerson',4:'Leo Østigård',5:'Kristoffer Ajer',6:'Marcus Holmgren Pedersen',7:'David Møller Wolfe',8:'Torbjørn Heggem',9:'Morten Thorsby',10:'Martin Ødegaard',11:'Sander Berge',12:'Andreas Schjelderup',14:'Patrick Berg',15:'Erling Haaland',16:'Alexander Sørloth',17:'Aron Dønnum',18:'Jørgen Strand Larsen',19:'Antonio Nusa',20:'Oscar Bobb'},
   ARG:{1:'Argentina',2:'Emiliano Martínez',3:'Nahuel Molina',4:'Cristian Romero',5:'Nicolás Otamendi',6:'Nicolás Tagliafico',7:'Leonardo Balerdi',8:'Enzo Fernández',9:'Alexis Mac Allister',10:'Rodrigo De Paul',11:'Exequiel Palacios',12:'Leandro Paredes',14:'Nico Paz',15:'Franco Mastantuono',16:'Nico González',17:'Lionel Messi',18:'Lautaro Martínez',19:'Julián Álvarez',20:'Giuliano Simeone'},
-  DZA:{1:'Argélia',2:'Alexis Guendouz',3:'Ramy Bensebaini',4:'Youcef Atal',5:'Rayan Aït-Nouri',6:'Mohamed Amine Tougai',7:'Aïssa Mandi',8:'Ismael Bennacer',9:'Houssem Aouar',10:'Hicham Boudaoui',11:'Ramiz Zerrouki',12:'Nabil Bentaleb',14:'Farés Chaibi',15:'Riyad Mahrez',16:'Said Benrahma',17:'Anis Hadj Moussa',18:'Amine Gouiri',19:'Baghdad Bounedjah',20:'Mohammed Amoura'},
+  ALG:{1:'Argélia',2:'Alexis Guendouz',3:'Ramy Bensebaini',4:'Youcef Atal',5:'Rayan Aït-Nouri',6:'Mohamed Amine Tougai',7:'Aïssa Mandi',8:'Ismael Bennacer',9:'Houssem Aouar',10:'Hicham Boudaoui',11:'Ramiz Zerrouki',12:'Nabil Bentaleb',14:'Farés Chaibi',15:'Riyad Mahrez',16:'Said Benrahma',17:'Anis Hadj Moussa',18:'Amine Gouiri',19:'Baghdad Bounedjah',20:'Mohammed Amoura'},
   AUT:{1:'Áustria',2:'Alexander Schlager',3:'Patrick Pentz',4:'David Alaba',5:'Kevin Danso',6:'Philipp Lienhart',7:'Stefan Posch',8:'Phillipp Mwene',9:'Alexander Prass',10:'Xaver Schlager',11:'Marcel Sabitzer',12:'Konrad Laimer',14:'Florian Grillitsch',15:'Nicolas Seiwald',16:'Romano Schmid',17:'Patrick Wimmer',18:'Christoph Baumgartner',19:'Michael Gregoritsch',20:'Marko Arnautović'},
   JOR:{1:'Jordânia',2:'Yazeed Abulaila',3:'Ihsan Haddad',4:'Mohammad Abu Hashish',5:'Yazan Al-Arab',6:'Abdallah Nasib',7:'Saleem Obaid',8:'Mohammad Abualnadi',9:'Ibrahim Saadeh',10:'Nizar Al-Rashdan',11:'Noor Al-Rawabdeh',12:'Mohannad Abu Taha',14:'Amer Jamous',15:'Musa Al-Taamari',16:'Yazan Al-Naimat',17:'Mahmoud Al-Mardi',18:'Ali Olwan',19:'Mohammad Abu Zrayq',20:'Ibrahim Sabra'},
-  PRT:{1:'Portugal',2:'Diogo Costa',3:'José Sá',4:'Rúben Dias',5:'João Cancelo',6:'Diogo Dalot',7:'Nuno Mendes',8:'Gonçalo Inácio',9:'Bernardo Silva',10:'Bruno Fernandes',11:'Rúben Neves',12:'Vitinha',14:'João Neves',15:'Cristiano Ronaldo',16:'Francisco Trincão',17:'João Félix',18:'Gonçalo Ramos',19:'Pedro Neto',20:'Rafael Leão'},
+  POR:{1:'Portugal',2:'Diogo Costa',3:'José Sá',4:'Rúben Dias',5:'João Cancelo',6:'Diogo Dalot',7:'Nuno Mendes',8:'Gonçalo Inácio',9:'Bernardo Silva',10:'Bruno Fernandes',11:'Rúben Neves',12:'Vitinha',14:'João Neves',15:'Cristiano Ronaldo',16:'Francisco Trincão',17:'João Félix',18:'Gonçalo Ramos',19:'Pedro Neto',20:'Rafael Leão'},
   COD:{1:'RD Congo',2:'Lionel Mpasi',3:'Aaron Wan-Bissaka',4:'Axel Tuanzebe',5:'Arthur Masuaku',6:'Chancel Mbemba',7:'Joris Kayembe',8:'Charles Pickel',9:"Ngal'ayel Mukau",10:'Edo Kayembe',11:'Samuel Moutoussamy',12:'Noah Sadiki',14:'Théo Bongonda',15:'Meschack Elia',16:'Yoane Wissa',17:'Brian Cipenga',18:'Fiston Mayele',19:'Cédric Bakambu',20:'Nathanaël Mbuku'},
   UZB:{1:'Uzbequistão',2:'Utkir Yusupov',3:'Farrukh Savfiev',4:'Sherzod Nasrullaev',5:'Umar Eshmurodov',6:'Husniddin Aliqulov',7:'Rustamjon Ashurmatov',8:'Khojiakbar Alijonov',9:'Abdukodir Khusanov',10:'Odiljon Hamrobekov',11:'Otabek Shukurov',12:'Jamshid Iskanderov',14:'Azizbek Turgunboev',15:'Khojimat Erkinov',16:'Eldor Shomurodov',17:'Oston Urunov',18:'Jaloliddin Masharipov',19:'Igor Sergeev',20:'Abbosbek Fayzullaev'},
   COL:{1:'Colômbia',2:'Camilo Vargas',3:'David Ospina',4:'Dávinson Sánchez',5:'Yerry Mina',6:'Daniel Muñoz',7:'Johan Mojica',8:'Jhon Lucumí',9:'Santiago Arias',10:'Jefferson Lerma',11:'Kevin Castaño',12:'Richard Ríos',14:'James Rodríguez',15:'Juan Fernando Quintero',16:'Jorge Carrascal',17:'Jhon Arias',18:'Jhon Córdoba',19:'Luis Suárez',20:'Luis Díaz'},
-  'GB-ENG':{1:'Inglaterra',2:'Jordan Pickford',3:'John Stones',4:'Marc Guéhi',5:'Ezri Konsa',6:'Trent Alexander-Arnold',7:'Reece James',8:'Dan Burn',9:'Jordan Henderson',10:'Declan Rice',11:'Jude Bellingham',12:'Cole Palmer',14:'Morgan Rogers',15:'Anthony Gordon',16:'Phil Foden',17:'Bukayo Saka',18:'Harry Kane',19:'Marcus Rashford',20:'Ollie Watkins'},
-  HRV:{1:'Croácia',2:'Dominik Livaković',3:'Duje Ćaleta-Car',4:'Joško Gvardiol',5:'Josip Stanišić',6:'Luka Vušković',7:'Josip Šutalo',8:'Kristijan Jakić',9:'Luka Modrić',10:'Mateo Kovačić',11:'Martin Baturina',12:'Lovro Majer',14:'Mario Pašalić',15:'Petar Sučić',16:'Ivan Perišić',17:'Marco Pašalić',18:'Ante Budimir',19:'Andrej Kramarić',20:'Franjo Ivanović'},
+  ENG:{1:'Inglaterra',2:'Jordan Pickford',3:'John Stones',4:'Marc Guéhi',5:'Ezri Konsa',6:'Trent Alexander-Arnold',7:'Reece James',8:'Dan Burn',9:'Jordan Henderson',10:'Declan Rice',11:'Jude Bellingham',12:'Cole Palmer',14:'Morgan Rogers',15:'Anthony Gordon',16:'Phil Foden',17:'Bukayo Saka',18:'Harry Kane',19:'Marcus Rashford',20:'Ollie Watkins'},
+  CRO:{1:'Croácia',2:'Dominik Livaković',3:'Duje Ćaleta-Car',4:'Joško Gvardiol',5:'Josip Stanišić',6:'Luka Vušković',7:'Josip Šutalo',8:'Kristijan Jakić',9:'Luka Modrić',10:'Mateo Kovačić',11:'Martin Baturina',12:'Lovro Majer',14:'Mario Pašalić',15:'Petar Sučić',16:'Ivan Perišić',17:'Marco Pašalić',18:'Ante Budimir',19:'Andrej Kramarić',20:'Franjo Ivanović'},
   GHA:{1:'Gana',2:'Lawrence Ati Zigi',3:'Tariq Lamptey',4:'Mohammed Salisu',5:'Alidu Seidu',6:'Alexander Djiku',7:'Gideon Mensah',8:'Caleb Yirenkyi',9:'Abdul Fatawu Issahaku',10:'Thomas Partey',11:'Salis Abdul Samed',12:'Kamaldeen Sulemana',14:'Mohammed Kudus',15:'Iñaki Williams',16:'Jordan Ayew',17:'André Ayew',18:'Joseph Paintsil',19:'Osman Bukari',20:'Antoine Semenyo'},
   PAN:{1:'Panamá',2:'Orlando Mosquera',3:'Luis Mejía',4:'Fidel Escobar',5:'Andrés Andrade',6:'Michael Amir Murillo',7:'Eric Davis',8:'José Córdoba',9:'César Blackman',10:'Cristian Martínez',11:'Aníbal Godoy',12:'Adalberto Carrasquilla',14:'Édgar Bárcenas',15:'Carlos Harvey',16:'Ismael Díaz',17:'José Fajardo',18:'Cecilio Waterman',19:'José Luis Rodríguez',20:'Alberto Quintero'},
 };
@@ -125,13 +125,13 @@ const legendPlayers = [
   { name: 'Achraf Hakimi',       code: 'MAR'    },
   { name: 'Alphonso Davies',     code: 'CAN'    },
   { name: 'Christian Pulisic',   code: 'USA'    },
-  { name: 'Cody Gakpo',          code: 'NLD'    },
-  { name: 'Cristiano Ronaldo',   code: 'PRT'    },
+  { name: 'Cody Gakpo',          code: 'NED'    },
+  { name: 'Cristiano Ronaldo',   code: 'POR'    },
   { name: 'Erling Haaland',      code: 'NOR'    },
-  { name: 'Federico Valverde',   code: 'URY'    },
-  { name: 'Florian Wirtz',       code: 'DEU'    },
+  { name: 'Federico Valverde',   code: 'URU'    },
+  { name: 'Florian Wirtz',       code: 'GER'    },
   { name: 'Jérémy Doku',         code: 'BEL'    },
-  { name: 'Jude Bellingham',     code: 'GB-ENG' },
+  { name: 'Jude Bellingham',     code: 'ENG' },
   { name: 'Kevin De Bruyne',     code: 'BEL'    },
   { name: 'Lamine Yamal',        code: 'ESP'    },
   { name: 'Lautaro Martínez',    code: 'ARG'    },
@@ -165,11 +165,11 @@ const legendStickerMap = (() => {
 })();
 
 const continentMap = {
-  'BRA': 'América do Sul', 'ARG': 'América do Sul', 'URY': 'América do Sul', 'COL': 'América do Sul', 'ECU': 'América do Sul', 'PRY': 'América do Sul',
-  'DEU': 'Europa', 'GB-ENG': 'Europa', 'FRA': 'Europa', 'ESP': 'Europa', 'PRT': 'Europa', 'NLD': 'Europa', 'BEL': 'Europa', 'HRV': 'Europa', 'SWE': 'Europa', 'GBR': 'Europa', 'AUT': 'Europa', 'CZE': 'Europa', 'TUR': 'Europa', 'NOR': 'Europa', 'BIH': 'Europa', 'CHE': 'Europa',
+  'BRA': 'América do Sul', 'ARG': 'América do Sul', 'URU': 'América do Sul', 'COL': 'América do Sul', 'ECU': 'América do Sul', 'PAR': 'América do Sul',
+  'GER': 'Europa', 'ENG': 'Europa', 'FRA': 'Europa', 'ESP': 'Europa', 'POR': 'Europa', 'NED': 'Europa', 'BEL': 'Europa', 'CRO': 'Europa', 'SWE': 'Europa', 'SCO': 'Europa', 'AUT': 'Europa', 'CZE': 'Europa', 'TUR': 'Europa', 'NOR': 'Europa', 'BIH': 'Europa', 'SUI': 'Europa',
   'USA': 'América do Norte', 'MEX': 'América do Norte', 'CAN': 'América do Norte', 'PAN': 'América do Norte', 'HTI': 'América do Norte', 'CUW': 'América do Norte',
-  'MAR': 'África', 'SEN': 'África', 'CIV': 'África', 'EGY': 'África', 'GHA': 'África', 'DZA': 'África', 'TUN': 'África', 'ZAF': 'África', 'COD': 'África', 'CPV': 'África',
-  'JPN': 'Ásia', 'KOR': 'Ásia', 'AUS': 'Ásia', 'SAU': 'Ásia', 'IRN': 'Ásia', 'QAT': 'Ásia', 'IRQ': 'Ásia', 'UZB': 'Ásia', 'JOR': 'Ásia', 'NZL': 'Oceania'
+  'MAR': 'África', 'SEN': 'África', 'CIV': 'África', 'EGY': 'África', 'GHA': 'África', 'ALG': 'África', 'TUN': 'África', 'RSA': 'África', 'COD': 'África', 'CPV': 'África',
+  'JPN': 'Ásia', 'KOR': 'Ásia', 'AUS': 'Ásia', 'KSA': 'Ásia', 'IRN': 'Ásia', 'QAT': 'Ásia', 'IRQ': 'Ásia', 'UZB': 'Ásia', 'JOR': 'Ásia', 'NZL': 'Oceania'
 };
 
 // ============================================================================
@@ -177,12 +177,15 @@ const continentMap = {
 // ============================================================================
 
 const legacyCountryCodeMap = {
-  MX: 'MEX', ZA: 'ZAF', KR: 'KOR', CZ: 'CZE', CA: 'CAN', BA: 'BIH', QA: 'QAT', CH: 'CHE',
-  BR: 'BRA', MA: 'MAR', HT: 'HTI', GB: 'GBR', 'GB-ENG': 'GB-ENG', US: 'USA', PY: 'PRY', AU: 'AUS', TR: 'TUR',
-  DE: 'DEU', CW: 'CUW', CI: 'CIV', EC: 'ECU', NL: 'NLD', JP: 'JPN', SE: 'SWE', TN: 'TUN',
-  BE: 'BEL', EG: 'EGY', IR: 'IRN', NZ: 'NZL', ES: 'ESP', CV: 'CPV', SA: 'SAU', UY: 'URY',
-  FR: 'FRA', SN: 'SEN', IQ: 'IRQ', NO: 'NOR', AR: 'ARG', DZ: 'DZA', AT: 'AUT', JO: 'JOR',
-  PT: 'PRT', CD: 'COD', UZ: 'UZB', CO: 'COL', HR: 'HRV', GH: 'GHA', PA: 'PAN'
+  MX: 'MEX', ZA: 'RSA', KR: 'KOR', CZ: 'CZE', CA: 'CAN', BA: 'BIH', QA: 'QAT', CH: 'SUI',
+  BR: 'BRA', MA: 'MAR', HT: 'HTI', GB: 'SCO', 'GB-ENG': 'ENG', US: 'USA', PY: 'PAR', AU: 'AUS', TR: 'TUR',
+  DE: 'GER', CW: 'CUW', CI: 'CIV', EC: 'ECU', NL: 'NED', JP: 'JPN', SE: 'SWE', TN: 'TUN',
+  BE: 'BEL', EG: 'EGY', IR: 'IRN', NZ: 'NZL', ES: 'ESP', CV: 'CPV', SA: 'KSA', UY: 'URU',
+  FR: 'FRA', SN: 'SEN', IQ: 'IRQ', NO: 'NOR', AR: 'ARG', DZ: 'ALG', AT: 'AUT', JO: 'JOR',
+  PT: 'POR', CD: 'COD', UZ: 'UZB', CO: 'COL', HR: 'CRO', GH: 'GHA', PA: 'PAN',
+  // Migração de códigos antigos para novos (renomeação de siglas)
+  ZAF: 'RSA', CHE: 'SUI', GBR: 'SCO', PRY: 'PAR', DEU: 'GER',
+  NLD: 'NED', SAU: 'KSA', URY: 'URU', DZA: 'ALG', PRT: 'POR', HRV: 'CRO'
 };
 
 let stickers = JSON.parse(localStorage.getItem('copaStickers') || '{}');
@@ -232,6 +235,13 @@ function migrateLegacyData() {
     Object.entries(source).forEach(([key, value]) => {
       if (Object.prototype.hasOwnProperty.call(legacyCountryCodeMap, key)) {
         result[legacyCountryCodeMap[key]] = value;
+        changed = true;
+        return;
+      }
+
+      // Trata prefixo composto GB-ENG (ex: GB-ENG-5 → ENG-5)
+      if (key.startsWith('GB-ENG-')) {
+        result['ENG' + key.slice('GB-ENG'.length)] = value;
         changed = true;
         return;
       }
