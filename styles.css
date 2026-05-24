@@ -234,10 +234,10 @@ button:active:not(:disabled) {
   gap: 6px;
 }
 
-/* History grid (7 cols desktop, 5 cols mobile) */
+/* History grid (4 cols desktop, 4 cols mobile) */
 .history-grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 8px;
 }
 
@@ -247,7 +247,7 @@ button:active:not(:disabled) {
     gap: 5px;
   }
   .history-grid {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 5px;
   }
 }
