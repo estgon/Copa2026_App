@@ -2255,8 +2255,33 @@ function saveCommunityProfile() {
   communityProfile.email = (document.getElementById('profile-email')?.value || '').trim();
   communityProfile.contact = (document.getElementById('profile-contact')?.value || '').trim();
   localStorage.setItem('copaProfile', JSON.stringify(communityProfile));
+  updateProfileFab();
+  renderProfileCard();
   renderComunidade();
+  closeProfileModal();
   showToast('Perfil salvo! ✅');
+}
+
+function updateProfileFab() {
+  const fab = document.getElementById('profile-fab');
+  if (!fab) return;
+  if (communityProfile.name) {
+    const color = getAvatarColor(communityProfile.name);
+    fab.textContent = getInitials(communityProfile.name);
+    fab.style.background = color;
+  } else {
+    fab.textContent = '?';
+    fab.style.background = 'linear-gradient(135deg,#667eea,#764ba2)';
+  }
+}
+
+function openProfileModal() {
+  renderProfileCard();
+  document.getElementById('profile-modal')?.classList.add('active');
+}
+
+function closeProfileModal() {
+  document.getElementById('profile-modal')?.classList.remove('active');
 }
 
 // --- Onboarding ---
@@ -2276,6 +2301,7 @@ function saveOnboardingProfile() {
   else if (raw) { communityProfile.contact = raw; }
   localStorage.setItem('copaProfile', JSON.stringify(communityProfile));
   document.getElementById('onboarding-modal')?.classList.remove('active');
+  updateProfileFab();
   showToast('Perfil criado! 🎉');
 }
 
@@ -2469,7 +2495,6 @@ function showToast(msg) {
 let _qrGenerated = false;
 
 function renderComunidade() {
-  renderProfileCard();
   renderTrocas();
   renderWishlist();
   renderTradeHistory();
@@ -2668,6 +2693,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderLegends();
   renderTrocas();
   updateStats();
+  updateProfileFab();
   checkIncomingTradeLink();
   checkOnboarding();
 });
