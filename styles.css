@@ -234,6 +234,24 @@ button:active:not(:disabled) {
   gap: 6px;
 }
 
+/* History grid (7 cols desktop, 5 cols mobile) */
+.history-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+@media (max-width: 600px) {
+  .sticker-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+  }
+  .history-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+  }
+}
+
 .sticker-button {
   position: relative;
   width: 100%;
