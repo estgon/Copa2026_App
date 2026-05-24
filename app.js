@@ -2671,6 +2671,301 @@ function buildMatchProposalMessage(friendName, contact, wishlistHits, needsHits,
 }
 
 // ============================================================================
+// PHOTO ID — IA via Claude API
+// ============================================================================
+
+const PHOTO_PROMPT = `Esta é uma foto de figurinhas do álbum Copa do Mundo 2026 (Panini).
+Identifique TODOS os códigos de figurinha visíveis na imagem.
+
+Cada figurinha tem um código impresso: SIGLA DO PAÍS + NÚMERO (1 a 20). Exemplos: RSA1, BRA5, ENG14, KOR3.
+
+Siglas válidas dos países:
+MEX, RSA, KOR, CZE, CAN, BIH, QAT, SUI, BRA, MAR, HTI, SCO, USA, PAR, AUS, TUR, GER, CUW, CIV, ECU, NED, JPN, SWE, TUN, BEL, EGY, IRN, NZL, ESP, CPV, KSA, URU, FRA, SEN, IRQ, NOR, ARG, ALG, AUT, JOR, POR, COD, UZB, COL, ENG, CRO, GHA, PAN
+
+Categorias especiais:
+- CC seguido de número 1-14 (ex: CC1, CC05) → figurinhas Refri/Coca-Cola
+- FWC seguido de número 1-19 (ex: FWC1, FWC9) → figurinhas World Cup History
+- FIFA00 → figurinha especial FIFA
+
+Se a mesma figurinha aparecer mais de uma vez na foto, liste-a múltiplas vezes.
+
+Responda SOMENTE com JSON válido, sem texto extra:
+{"stickers": ["RSA1", "BRA5", "CC3", "ENG14"]}
+
+Se não identificar nenhuma figurinha: {"stickers": []}`;
+
+function openPhotoIdModal() {
+  const apiKey = localStorage.getItem('anthropicApiKey');
+  if (!apiKey) {
+    openApiKeyModal(true);
+    return;
+  }
+  document.getElementById('photo-id-file').click();
+}
+
+async function handlePhotoFile(input) {
+  if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
+
+  const modal = document.getElementById('photo-id-modal');
+  modal.classList.add('active');
+
+  const preview = document.getElementById('photo-id-preview');
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = 'block';
+
+  const status = document.getElementById('photo-id-status');
+  const results = document.getElementById('photo-id-results');
+  const actions = document.getElementById('photo-id-actions');
+
+  status.innerHTML = '<span style="display:flex;align-items:center;gap:8px;"><span style="display:inline-block;width:16px;height:16px;border:2px solid #667eea;border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;"></span> Analisando figurinhas…</span>';
+  results.innerHTML = '';
+  actions.style.display = 'none';
+
+  try {
+    const base64 = await compressImage(file);
+    const mediaType = file.type.includes('png') ? 'image/png' : 'image/jpeg';
+    const rawCodes = await analyzeStickersPhoto(base64, mediaType);
+    status.textContent = `${rawCodes.length} código(s) detectado(s).`;
+    renderPhotoResults(rawCodes, results, actions);
+  } catch (err) {
+    status.innerHTML = `<span style="color:#E74C3C;">Erro: ${escapeHtml(err.message)}</span>`;
+    actions.style.display = 'grid';
+    document.getElementById('photo-id-confirm').style.display = 'none';
+  }
+}
+
+function compressImage(file, maxPx = 1280) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, maxPx / Math.max(img.width, img.height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      resolve(canvas.toDataURL('image/jpeg', 0.82).split(',')[1]);
+    };
+    img.onerror = reject;
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+async function analyzeStickersPhoto(base64, mediaType) {
+  const apiKey = localStorage.getItem('anthropicApiKey');
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 512,
+      messages: [{
+        role: 'user',
+        content: [
+          { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
+          { type: 'text', text: PHOTO_PROMPT }
+        ]
+      }]
+    })
+  });
+
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({}));
+    const msg = err.error?.message || `HTTP ${resp.status}`;
+    if (resp.status === 401) throw new Error('Chave da API inválida. Verifique nas configurações (⚙️).');
+    throw new Error(msg);
+  }
+
+  const data = await resp.json();
+  const text = data.content?.[0]?.text || '';
+  const match = text.match(/\{[\s\S]*?\}/);
+  if (!match) throw new Error('Resposta inesperada da IA. Tente novamente.');
+  const parsed = JSON.parse(match[0]);
+  return Array.isArray(parsed.stickers) ? parsed.stickers : [];
+}
+
+function parseStickerCode(raw) {
+  const code = raw.toUpperCase().replace(/\s/g, '');
+
+  const cc = code.match(/^CC0*(\d+)$/);
+  if (cc) {
+    const n = parseInt(cc[1]);
+    if (n >= 1 && n <= 14) return { key: `refri-${n}`, type: 'refri', display: `CC${String(n).padStart(2,'0')}` };
+    return null;
+  }
+
+  const fwc = code.match(/^FWC0*(\d+)$/);
+  if (fwc) {
+    const n = parseInt(fwc[1]);
+    if (n >= 1 && n <= 20) return { key: `history-${n - 1}`, type: 'history', display: `FWC${n}` };
+    return null;
+  }
+
+  const country = code.match(/^([A-Z]{2,3})0*(\d{1,2})$/);
+  if (country) {
+    const countryCode = country[1];
+    const num = parseInt(country[2]);
+    if (playerData[countryCode] && num >= 1 && num <= 20 && num !== 13) {
+      return { key: `${countryCode}-${num}`, type: 'country', display: `${countryCode}${num}` };
+    }
+  }
+  return null;
+}
+
+function photoStickerLabel(parsed) {
+  if (parsed.type === 'refri') {
+    const n = parseInt(parsed.key.split('-')[1]);
+    const p = refriPlayers[n];
+    return `🥤 ${parsed.display}${p ? ' — ' + escapeHtml(p.name) : ''}`;
+  }
+  if (parsed.type === 'history') {
+    const n = parseInt(parsed.key.split('-')[1]) + 1;
+    return `🏆 FWC${n} — World Cup History`;
+  }
+  const [code, num] = parsed.key.split('-');
+  const data = playerData[code];
+  const country = data ? data[1] : code;
+  const player = data && parseInt(num) !== 1 ? data[parseInt(num)] : null;
+  const iso = iso3ToIso2[code];
+  const flag = iso ? `<span class="fi fi-${iso}" style="font-size:1em;vertical-align:middle;margin-right:3px;"></span>` : '';
+  return `${flag}${escapeHtml(country)} ${num}${player ? ' — ' + escapeHtml(player) : ''}`;
+}
+
+function renderPhotoResults(rawCodes, container, actions) {
+  // Count occurrences per key
+  const countMap = {};
+  const orderedParsed = [];
+
+  rawCodes.forEach(raw => {
+    const p = parseStickerCode(raw);
+    if (!p) return;
+    if (!countMap[p.key]) {
+      countMap[p.key] = 0;
+      orderedParsed.push(p);
+    }
+    countMap[p.key]++;
+  });
+
+  const unrecognized = rawCodes.filter(raw => !parseStickerCode(raw));
+
+  if (orderedParsed.length === 0) {
+    container.innerHTML = '<p style="text-align:center;padding:24px 0;color:var(--color-text-secondary);font-size:13px;">Nenhuma figurinha reconhecida.<br>Tente uma foto mais nítida, com boa iluminação.</p>';
+    actions.style.display = 'grid';
+    document.getElementById('photo-id-confirm').style.display = 'none';
+    return;
+  }
+
+  container.innerHTML = orderedParsed.map(p => {
+    const count = countMap[p.key];
+    const alreadyHas = !!stickers[p.key];
+    const statusBadge = alreadyHas
+      ? `<span style="font-size:10px;background:#E74C3C22;color:#E74C3C;border-radius:4px;padding:2px 5px;font-weight:700;">repetida</span>`
+      : `<span style="font-size:10px;background:#27AE6022;color:#27AE60;border-radius:4px;padding:2px 5px;font-weight:700;">nova</span>`;
+
+    return `<label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:var(--color-background-secondary);cursor:pointer;margin-bottom:7px;-webkit-user-select:none;user-select:none;">
+      <input type="checkbox" data-key="${p.key}" data-type="${p.type}" checked style="width:17px;height:17px;flex-shrink:0;accent-color:#667eea;">
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:13px;font-weight:700;color:var(--color-text-primary);line-height:1.3;">${photoStickerLabel(p)}</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:3px;">${statusBadge}<span style="font-size:11px;color:var(--color-text-secondary);">${escapeHtml(p.display)}</span></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:5px;flex-shrink:0;">
+        <button type="button" onclick="photoCountChange(this,-1)" style="width:28px;height:28px;border-radius:50%;background:var(--color-background-secondary);border:1px solid var(--color-border-tertiary);font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--color-text-secondary);">−</button>
+        <span data-count="${p.key}" style="min-width:20px;text-align:center;font-size:14px;font-weight:800;color:var(--color-text-primary);">${count}</span>
+        <button type="button" onclick="photoCountChange(this,1)" style="width:28px;height:28px;border-radius:50%;background:var(--color-background-secondary);border:1px solid var(--color-border-tertiary);font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--color-text-secondary);">+</button>
+      </div>
+    </label>`;
+  }).join('')
+  + (unrecognized.length ? `<p style="font-size:11px;color:var(--color-text-secondary);margin-top:6px;">Não reconhecidos: ${unrecognized.map(escapeHtml).join(', ')}</p>` : '');
+
+  actions.style.display = 'grid';
+  document.getElementById('photo-id-confirm').style.display = 'block';
+}
+
+function photoCountChange(btn, delta) {
+  const span = btn.parentElement.querySelector('[data-count]');
+  if (!span) return;
+  span.textContent = Math.max(1, parseInt(span.textContent) + delta);
+}
+
+function confirmPhotoStickers() {
+  const checkboxes = document.querySelectorAll('#photo-id-results input[type=checkbox]:checked');
+  let added = 0, dupes = 0;
+
+  checkboxes.forEach(cb => {
+    const key = cb.dataset.key;
+    const type = cb.dataset.type;
+    const countSpan = document.querySelector(`#photo-id-results [data-count="${key}"]`);
+    const qty = countSpan ? Math.max(1, parseInt(countSpan.textContent) || 1) : 1;
+
+    for (let i = 0; i < qty; i++) {
+      if (!stickers[key]) {
+        stickers[key] = true;
+        if (type === 'country' && wishlist.has(key)) { wishlist.delete(key); saveWishlist(); }
+        added++;
+      } else {
+        duplicates[key] = (duplicates[key] || 0) + 1;
+        dupes++;
+      }
+    }
+  });
+
+  if (added + dupes === 0) { showToast('Nenhuma figurinha selecionada.'); return; }
+
+  saveData();
+  renderPaises();
+  renderRefri();
+  renderHistory();
+  renderTrocas();
+  updateStats();
+  closePhotoIdModal();
+  showToast(`✅ ${added} nova${added !== 1 ? 's' : ''}, ${dupes} repetida${dupes !== 1 ? 's' : ''} adicionada${added + dupes !== 1 ? 's' : ''}!`);
+}
+
+function closePhotoIdModal() {
+  document.getElementById('photo-id-modal').classList.remove('active');
+  document.getElementById('photo-id-file').value = '';
+  const preview = document.getElementById('photo-id-preview');
+  if (preview.src) { URL.revokeObjectURL(preview.src); preview.src = ''; preview.style.display = 'none'; }
+}
+
+// --- API Key management ---
+
+function openApiKeyModal(fromPhotoFlow) {
+  const input = document.getElementById('api-key-input');
+  const existing = localStorage.getItem('anthropicApiKey') || '';
+  if (input) input.value = existing ? '••••••••' + existing.slice(-4) : '';
+  document.getElementById('api-key-modal').classList.add('active');
+  if (fromPhotoFlow) document.getElementById('api-key-modal').dataset.fromPhoto = '1';
+}
+
+function closeApiKeyModal() {
+  const modal = document.getElementById('api-key-modal');
+  modal.classList.remove('active');
+  delete modal.dataset.fromPhoto;
+}
+
+function saveApiKey() {
+  const val = (document.getElementById('api-key-input')?.value || '').trim();
+  if (!val || val.startsWith('••')) { showToast('Insira uma chave válida.'); return; }
+  localStorage.setItem('anthropicApiKey', val);
+  const fromPhoto = document.getElementById('api-key-modal')?.dataset.fromPhoto;
+  closeApiKeyModal();
+  showToast('Chave salva! ✅');
+  if (fromPhoto) setTimeout(() => document.getElementById('photo-id-file').click(), 200);
+}
+
+function clearApiKey() {
+  localStorage.removeItem('anthropicApiKey');
+  if (document.getElementById('api-key-input')) document.getElementById('api-key-input').value = '';
+  showToast('Chave removida.');
+}
+
+// ============================================================================
 // INITIALIZATION
 // ============================================================================
 
