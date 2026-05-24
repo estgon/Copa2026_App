@@ -855,6 +855,15 @@ function renderContinentsView() {
 // RENDERING FUNCTIONS
 // ============================================================================
 
+function toggleGroup(group) {
+  const el = document.getElementById('group-countries-' + group);
+  const btn = document.getElementById('group-toggle-' + group);
+  if (!el) return;
+  const collapsed = el.style.display === 'none';
+  el.style.display = collapsed ? 'block' : 'none';
+  if (btn) btn.textContent = collapsed ? '▼' : '▶';
+}
+
 /**
  * Renderiza lista de países
  */
@@ -862,7 +871,7 @@ function renderPaises() {
   let html = '';
   Object.entries(countries).forEach(([group, countryList]) => {
     let groupHasContent = false;
-    let groupHtml = `<h2 style="font-size: 14px; font-weight: 700; background: #DAA520; color: white; padding: 12px 16px; border-radius: 12px; margin: 1.5rem 0 12px; text-transform: uppercase; letter-spacing: 0.3px;">Grupo ${group}</h2>`;
+    let groupHtml = '';
     
     countryList.forEach(([name, code]) => {
       if (!shouldShowCountry(group, code)) return;
@@ -951,10 +960,16 @@ function renderPaises() {
     });
     
     if (groupHasContent) {
-      html += groupHtml;
+      html += `<div>
+        <h2 onclick="toggleGroup('${group}')" style="font-size:14px;font-weight:700;background:#DAA520;color:white;padding:12px 16px;border-radius:12px;margin:1.5rem 0 0;text-transform:uppercase;letter-spacing:0.3px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;-webkit-user-select:none;user-select:none;">
+          <span>Grupo ${group}</span>
+          <span id="group-toggle-${group}" style="font-size:15px;line-height:1;opacity:0.85;">▼</span>
+        </h2>
+        <div id="group-countries-${group}" style="padding-top:12px;">${groupHtml}</div>
+      </div>`;
     }
   });
-  
+
   document.getElementById('paises-list').innerHTML = html || '<div style="text-align: center; color: var(--color-text-secondary); padding: 2rem;">Nenhuma figurinha encontrada</div>';
 }
 
