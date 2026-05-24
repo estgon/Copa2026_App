@@ -3,7 +3,7 @@
  * Gerencia cache e funcionalidade offline
  */
 
-const CACHE_NAME = 'estiva-go-copa-v12';
+const CACHE_NAME = 'estiva-go-copa-v13';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

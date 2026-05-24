@@ -2695,7 +2695,7 @@ Responda SOMENTE com JSON válido, sem texto extra:
 Se não identificar nenhuma figurinha: {"stickers": []}`;
 
 function openPhotoIdModal() {
-  const apiKey = localStorage.getItem('anthropicApiKey');
+  const apiKey = sessionStorage.getItem('anthropicApiKey');
   if (!apiKey) {
     openApiKeyModal(true);
     return;
@@ -2752,7 +2752,7 @@ function compressImage(file, maxPx = 1280) {
 }
 
 async function analyzeStickersPhoto(base64, mediaType) {
-  const apiKey = localStorage.getItem('anthropicApiKey');
+  const apiKey = sessionStorage.getItem('anthropicApiKey');
   const resp = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -2937,7 +2937,7 @@ function closePhotoIdModal() {
 
 function openApiKeyModal(fromPhotoFlow) {
   const input = document.getElementById('api-key-input');
-  const existing = localStorage.getItem('anthropicApiKey') || '';
+  const existing = sessionStorage.getItem('anthropicApiKey') || '';
   if (input) input.value = existing ? '••••••••' + existing.slice(-4) : '';
   document.getElementById('api-key-modal').classList.add('active');
   if (fromPhotoFlow) document.getElementById('api-key-modal').dataset.fromPhoto = '1';
@@ -2952,7 +2952,7 @@ function closeApiKeyModal() {
 function saveApiKey() {
   const val = (document.getElementById('api-key-input')?.value || '').trim();
   if (!val || val.startsWith('••')) { showToast('Insira uma chave válida.'); return; }
-  localStorage.setItem('anthropicApiKey', val);
+  sessionStorage.setItem('anthropicApiKey', val);
   const fromPhoto = document.getElementById('api-key-modal')?.dataset.fromPhoto;
   closeApiKeyModal();
   showToast('Chave salva! ✅');
@@ -2960,7 +2960,7 @@ function saveApiKey() {
 }
 
 function clearApiKey() {
-  localStorage.removeItem('anthropicApiKey');
+  sessionStorage.removeItem('anthropicApiKey');
   if (document.getElementById('api-key-input')) document.getElementById('api-key-input').value = '';
   showToast('Chave removida.');
 }
