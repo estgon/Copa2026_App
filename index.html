@@ -491,6 +491,21 @@
   </div>
 </div>
 
+<!-- Trade Match Modal -->
+<div id="trade-match-modal" class="modal">
+  <div class="modal-content" style="max-width:460px;width:100%;max-height:88vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+      <h2 style="margin:0;font-size:17px;font-weight:800;" id="trade-match-title">🎴 Match de Trocas</h2>
+      <button onclick="closeTradeMatchModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--color-text-secondary);">✕</button>
+    </div>
+    <div id="trade-match-body"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;">
+      <button onclick="closeTradeMatchModal()" style="padding:12px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;color:var(--color-text-primary);">Fechar</button>
+      <button id="trade-match-whatsapp-btn" style="padding:12px;background:#25D366;color:white;border:none;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700;">💬 Propor via WhatsApp</button>
+    </div>
+  </div>
+</div>
+
 <!-- External Scripts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="app.js"></script>

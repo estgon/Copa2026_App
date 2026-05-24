@@ -327,7 +327,8 @@ function generateRoomCode() {
     n: communityProfile.name || '',
     c: communityProfile.contact || '',
     o: offers.map(({ key, count }) => `${key}:${count}`).join(','),
-    w: getMyNeedsList().slice(0, 60).join(',')
+    w: getMyNeedsList().slice(0, 60).join(','),
+    wl: [...wishlist].filter(k => !stickers[k]).slice(0, 40).join(',')
   };
   return 'COPA-' + btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
 }
@@ -2279,11 +2280,13 @@ function copyTradeLink() {
   try {
     const offers = getFilteredOffersList().map(({ key, count }) => `${key}:${count}`).join(',');
     const needs = getFilteredNeedsList().slice(0, 60).join(',');
+    const wl = [...wishlist].filter(k => !stickers[k]).slice(0, 40).join(',');
     const payload = btoa(unescape(encodeURIComponent(JSON.stringify({
       n: communityProfile.name || '',
       c: communityProfile.contact || '',
       o: offers,
-      w: needs
+      w: needs,
+      wl
     }))));
     copyToClipboard(`${location.origin}${location.pathname}#trade=${payload}`, 'Link de trocas copiado!');
   } catch {
@@ -2383,34 +2386,117 @@ function checkIncomingTradeLink() {
 }
 
 function showIncomingTradeOffer(payload) {
-  const name = payload.n || 'Usuário';
+  const name = escapeHtml(payload.n || 'Usuário');
+  const contact = payload.c || '';
   const offerKeys = payload.o ? payload.o.split(',').map(s => s.split(':')[0]).filter(Boolean) : [];
-  const needKeys = payload.w ? payload.w.split(',').filter(Boolean) : [];
+  const needKeys  = payload.w  ? payload.w.split(',').filter(Boolean)  : [];
+  const theirWishlistKeys = payload.wl ? payload.wl.split(',').filter(Boolean) : [];
 
-  const myNeeds = new Set(getMyNeedsList());
-  const myOfferKeys = new Set(getMyOffersList().map(o => o.key));
+  const myNeeds    = new Set(getMyNeedsList());
+  const myWishlist = new Set([...wishlist].filter(k => !stickers[k]));
+  const myOfferSet = new Set(getMyOffersList().map(o => o.key));
 
-  const theyHaveWhatINeed = offerKeys.filter(k => myNeeds.has(k));
-  const iHaveWhatTheyNeed = needKeys.filter(k => myOfferKeys.has(k));
+  // Matches sorted by priority
+  const wishlistHits = offerKeys.filter(k => myWishlist.has(k));
+  const needsHits    = offerKeys.filter(k => myNeeds.has(k) && !myWishlist.has(k));
+  const theirWlHits  = theirWishlistKeys.filter(k => myOfferSet.has(k));
+  const theirNeedHits = needKeys.filter(k => myOfferSet.has(k) && !theirWishlistKeys.includes(k));
 
-  let msg = `🎴 Proposta de troca de ${name}!\n\n`;
-  if (theyHaveWhatINeed.length > 0) {
-    msg += `✅ Eles TÊM ${theyHaveWhatINeed.length} que você PRECISA:\n`;
-    theyHaveWhatINeed.slice(0, 8).forEach(k => { msg += `  • ${formatStickerLabel(k)}\n`; });
-    if (theyHaveWhatINeed.length > 8) msg += `  ... e mais ${theyHaveWhatINeed.length - 8}\n`;
-    msg += '\n';
-  } else {
-    msg += `❌ Eles não têm figurinhas que você precisa no momento\n\n`;
+  const totalForMe   = wishlistHits.length + needsHits.length;
+  const totalForThem = theirWlHits.length  + theirNeedHits.length;
+
+  const mutual = totalForMe > 0 && totalForThem > 0;
+  const scoreLabel = mutual
+    ? '🤝 Troca mútua possível!'
+    : totalForMe   > 0 ? '👀 Eles têm figurinhas para você'
+    : totalForThem > 0 ? '🔄 Você tem figurinhas para eles'
+    : '😕 Sem match no momento';
+  const scoreColor = mutual ? '#27AE60' : totalForMe > 0 ? '#3498DB' : totalForThem > 0 ? '#E67E22' : '#95A5A6';
+
+  const itemRow = (key, highlight) =>
+    `<div style="display:flex;align-items:center;gap:6px;padding:4px 8px;background:${highlight ? '#E74C3C0D' : 'var(--color-background-secondary)'};border-radius:6px;margin-bottom:3px;">
+       ${highlight ? '<span style="font-size:10px;">❤️</span>' : '<span style="font-size:10px;opacity:0.5;">•</span>'}
+       <span style="font-size:12px;color:var(--color-text-primary);flex:1;">${formatStickerLabel(key)}</span>
+     </div>`;
+
+  const section = (title, wlItems, needItems, emptyMsg) => {
+    if (wlItems.length === 0 && needItems.length === 0)
+      return `<div style="font-size:12px;color:var(--color-text-secondary);padding:4px 0 10px;">${emptyMsg}</div>`;
+    let h = '';
+    if (wlItems.length > 0) {
+      h += `<div style="font-size:10px;font-weight:700;color:#E74C3C;margin:0 0 4px;text-transform:uppercase;letter-spacing:0.3px;">❤️ Lista de desejos (${wlItems.length})</div>`;
+      wlItems.slice(0, 6).forEach(k => { h += itemRow(k, true); });
+      if (wlItems.length > 6) h += `<div style="font-size:11px;color:var(--color-text-secondary);padding:1px 8px 4px;">+${wlItems.length - 6} mais</div>`;
+    }
+    if (needItems.length > 0) {
+      if (wlItems.length > 0) h += `<div style="font-size:10px;font-weight:700;color:var(--color-text-secondary);margin:6px 0 4px;text-transform:uppercase;letter-spacing:0.3px;">Outras (${needItems.length})</div>`;
+      needItems.slice(0, 5).forEach(k => { h += itemRow(k, false); });
+      if (needItems.length > 5) h += `<div style="font-size:11px;color:var(--color-text-secondary);padding:1px 8px 4px;">+${needItems.length - 5} mais</div>`;
+    }
+    return h;
+  };
+
+  const bodyHtml = `
+    <div style="background:${scoreColor}18;border:1px solid ${scoreColor}40;border-radius:12px;padding:10px 14px;margin-bottom:14px;text-align:center;">
+      <div style="font-size:14px;font-weight:700;color:${scoreColor};">${scoreLabel}</div>
+      ${mutual ? `<div style="font-size:11px;color:var(--color-text-secondary);margin-top:3px;">${totalForMe} para você · ${totalForThem} para eles</div>` : ''}
+    </div>
+
+    <div style="margin-bottom:12px;">
+      <div style="font-size:11px;font-weight:800;color:var(--color-text-primary);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">✅ ${name} tem para você (${totalForMe})</div>
+      ${section('', wishlistHits, needsHits, 'Nenhuma figurinha deles está na sua lista')}
+    </div>
+
+    <div style="border-top:0.5px solid var(--color-border-tertiary);padding-top:12px;margin-bottom:12px;">
+      <div style="font-size:11px;font-weight:800;color:var(--color-text-primary);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">🔄 Você tem para ${name} (${totalForThem})</div>
+      ${section('', theirWlHits, theirNeedHits, 'Nenhuma das suas duplicatas está na lista deles')}
+    </div>
+
+    ${contact ? `<div style="background:var(--color-background-secondary);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary);">📱 Contato: <strong style="color:var(--color-text-primary);">${escapeHtml(contact)}</strong></div>` : ''}
+  `;
+
+  const titleEl = document.getElementById('trade-match-title');
+  const bodyEl  = document.getElementById('trade-match-body');
+  const waBtn   = document.getElementById('trade-match-whatsapp-btn');
+
+  if (titleEl) titleEl.textContent = `🎴 Match com ${payload.n || 'Usuário'}`;
+  if (bodyEl)  bodyEl.innerHTML = bodyHtml;
+  if (waBtn) {
+    const hasMatch = totalForMe > 0 || totalForThem > 0;
+    waBtn.style.display = hasMatch ? '' : 'none';
+    if (hasMatch) waBtn.onclick = () => shareViaWhatsApp(
+      buildMatchProposalMessage(payload.n || 'Usuário', contact, wishlistHits, needsHits, theirWlHits, theirNeedHits)
+    );
   }
-  if (iHaveWhatTheyNeed.length > 0) {
-    msg += `🔄 Você TEM ${iHaveWhatTheyNeed.length} que eles PRECISAM:\n`;
-    iHaveWhatTheyNeed.slice(0, 8).forEach(k => { msg += `  • ${formatStickerLabel(k)}\n`; });
-    if (iHaveWhatTheyNeed.length > 8) msg += `  ... e mais ${iHaveWhatTheyNeed.length - 8}\n`;
+
+  setTimeout(() => document.getElementById('trade-match-modal')?.classList.add('active'), 300);
+}
+
+function closeTradeMatchModal() {
+  document.getElementById('trade-match-modal')?.classList.remove('active');
+}
+
+function buildMatchProposalMessage(friendName, contact, wishlistHits, needsHits, theirWlHits, theirNeedHits) {
+  const myName = communityProfile.name || 'Eu';
+  const forMe   = [...wishlistHits, ...needsHits];
+  const forThem = [...theirWlHits,  ...theirNeedHits];
+  let msg = `🎴 Proposta de Troca – Copa 2026\n${myName} ↔ ${friendName}\n\n`;
+  if (forMe.length > 0) {
+    msg += `✅ Quero de você (${forMe.length}):\n`;
+    forMe.slice(0, 8).forEach(k => { msg += `• ${formatStickerLabel(k)}\n`; });
+    if (forMe.length > 8) msg += `+${forMe.length - 8} mais\n`;
     msg += '\n';
   }
-  if (payload.c) msg += `📱 Contato: ${payload.c}`;
-
-  setTimeout(() => alert(msg), 600);
+  if (forThem.length > 0) {
+    msg += `🔄 Posso te oferecer (${forThem.length}):\n`;
+    forThem.slice(0, 8).forEach(k => { msg += `• ${formatStickerLabel(k)}\n`; });
+    if (forThem.length > 8) msg += `+${forThem.length - 8} mais\n`;
+    msg += '\n';
+  }
+  if (communityProfile.contact) msg += `📱 Meu contato: ${communityProfile.contact}\n`;
+  if (contact) msg += `📱 Seu contato: ${contact}\n`;
+  msg += '\n_Copa 2026 – Estiva GO_';
+  return msg;
 }
 
 // ============================================================================
