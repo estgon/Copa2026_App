@@ -209,6 +209,7 @@ let offerFilter = (() => {
 let _lpTimer = null;
 let _lpTriggered = false;
 let _lpStartX = 0, _lpStartY = 0;
+let _lpElement = null;
 let _countModalKey = null;
 let _countModalType = null;
 let _countModalVal = 0;
@@ -432,8 +433,11 @@ function stickerPointerDown(key, type, event) {
   _lpTriggered = false;
   _lpStartX = event.clientX;
   _lpStartY = event.clientY;
+  _lpElement = event.currentTarget;
+  if (_lpElement) _lpElement.classList.add('lp-active');
   _lpTimer = setTimeout(() => {
     _lpTriggered = true;
+    _lpClearFeedback();
     openCountModal(key, type);
   }, 800);
 }
@@ -445,15 +449,22 @@ function stickerPointerMove(event) {
   if (Math.sqrt(dx * dx + dy * dy) > 8) {
     clearTimeout(_lpTimer);
     _lpTimer = null;
+    _lpClearFeedback();
   }
 }
 
 function stickerPointerUp() {
   if (_lpTimer) { clearTimeout(_lpTimer); _lpTimer = null; }
+  _lpClearFeedback();
 }
 
 function stickerPointerCancel() {
   if (_lpTimer) { clearTimeout(_lpTimer); _lpTimer = null; }
+  _lpClearFeedback();
+}
+
+function _lpClearFeedback() {
+  if (_lpElement) { _lpElement.classList.remove('lp-active'); _lpElement = null; }
 }
 
 function stickerClick(key, type) {
@@ -2752,32 +2763,50 @@ function compressImage(file, maxPx = 1280) {
 }
 
 async function analyzeStickersPhoto(base64, mediaType) {
+  if (!navigator.onLine) {
+    throw new Error('Sem conexão com a internet. Verifique sua rede e tente novamente.');
+  }
+
   const apiKey = sessionStorage.getItem('anthropicApiKey');
-  const resp = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true'
-    },
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 512,
-      messages: [{
-        role: 'user',
-        content: [
-          { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
-          { type: 'text', text: PHOTO_PROMPT }
-        ]
-      }]
-    })
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+  let resp;
+  try {
+    resp = await fetch('https://api.anthropic.com/v1/messages', {
+      signal: controller.signal,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 512,
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
+            { type: 'text', text: PHOTO_PROMPT }
+          ]
+        }]
+      })
+    });
+  } catch (err) {
+    if (err.name === 'AbortError') throw new Error('Tempo limite excedido (30s). Tente com uma imagem menor.');
+    if (!navigator.onLine) throw new Error('Conexão perdida durante o envio. Verifique sua rede.');
+    throw new Error('Falha na conexão com a API. Tente novamente.');
+  } finally {
+    clearTimeout(timeoutId);
+  }
 
   if (!resp.ok) {
     const err = await resp.json().catch(() => ({}));
     const msg = err.error?.message || `HTTP ${resp.status}`;
     if (resp.status === 401) throw new Error('Chave da API inválida. Verifique nas configurações (⚙️).');
+    if (resp.status === 429) throw new Error('Limite de requisições atingido. Aguarde um momento e tente novamente.');
     throw new Error(msg);
   }
 
@@ -3001,4 +3030,8 @@ document.addEventListener('DOMContentLoaded', () => {
   updateProfileFab();
   checkIncomingTradeLink();
   checkOnboarding();
+
+  // Network status feedback
+  window.addEventListener('offline', () => showToast('📡 Sem conexão — algumas funções indisponíveis.'));
+  window.addEventListener('online',  () => showToast('✅ Conexão restaurada!'));
 });

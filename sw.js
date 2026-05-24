@@ -3,10 +3,11 @@
  * Gerencia cache e funcionalidade offline
  */
 
-const CACHE_NAME = 'estiva-go-copa-v14';
+const CACHE_NAME = 'estiva-go-copa-v15';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
+  './offline.html',
   './styles.css',
   './app.js',
   './manifest.json',
@@ -86,12 +87,13 @@ self.addEventListener('fetch', (event) => {
       .catch(() => {
         return caches.match(event.request)
           .then((cachedResponse) => {
-            return cachedResponse || new Response('Offline - Recurso não disponível', {
+            if (cachedResponse) return cachedResponse;
+            if (event.request.mode === 'navigate') {
+              return caches.match('./offline.html');
+            }
+            return new Response('Offline', {
               status: 503,
-              statusText: 'Service Unavailable',
-              headers: new Headers({
-                'Content-Type': 'text/plain'
-              })
+              headers: new Headers({ 'Content-Type': 'text/plain' })
             });
           });
       })

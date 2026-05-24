@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Sem conexão — Estiva GO</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100dvh;
+      background: linear-gradient(135deg, #111827 0%, #1e0a3c 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: white;
+      padding: max(2rem, env(safe-area-inset-top, 2rem)) 2rem
+               max(2rem, env(safe-area-inset-bottom, 2rem));
+      text-align: center;
+      gap: 0;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: baseline;
+      background: #1f2937;
+      border-radius: 10px;
+      padding: 7px 16px 7px 14px;
+      gap: 6px;
+      margin-bottom: 2.5rem;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    }
+    .logo-we  { font-size: 22px; letter-spacing: 4px; font-weight: 900; color: #fff; }
+    .logo-26  { font-size: 30px; font-weight: 900; color: #fff; }
+
+    .icon {
+      font-size: 64px;
+      margin-bottom: 1.25rem;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      color: #e2e8f0;
+    }
+
+    p {
+      font-size: 14px;
+      color: #94a3b8;
+      line-height: 1.6;
+      max-width: 300px;
+      margin-bottom: 2rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 6px 20px rgba(102,126,234,0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn:active { transform: translateY(1px); box-shadow: 0 3px 10px rgba(102,126,234,0.3); }
+
+    .hint {
+      margin-top: 1.5rem;
+      font-size: 12px;
+      color: #475569;
+      line-height: 1.5;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50%       { transform: scale(1.08); opacity: 0.8; }
+    }
+  </style>
+</head>
+<body>
+  <div class="logo">
+    <span class="logo-we">WE ARE</span>
+    <span class="logo-26">26</span>
+  </div>
+
+  <div class="icon">📡</div>
+
+  <h1>Sem conexão</h1>
+  <p>Você está offline. O álbum e seus dados salvos continuam disponíveis — só não é possível usar funções que precisam de internet.</p>
+
+  <a class="btn" href="./index.html">
+    ↩ Voltar ao álbum
+  </a>
+
+  <p class="hint">
+    Seus dados estão salvos localmente e<br>
+    nada foi perdido. Reconecte e tente novamente.
+  </p>
+
+  <script>
+    // Volta automaticamente quando a rede voltar
+    window.addEventListener('online', () => {
+      window.location.href = './index.html';
+    });
+  </script>
+</body>
+</html>

@@ -1,4 +1,8 @@
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin    { to { transform: rotate(360deg); } }
+@keyframes lp-ring {
+  0%   { box-shadow: 0 0 0 0   rgba(102,126,234,0.75), inset 0 0 0 1.5px rgba(102,126,234,0.2); }
+  100% { box-shadow: 0 0 0 7px rgba(102,126,234,0),    inset 0 0 0 1.5px rgba(102,126,234,0.7); }
+}
 
 /* Variables and Theme */
 :root {
@@ -271,6 +275,11 @@ button:active:not(:disabled) {
   min-height: 46px;
 }
 
+.sticker-button.lp-active {
+  animation: lp-ring 0.8s ease-out forwards;
+  border-color: rgba(102,126,234,0.8) !important;
+}
+
 .dup-indicator {
   position: absolute;
   top: -8px;
@@ -278,8 +287,8 @@ button:active:not(:disabled) {
   background: #E74C3C;
   color: white;
   border-radius: 50%;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -289,10 +298,18 @@ button:active:not(:disabled) {
   border: 2px solid white;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s;
+  /* área de toque estendida sem afetar o layout */
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dup-indicator::before {
+  content: '';
+  position: absolute;
+  inset: -10px;
 }
 
 .dup-indicator:hover {
-  transform: scale(1.1);
+  transform: scale(1.15);
 }
 
 /* Dropdown Menu for Duplicates */
