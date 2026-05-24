@@ -36,7 +36,7 @@ const countryColors = {
 
 const flagEmojis = {
   'MEX': '🇲🇽', 'ZAF': '🇿🇦', 'KOR': '🇰🇷', 'CZE': '🇨🇿', 'CAN': '🇨🇦', 'BIH': '🇧🇦', 'QAT': '🇶🇦', 'CHE': '🇨🇭',
-  'BRA': '🇧🇷', 'MAR': '🇲🇦', 'HTI': '🇭🇹', 'GBR': '🇬🇧', 'GB-ENG': '🏴', 'USA': '🇺🇸', 'PRY': '🇵🇾', 'AUS': '🇦🇺',
+  'BRA': '🇧🇷', 'MAR': '🇲🇦', 'HTI': '🇭🇹', 'GBR': '🏴󠁧󠁢󠁳󠁣󠁴󠁿', 'GB-ENG': '🏴', 'USA': '🇺🇸', 'PRY': '🇵🇾', 'AUS': '🇦🇺',
   'TUR': '🇹🇷', 'DEU': '🇩🇪', 'CUW': '🇨🇼', 'CIV': '🇨🇮', 'ECU': '🇪🇨', 'NLD': '🇳🇱', 'JPN': '🇯🇵', 'SWE': '🇸🇪',
   'TUN': '🇹🇳', 'BEL': '🇧🇪', 'EGY': '🇪🇬', 'IRN': '🇮🇷', 'NZL': '🇳🇿', 'ESP': '🇪🇸', 'CPV': '🇨🇻', 'SAU': '🇸🇦',
   'URY': '🇺🇾', 'FRA': '🇫🇷', 'SEN': '🇸🇳', 'IRQ': '🇮🇶', 'NOR': '🇳🇴', 'ARG': '🇦🇷', 'DZA': '🇩🇿', 'AUT': '🇦🇹',
@@ -45,7 +45,7 @@ const flagEmojis = {
 
 const iso3ToIso2 = {
   MEX: 'mx', ZAF: 'za', KOR: 'kr', CZE: 'cz', CAN: 'ca', BIH: 'ba', QAT: 'qa', CHE: 'ch',
-  BRA: 'br', MAR: 'ma', HTI: 'ht', GBR: 'gb', 'GB-ENG': 'gb-eng', USA: 'us', PRY: 'py', AUS: 'au',
+  BRA: 'br', MAR: 'ma', HTI: 'ht', GBR: 'gb-sct', 'GB-ENG': 'gb-eng', USA: 'us', PRY: 'py', AUS: 'au',
   TUR: 'tr', DEU: 'de', CUW: 'cw', CIV: 'ci', ECU: 'ec', NLD: 'nl', JPN: 'jp', SWE: 'se',
   TUN: 'tn', BEL: 'be', EGY: 'eg', IRN: 'ir', NZL: 'nz', ESP: 'es', CPV: 'cv', SAU: 'sa',
   URY: 'uy', FRA: 'fr', SEN: 'sn', IRQ: 'iq', NOR: 'no', ARG: 'ar', DZA: 'dz', AUT: 'at',
