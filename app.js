@@ -1173,7 +1173,8 @@ function updateStats() {
   document.getElementById('missing').textContent = missing;
   document.getElementById('percentage').textContent = percentage + '%';
   document.getElementById('duplicates').textContent = totalDuplicates;
-  document.getElementById('progress-bar').style.width = percentage + '%';
+  const pbEl = document.getElementById('progress-bar');
+  if (pbEl) pbEl.style.width = percentage + '%';
 
   document.getElementById('stats-paises').textContent = paises + '/960';
   document.getElementById('stats-refri').textContent = refri + '/14';
@@ -1197,11 +1198,7 @@ function updateStats() {
  */
 function switchTab(tab) {
   document.getElementById('dashboard-content').style.display = tab === 'dashboard' ? 'block' : 'none';
-  document.getElementById('paises-content').style.display = tab === 'paises' ? 'block' : 'none';
-  document.getElementById('refri-content').style.display = tab === 'refri' ? 'block' : 'none';
-  document.getElementById('history-content').style.display = tab === 'history' ? 'block' : 'none';
-  document.getElementById('legends-content').style.display = tab === 'legends' ? 'block' : 'none';
-  document.getElementById('relatorios-content').style.display = tab === 'relatorios' ? 'block' : 'none';
+  document.getElementById('album-content').style.display = tab === 'album' ? 'block' : 'none';
   document.getElementById('comunidade-content').style.display = tab === 'comunidade' ? 'block' : 'none';
 
   document.querySelectorAll('[id^="tab-"]').forEach(btn => {
@@ -1212,7 +1209,13 @@ function switchTab(tab) {
   if (activeBtn) activeBtn.classList.add('active');
 
   if (tab === 'comunidade') renderComunidade();
-  if (tab === 'legends') renderLegends();
+  if (tab === 'album') {
+    renderPaises();
+    renderRefri();
+    renderHistory();
+    renderLegends();
+  }
+  if (tab === 'dashboard') updateDashboardView();
 }
 
 // ============================================================================
@@ -2640,7 +2643,6 @@ document.addEventListener('DOMContentLoaded', () => {
   renderLegends();
   renderTrocas();
   updateStats();
-  switchDashboardView('continents');
   checkIncomingTradeLink();
   checkOnboarding();
 });

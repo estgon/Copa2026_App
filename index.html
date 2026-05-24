@@ -132,96 +132,80 @@
       </div>
     </div>
 
-    <!-- Progress Bar -->
-    <div class="progress-container">
-      <h2>Progresso Geral</h2>
-      <div class="progress-bar">
-        <div id="progress-bar" class="progress-fill"></div>
-      </div>
-    </div>
-
-    <!-- Dashboard View Toggle -->
-    <div style="display: flex; gap: 12px; margin-bottom: 1.5rem; padding: 1rem; background: var(--color-background-primary); border-radius: 12px; border: 1px solid var(--color-border-tertiary);">
-      <button onclick="switchDashboardView('groups')" style="flex: 1; padding: 12px 16px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 700;" id="btn-groups">📊 Por Grupos</button>
-      <button onclick="switchDashboardView('continents')" style="flex: 1; padding: 12px 16px; background: var(--color-background-secondary); color: var(--color-text-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 700;" id="btn-continents">🌍 Por Continente</button>
-    </div>
-
-    <!-- Dashboard Statistics -->
-    <div class="card">
-      <h2 id="view-title">Por Continente</h2>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;" id="view-stats"></div>
-    </div>
-
-    <!-- Category Stats -->
-    <div class="card">
-      <h2>Por Categoria</h2>
-      <div class="category-grid">
-        <div class="category-card" style="background: linear-gradient(135deg, #667eea10 0%, #764ba210 100%); border-color: #667eea30;">
-          <div class="title" style="color: #667eea;">Países</div>
-          <div class="count" style="color: #667eea;" id="stats-paises">0/960</div>
-          <div class="bar"><div id="bar-paises" class="bar-fill" style="background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);"></div></div>
-        </div>
-        <div class="category-card" style="background: linear-gradient(135deg, #E74C3C10 0%, #C0392B10 100%); border-color: #E74C3C30;">
-          <div class="title" style="color: #E74C3C;">🥤 Refri</div>
-          <div class="count" style="color: #E74C3C;" id="stats-refri">0/14</div>
-          <div class="bar"><div id="bar-refri" class="bar-fill" style="background: linear-gradient(90deg, #E74C3C 0%, #C0392B 100%);"></div></div>
-        </div>
-        <div class="category-card" style="background: linear-gradient(135deg, #3498DB10 0%, #2980B910 100%); border-color: #3498DB30;">
-          <div class="title" style="color: #3498DB;">🏆 World Cup</div>
-          <div class="count" style="color: #3498DB;" id="stats-history">0/20</div>
-          <div class="bar"><div id="bar-history" class="bar-fill" style="background: linear-gradient(90deg, #3498DB 0%, #2980B9 100%);"></div></div>
-        </div>
-        <div class="category-card" style="background: linear-gradient(135deg, #9B59B610 0%, #8E44AD10 100%); border-color: #9B59B630;">
-          <div class="title" style="color: #9B59B6;">⭐ Legends</div>
-          <div class="count" style="color: #9B59B6;" id="stats-legends">0/80</div>
-          <div class="bar"><div id="bar-legends" class="bar-fill" style="background: linear-gradient(90deg, #9B59B6 0%, #8E44AD 100%);"></div></div>
-        </div>
-      </div>
-    </div>
-
     <!-- Tabs Navigation -->
     <div class="tab-container">
-      <button class="tab-button active" id="tab-dashboard" onclick="switchTab('dashboard')">Dashboard</button>
-      <button class="tab-button" id="tab-paises" onclick="switchTab('paises')">Países</button>
-      <button class="tab-button" id="tab-refri" onclick="switchTab('refri')">Refri</button>
-      <button class="tab-button" id="tab-history" onclick="switchTab('history')">World Cup</button>
-      <button class="tab-button" id="tab-legends" onclick="switchTab('legends')">Legends</button>
-      <button class="tab-button" id="tab-relatorios" onclick="switchTab('relatorios')">Relatórios</button>
+      <button class="tab-button" id="tab-dashboard" onclick="switchTab('dashboard')">Dashboard</button>
+      <button class="tab-button active" id="tab-album" onclick="switchTab('album')">Meu álbum da Copa</button>
       <button class="tab-button" id="tab-comunidade" onclick="switchTab('comunidade')">Comunidade</button>
     </div>
 
     <!-- Dashboard Content -->
-    <div id="dashboard-content" style="display: block;">
-      <div style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 1.5rem; border-radius: 16px; border: 1px solid #667eea30; text-align: center;">
+    <div id="dashboard-content" style="display: none; padding-bottom: 2rem;">
+      <div style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 1.5rem; border-radius: 16px; border: 1px solid #667eea30; text-align: center; margin-bottom: 1.5rem;">
         <h3 style="margin: 0 0 0.5rem; font-size: 16px; font-weight: 700; color: #667eea;">🏆 Sua Jornada na Copa 2026</h3>
         <p style="margin: 0; font-size: 13px; color: var(--color-text-secondary);">Colecione todas as figurinhas de todos os continentes</p>
       </div>
+
+      <div style="display: flex; gap: 12px; margin-bottom: 1.5rem; padding: 1rem; background: var(--color-background-primary); border-radius: 12px; border: 1px solid var(--color-border-tertiary);">
+        <button onclick="switchDashboardView('groups')" style="flex: 1; padding: 12px 16px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 700;" id="btn-groups">📊 Por Grupos</button>
+        <button onclick="switchDashboardView('continents')" style="flex: 1; padding: 12px 16px; background: var(--color-background-secondary); color: var(--color-text-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 700;" id="btn-continents">🌍 Por Continente</button>
+      </div>
+
+      <div class="card">
+        <h2 id="view-title">Por Continente</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;" id="view-stats"></div>
+      </div>
+
+      <div class="card">
+        <h2>Por Categoria</h2>
+        <div class="category-grid">
+          <div class="category-card" style="background: linear-gradient(135deg, #667eea10 0%, #764ba210 100%); border-color: #667eea30;">
+            <div class="title" style="color: #667eea;">Países</div>
+            <div class="count" style="color: #667eea;" id="stats-paises">0/960</div>
+            <div class="bar"><div id="bar-paises" class="bar-fill" style="background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);"></div></div>
+          </div>
+          <div class="category-card" style="background: linear-gradient(135deg, #E74C3C10 0%, #C0392B10 100%); border-color: #E74C3C30;">
+            <div class="title" style="color: #E74C3C;">🥤 Refri</div>
+            <div class="count" style="color: #E74C3C;" id="stats-refri">0/14</div>
+            <div class="bar"><div id="bar-refri" class="bar-fill" style="background: linear-gradient(90deg, #E74C3C 0%, #C0392B 100%);"></div></div>
+          </div>
+          <div class="category-card" style="background: linear-gradient(135deg, #3498DB10 0%, #2980B910 100%); border-color: #3498DB30;">
+            <div class="title" style="color: #3498DB;">🏆 World Cup</div>
+            <div class="count" style="color: #3498DB;" id="stats-history">0/20</div>
+            <div class="bar"><div id="bar-history" class="bar-fill" style="background: linear-gradient(90deg, #3498DB 0%, #2980B9 100%);"></div></div>
+          </div>
+          <div class="category-card" style="background: linear-gradient(135deg, #9B59B610 0%, #8E44AD10 100%); border-color: #9B59B630;">
+            <div class="title" style="color: #9B59B6;">⭐ Legends</div>
+            <div class="count" style="color: #9B59B6;" id="stats-legends">0/80</div>
+            <div class="bar"><div id="bar-legends" class="bar-fill" style="background: linear-gradient(90deg, #9B59B6 0%, #8E44AD 100%);"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 1rem;">
+        <h2>📊 Relatório por Grupos</h2>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 0.75rem;">
+          <button onclick="generateReport('obtained')" style="padding: 10px 18px; background: linear-gradient(135deg, #27AE60 0%, #229954 100%); color: white; border: none; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 700;">✅ Obtidas</button>
+          <button onclick="generateReport('missing')" style="padding: 10px 18px; background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%); color: white; border: none; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 700;">❌ Faltantes</button>
+        </div>
+      </div>
     </div>
 
-    <!-- Countries Content -->
-    <div id="paises-content" style="display: none; padding-bottom: 2rem;">
+    <!-- Meu álbum da Copa -->
+    <div id="album-content" style="display: block; padding-bottom: 2rem;">
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 1rem;">
         <input type="text" id="search-paises" placeholder="País, código ou jogador..." style="padding: 12px; border: 0.5px solid var(--color-border-tertiary); border-radius: 8px; font-size: 14px; box-sizing: border-box;">
         <input type="number" id="search-number" placeholder="Número..." min="1" max="20" style="padding: 12px; border: 0.5px solid var(--color-border-tertiary); border-radius: 8px; font-size: 14px; box-sizing: border-box;">
       </div>
       <div id="paises-list"></div>
-    </div>
 
-    <!-- Refri Content -->
-    <div id="refri-content" style="display: none; padding-bottom: 2rem;">
-      <h2 style="font-size: 14px; font-weight: 700; background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%); color: white; padding: 12px 16px; border-radius: 12px; margin-bottom: 12px;">🥤 Refri (14)</h2>
+      <h2 style="font-size: 14px; font-weight: 700; background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%); color: white; padding: 12px 16px; border-radius: 12px; margin: 1.5rem 0 12px;">🥤 Refri (14)</h2>
       <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px;" id="refri-list"></div>
-    </div>
 
-    <!-- History Content -->
-    <div id="history-content" style="display: none; padding-bottom: 2rem;">
-      <h2 style="font-size: 14px; font-weight: 700; background: linear-gradient(135deg, #3498DB 0%, #2980B9 100%); color: white; padding: 12px 16px; border-radius: 12px; margin-bottom: 12px;">🏆 World Cup History (20)</h2>
+      <h2 style="font-size: 14px; font-weight: 700; background: linear-gradient(135deg, #3498DB 0%, #2980B9 100%); color: white; padding: 12px 16px; border-radius: 12px; margin: 1.5rem 0 12px;">🏆 World Cup History (20)</h2>
       <div class="history-grid" id="history-list"></div>
-    </div>
 
-    <!-- Legends Content -->
-    <div id="legends-content" style="display: none; padding-bottom: 2rem;">
-      <h2 style="font-size: 14px; font-weight: 700; background: linear-gradient(135deg, #9B59B6 0%, #8E44AD 100%); color: white; padding: 12px 16px; border-radius: 12px; margin-bottom: 12px;">⭐ Legends (20 jogadores × 4 raridades = 80)</h2>
+      <h2 style="font-size: 14px; font-weight: 700; background: linear-gradient(135deg, #9B59B6 0%, #8E44AD 100%); color: white; padding: 12px 16px; border-radius: 12px; margin: 1.5rem 0 12px;">⭐ Legends (20 jogadores × 4 raridades = 80)</h2>
       <div id="legends-list"></div>
     </div>
 
@@ -229,33 +213,6 @@
     <div id="proposal-bar" style="display:none;position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#667eea,#764ba2);padding:12px 16px;z-index:50;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 -4px 20px rgba(102,126,234,0.4);">
       <span id="proposal-count" style="color:white;font-size:13px;font-weight:600;">Selecione figurinhas</span>
       <button id="proposal-generate-btn" onclick="openProposalModal()" style="padding:10px 18px;background:white;color:#667eea;border:none;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700;opacity:0.4;">Gerar Proposta →</button>
-    </div>
-
-    <!-- Reports Content -->
-    <div id="relatorios-content" style="display: none; padding-bottom: 2rem;">
-      <h2 style="font-size: 16px; font-weight: 700; margin-bottom: 1.5rem;">Gerar Relatórios</h2>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
-        <div style="padding: 1.5rem; background: linear-gradient(135deg, #27AE6015 0%, #27AE6030 100%); border-radius: 16px; border: 1px solid #27AE6040; text-align: center;">
-          <div style="font-size: 36px; margin-bottom: 8px;">✅</div>
-          <h3 style="margin: 0 0 8px; font-size: 14px; font-weight: 700;">Obtidas</h3>
-          <button onclick="generateReport('obtained')" style="width: 100%; padding: 10px; background: linear-gradient(135deg, #27AE60 0%, #229954 100%); color: white; border: none; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 700;">Gerar</button>
-        </div>
-        <div style="padding: 1.5rem; background: linear-gradient(135deg, #E74C3C15 0%, #E74C3C30 100%); border-radius: 16px; border: 1px solid #E74C3C40; text-align: center;">
-          <div style="font-size: 36px; margin-bottom: 8px;">❌</div>
-          <h3 style="margin: 0 0 8px; font-size: 14px; font-weight: 700;">Faltantes</h3>
-          <button onclick="generateReport('missing')" style="width: 100%; padding: 10px; background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%); color: white; border: none; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 700;">Gerar</button>
-        </div>
-        <div style="padding: 1.5rem; background: linear-gradient(135deg, #3498DB15 0%, #3498DB30 100%); border-radius: 16px; border: 1px solid #3498DB40; text-align: center;">
-          <div style="font-size: 36px; margin-bottom: 8px;">🔄</div>
-          <h3 style="margin: 0 0 8px; font-size: 14px; font-weight: 700;">Para Troca</h3>
-          <button onclick="generateReport('duplicates')" style="width: 100%; padding: 10px; background: linear-gradient(135deg, #3498DB 0%, #2980B9 100%); color: white; border: none; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 700;">Gerar</button>
-        </div>
-        <div style="padding: 1.5rem; background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); border-radius: 16px; border: 1px solid #667eea40; text-align: center;">
-          <div style="font-size: 36px; margin-bottom: 8px;">📊</div>
-          <h3 style="margin: 0 0 8px; font-size: 14px; font-weight: 700;">Completo</h3>
-          <button onclick="generateReport('complete')" style="width: 100%; padding: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 700;">Gerar</button>
-        </div>
-      </div>
     </div>
 
     <!-- Comunidade Content -->
