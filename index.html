@@ -506,6 +506,23 @@
   </div>
 </div>
 
+<!-- Sticker Count Modal -->
+<div id="sticker-count-modal" class="modal">
+  <div class="modal-content" style="max-width:300px;width:100%;text-align:center;">
+    <h2 style="margin:0 0 6px;font-size:15px;font-weight:800;">Quantidade</h2>
+    <p id="count-modal-label" style="font-size:12px;color:var(--color-text-secondary);margin:0 0 20px;line-height:1.4;"></p>
+    <div style="display:flex;align-items:center;justify-content:center;gap:24px;margin-bottom:24px;">
+      <button onclick="changeModalCount(-1)" style="width:46px;height:46px;border-radius:50%;background:var(--color-background-secondary);border:1.5px solid var(--color-border-tertiary);font-size:24px;font-weight:700;cursor:pointer;color:var(--color-text-primary);display:flex;align-items:center;justify-content:center;">−</button>
+      <span id="count-modal-value" style="font-size:40px;font-weight:900;min-width:56px;display:inline-block;color:var(--color-text-primary);"></span>
+      <button onclick="changeModalCount(1)" style="width:46px;height:46px;border-radius:50%;background:var(--color-background-secondary);border:1.5px solid var(--color-border-tertiary);font-size:24px;font-weight:700;cursor:pointer;color:var(--color-text-primary);display:flex;align-items:center;justify-content:center;">+</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <button onclick="setModalCountZero()" style="padding:12px;background:#E74C3C;color:white;border:none;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700;">Não tenho</button>
+      <button onclick="closeCountModal()" style="padding:12px;background:#27AE60;color:white;border:none;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700;">Confirmar</button>
+    </div>
+  </div>
+</div>
+
 <!-- External Scripts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="app.js"></script>

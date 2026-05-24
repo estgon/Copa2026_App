@@ -203,6 +203,12 @@ let offerFilter = (() => {
   try { const f = JSON.parse(localStorage.getItem('copaOfferFilter') || '{}'); return { paises: f.paises !== false, refri: f.refri !== false, history: f.history !== false, legends: f.legends !== false }; }
   catch { return { paises: true, refri: true, history: true, legends: true }; }
 })();
+let _lpTimer = null;
+let _lpTriggered = false;
+let _lpStartX = 0, _lpStartY = 0;
+let _countModalKey = null;
+let _countModalType = null;
+let _countModalVal = 0;
 
 migrateLegacyData();
 
@@ -408,6 +414,97 @@ function renderWishlist() {
       <button onclick="toggleWishlist('${key}', event)" title="Remover" style="background:none;border:none;cursor:pointer;font-size:16px;color:var(--color-text-secondary);padding:2px;line-height:1;flex-shrink:0;">✕</button>
     </div>`;
   }).join('');
+}
+
+// ---- Count-based sticker interaction ----
+
+function stickerPointerDown(key, type, event) {
+  _lpTriggered = false;
+  _lpStartX = event.clientX;
+  _lpStartY = event.clientY;
+  _lpTimer = setTimeout(() => {
+    _lpTriggered = true;
+    openCountModal(key, type);
+  }, 800);
+}
+
+function stickerPointerMove(event) {
+  if (!_lpTimer) return;
+  const dx = event.clientX - _lpStartX;
+  const dy = event.clientY - _lpStartY;
+  if (Math.sqrt(dx * dx + dy * dy) > 8) {
+    clearTimeout(_lpTimer);
+    _lpTimer = null;
+  }
+}
+
+function stickerPointerUp() {
+  if (_lpTimer) { clearTimeout(_lpTimer); _lpTimer = null; }
+}
+
+function stickerPointerCancel() {
+  if (_lpTimer) { clearTimeout(_lpTimer); _lpTimer = null; }
+}
+
+function stickerClick(key, type) {
+  if (_lpTriggered) { _lpTriggered = false; return; }
+  if (!stickers[key]) {
+    stickers[key] = true;
+    if (wishlist.has(key)) { wishlist.delete(key); saveWishlist(); }
+  } else {
+    duplicates[key] = (duplicates[key] || 0) + 1;
+  }
+  saveData();
+  if (type === 'country') renderPaises();
+  else if (type === 'refri') renderRefri();
+  else if (type === 'history') renderHistory();
+  else if (type === 'legend') renderLegends();
+  renderTrocas();
+}
+
+function openCountModal(key, type) {
+  _countModalKey = key;
+  _countModalType = type;
+  _countModalVal = stickers[key] ? 1 + (duplicates[key] || 0) : 0;
+  document.getElementById('count-modal-label').textContent = formatStickerLabel(key);
+  document.getElementById('count-modal-value').textContent = _countModalVal;
+  document.getElementById('sticker-count-modal').classList.add('active');
+}
+
+function closeCountModal() {
+  const key = _countModalKey;
+  const type = _countModalType;
+  const count = _countModalVal;
+  _countModalKey = null;
+  _countModalType = null;
+  _countModalVal = 0;
+  document.getElementById('sticker-count-modal').classList.remove('active');
+  if (!key) return;
+  if (count === 0) {
+    delete stickers[key];
+    delete duplicates[key];
+  } else {
+    stickers[key] = true;
+    if (count > 1) duplicates[key] = count - 1;
+    else delete duplicates[key];
+  }
+  if (stickers[key] && wishlist.has(key)) { wishlist.delete(key); saveWishlist(); }
+  saveData();
+  if (type === 'country') renderPaises();
+  else if (type === 'refri') renderRefri();
+  else if (type === 'history') renderHistory();
+  else if (type === 'legend') renderLegends();
+  renderTrocas();
+}
+
+function changeModalCount(delta) {
+  _countModalVal = Math.max(0, _countModalVal + delta);
+  document.getElementById('count-modal-value').textContent = _countModalVal;
+}
+
+function setModalCountZero() {
+  _countModalVal = 0;
+  document.getElementById('count-modal-value').textContent = 0;
 }
 
 function escapeHtml(text) {
@@ -832,18 +929,20 @@ function renderPaises() {
         const key = `${code}-${i}`;
         const inWishlist = wishlist.has(key);
         const safeKey = key.replace(/[^a-zA-Z0-9]/g, '-');
-        const dupMenu = `
-          <div class="dup-menu" id="dup-${code}-${i}">
-            <button onclick="event.stopPropagation(); addDuplicate('${code}', ${i}, 'country')" style="padding:4px 8px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:4px;cursor:pointer;font-size:11px;font-weight:500;color:var(--color-text-primary);">+1</button>
-            <div style="font-size:11px;text-align:center;font-weight:700;color:var(--color-text-primary);">${dupCount}</div>
-            <button onclick="event.stopPropagation(); removeDuplicate('${code}', ${i}, 'country')" style="padding:4px 8px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:4px;cursor:pointer;font-size:11px;font-weight:500;color:var(--color-text-primary);">-1</button>
-          </div>`;
+        const totalCount = checked ? 1 + (duplicates[key] || 0) : 0;
 
-        groupHtml += `<div data-sticker-wrapper="1" style="position:relative;${inWishlist ? 'outline:1.5px solid #E74C3C60;border-radius:6px;' : ''}">
-          <button onclick="toggleSticker('${code}', ${i}, 'country')" class="sticker-button ${checked ? 'checked' : ''}" style="${btnStyle}${borderPart}background:${btnBg};color:${btnColor};box-shadow:${btnShadow};">${btnContent}</button>
+        groupHtml += `<div data-sticker-wrapper="1" style="position:relative;${!checked && inWishlist ? 'outline:1.5px solid #E74C3C60;border-radius:6px;' : ''}">
+          <button
+            onpointerdown="stickerPointerDown('${key}','country',event)"
+            onpointermove="stickerPointerMove(event)"
+            onpointerup="stickerPointerUp()"
+            onpointercancel="stickerPointerCancel()"
+            onclick="stickerClick('${key}','country')"
+            oncontextmenu="return false"
+            class="sticker-button ${checked ? 'checked' : ''}" style="-webkit-user-select:none;user-select:none;touch-action:manipulation;${btnStyle}${borderPart}background:${btnBg};color:${btnColor};box-shadow:${btnShadow};">${btnContent}</button>
           ${legendPlayer ? `<div title="${escapeHtml(legendPlayer.name)} – Legend" style="position:absolute;top:-5px;left:-5px;background:linear-gradient(135deg,#F1C40F,#E67E22);color:#1a1200;border-radius:50%;width:14px;height:14px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;border:1.5px solid white;box-shadow:0 1px 6px #F1C40F80;pointer-events:none;z-index:2;">★</div>` : ''}
           ${!checked ? `<button id="wl-${safeKey}" onclick="toggleWishlist('${key}', event)" title="${inWishlist ? 'Remover da lista de desejos' : 'Adicionar à lista de desejos'}" style="position:absolute;bottom:1px;right:1px;background:none;border:none;cursor:pointer;font-size:9px;padding:2px;line-height:1;z-index:3;opacity:${inWishlist ? '1' : '0.55'};">${inWishlist ? '❤️' : '🤍'}</button>` : ''}
-          ${checked ? `<div class="dup-indicator" onclick="event.stopPropagation(); document.getElementById('dup-${code}-${i}').classList.toggle('active');">+</div>${dupMenu}` : ''}
+          ${checked ? `<span style="position:absolute;top:-6px;right:-6px;background:#E74C3C;color:white;border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:2px solid white;pointer-events:none;z-index:4;">${totalCount}</span>` : ''}
         </div>`;
       }
 
@@ -873,19 +972,22 @@ function renderRefri() {
     const inWishlist = wishlist.has(key);
     const safeKey = key.replace(/[^a-zA-Z0-9]/g, '-');
 
+    const totalCount = checked ? 1 + dupCount : 0;
     html += `<div data-sticker-wrapper="1" style="position:relative;${!checked && inWishlist ? 'outline:1.5px solid #E74C3C60;border-radius:14px;' : ''}">
-      <button onclick="toggleSticker('', ${i}, 'refri')" class="refri-card ${checked ? 'checked' : ''}" style="background: ${checked ? '#E74C3C' : 'var(--color-background-secondary)'}; box-shadow: ${checked ? '0 4px 14px #E74C3C50' : 'none'};">
+      <button
+        onpointerdown="stickerPointerDown('${key}','refri',event)"
+        onpointermove="stickerPointerMove(event)"
+        onpointerup="stickerPointerUp()"
+        onpointercancel="stickerPointerCancel()"
+        onclick="stickerClick('${key}','refri')"
+        oncontextmenu="return false"
+        class="refri-card ${checked ? 'checked' : ''}" style="-webkit-user-select:none;user-select:none;touch-action:manipulation;background: ${checked ? '#E74C3C' : 'var(--color-background-secondary)'}; box-shadow: ${checked ? '0 4px 14px #E74C3C50' : 'none'};">
         <div class="refri-card__number" style="color: ${checked ? 'rgba(255,255,255,0.65)' : 'var(--color-text-secondary)'};">${label}</div>
         <div class="refri-card__flag">${flagHtml(player.code, { size: '1.8em' })}</div>
         <div class="refri-card__name" style="color: ${checked ? 'white' : 'var(--color-text-primary)'};">${escapeHtml(player.name)}</div>
       </button>
       ${!checked ? `<button id="wl-${safeKey}" onclick="toggleWishlist('${key}', event)" title="${inWishlist ? 'Remover da lista de desejos' : 'Adicionar à lista de desejos'}" style="position:absolute;bottom:2px;right:2px;background:none;border:none;cursor:pointer;font-size:10px;padding:2px;line-height:1;z-index:3;opacity:${inWishlist ? '1' : '0.55'};">${inWishlist ? '❤️' : '🤍'}</button>` : ''}
-      ${checked ? `<div class="dup-indicator" style="background: #E74C3C;" onclick="event.stopPropagation(); document.getElementById('dup-refri-${i}').classList.toggle('active');">+</div>
-      <div class="dup-menu" id="dup-refri-${i}">
-        <button onclick="event.stopPropagation(); addDuplicate('', ${i}, 'refri')" style="padding: 4px 8px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 500;">+1</button>
-        <div style="font-size: 11px; text-align: center; font-weight: 700; color: var(--color-text-primary);">${dupCount}</div>
-        <button onclick="event.stopPropagation(); removeDuplicate('', ${i}, 'refri')" style="padding: 4px 8px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 500;">-1</button>
-      </div>` : ''}
+      ${checked ? `<span style="position:absolute;top:-6px;right:-6px;background:#E74C3C;color:white;border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:2px solid white;pointer-events:none;z-index:4;">${totalCount}</span>` : ''}
     </div>`;
   }
   document.getElementById('refri-list').innerHTML = html;
@@ -902,15 +1004,18 @@ function renderHistory() {
     const dupCount = duplicates[key] || 0;
     const inWishlist = wishlist.has(key);
     const safeKey = key.replace(/[^a-zA-Z0-9]/g, '-');
+    const totalCount = checked ? 1 + dupCount : 0;
     html += `<div data-sticker-wrapper="1" style="position:relative;${!checked && inWishlist ? 'outline:1.5px solid #E74C3C60;border-radius:6px;' : ''}">
-      <button onclick="toggleSticker('', ${i}, 'history')" class="sticker-button ${checked ? 'checked' : ''}" style="background: ${checked ? '#3498DB' : 'var(--color-background-secondary)'}; color: ${checked ? 'white' : 'var(--color-text-primary)'}; box-shadow: ${checked ? '0 4px 12px #3498DB40' : 'none'};">FWC${i}</button>
+      <button
+        onpointerdown="stickerPointerDown('${key}','history',event)"
+        onpointermove="stickerPointerMove(event)"
+        onpointerup="stickerPointerUp()"
+        onpointercancel="stickerPointerCancel()"
+        onclick="stickerClick('${key}','history')"
+        oncontextmenu="return false"
+        class="sticker-button ${checked ? 'checked' : ''}" style="-webkit-user-select:none;user-select:none;touch-action:manipulation;background: ${checked ? '#3498DB' : 'var(--color-background-secondary)'}; color: ${checked ? 'white' : 'var(--color-text-primary)'}; box-shadow: ${checked ? '0 4px 12px #3498DB40' : 'none'};">FWC${i}</button>
       ${!checked ? `<button id="wl-${safeKey}" onclick="toggleWishlist('${key}', event)" title="${inWishlist ? 'Remover da lista de desejos' : 'Adicionar à lista de desejos'}" style="position:absolute;bottom:1px;right:1px;background:none;border:none;cursor:pointer;font-size:9px;padding:2px;line-height:1;z-index:3;opacity:${inWishlist ? '1' : '0.55'};">${inWishlist ? '❤️' : '🤍'}</button>` : ''}
-      ${checked ? `<div class="dup-indicator" style="background: #3498DB;" onclick="event.stopPropagation(); document.getElementById('dup-history-${i}').classList.toggle('active');">+</div>
-      <div class="dup-menu" id="dup-history-${i}">
-        <button onclick="event.stopPropagation(); addDuplicate('', ${i}, 'history')" style="padding: 4px 8px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 500;">+1</button>
-        <div style="font-size: 11px; text-align: center; font-weight: 700;">${dupCount}</div>
-        <button onclick="event.stopPropagation(); removeDuplicate('', ${i}, 'history')" style="padding: 4px 8px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 500;">-1</button>
-      </div>` : ''}
+      ${checked ? `<span style="position:absolute;top:-6px;right:-6px;background:#3498DB;color:white;border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:2px solid white;pointer-events:none;z-index:4;">${totalCount}</span>` : ''}
     </div>`;
   }
   document.getElementById('history-list').innerHTML = html;
@@ -931,19 +1036,21 @@ function renderLegends() {
       const dupCount = duplicates[key] || 0;
       const inWishlist = wishlist.has(key);
       const safeKey = key.replace(/[^a-zA-Z0-9]/g, '-');
+      const totalCount = checked ? 1 + dupCount : 0;
       html += `<div data-sticker-wrapper="1" style="position:relative;${!checked && inWishlist ? 'outline:1.5px solid #E74C3C60;border-radius:8px;' : ''}">`;
-      html += `<button onclick="toggleLegendSticker(${idx},'${rarity.id}')" style="width:100%;padding:10px 4px;border:2px solid ${rarity.color};border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;text-align:center;background:${checked ? rarity.color : 'var(--color-background-primary)'};color:${checked ? rarity.textColor : rarity.color};transition:all 0.2s;">${rarity.label}</button>`;
+      html += `<button
+        onpointerdown="stickerPointerDown('${key}','legend',event)"
+        onpointermove="stickerPointerMove(event)"
+        onpointerup="stickerPointerUp()"
+        onpointercancel="stickerPointerCancel()"
+        onclick="stickerClick('${key}','legend')"
+        oncontextmenu="return false"
+        style="-webkit-user-select:none;user-select:none;touch-action:manipulation;width:100%;padding:10px 4px;border:2px solid ${rarity.color};border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;text-align:center;background:${checked ? rarity.color : 'var(--color-background-primary)'};color:${checked ? rarity.textColor : rarity.color};transition:all 0.2s;">${rarity.label}</button>`;
       if (!checked) {
         html += `<button id="wl-${safeKey}" onclick="toggleWishlist('${key}', event)" title="${inWishlist ? 'Remover da lista de desejos' : 'Adicionar à lista de desejos'}" style="position:absolute;bottom:2px;right:2px;background:none;border:none;cursor:pointer;font-size:9px;padding:2px;line-height:1;z-index:3;opacity:${inWishlist ? '1' : '0.55'};">${inWishlist ? '❤️' : '🤍'}</button>`;
       }
-      if (checked && dupCount > 0) {
-        html += `<span style="position:absolute;top:-6px;right:-6px;background:#E74C3C;color:white;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:2px solid white;pointer-events:none;">${dupCount}</span>`;
-      }
       if (checked) {
-        html += `<div style="display:flex;gap:3px;margin-top:4px;">`;
-        html += `<button onclick="addDuplicate(${idx},'${rarity.id}','legend')" style="flex:1;padding:3px;background:#27AE60;color:white;border:none;border-radius:4px;cursor:pointer;font-size:10px;font-weight:600;">+1</button>`;
-        html += `<button onclick="removeDuplicate(${idx},'${rarity.id}','legend')" style="flex:1;padding:3px;background:#E74C3C;color:white;border:none;border-radius:4px;cursor:pointer;font-size:10px;font-weight:600;">-1</button>`;
-        html += `</div>`;
+        html += `<span style="position:absolute;top:-6px;right:-6px;background:${rarity.color};color:${rarity.textColor || 'white'};border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:2px solid white;pointer-events:none;z-index:4;">${totalCount}</span>`;
       }
       html += `</div>`;
     });
