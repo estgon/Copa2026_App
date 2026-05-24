@@ -57,14 +57,14 @@ const refriPlayers = [
   { name: 'Federico Valverde', code: 'URY'    }, // CC 02
   { name: 'Lautaro Martínez',  code: 'ARG'    }, // CC 03
   { name: 'Gabriel Magalhães', code: 'BRA'    }, // CC 04
-  { name: 'Harry Kane',        code: 'GB-ENG' }, // CC 05
+  { name: 'Harry Kane',        code: 'GB-ENG', img: 'imgs/refri-cc05.png' }, // CC 05
   { name: 'Joško Gvardiol',    code: 'HRV'    }, // CC 06
-  { name: 'Alphonso Davies',   code: 'CAN'    }, // CC 07
-  { name: 'Joshua Kimmich',    code: 'DEU'    }, // CC 08
+  { name: 'Alphonso Davies',   code: 'CAN',    img: 'imgs/refri-cc07.png' }, // CC 07
+  { name: 'Joshua Kimmich',    code: 'DEU',    img: 'imgs/refri-cc08.png' }, // CC 08
   { name: 'Santiago Giménez',  code: 'MEX'    }, // CC 09
   { name: 'Virgil van Dijk',   code: 'NLD'    }, // CC 10
   { name: 'Emiliano Martínez', code: 'ARG'    }, // CC 11
-  { name: 'Jefferson Lerma',   code: 'COL'    }, // CC 12
+  { name: 'Jefferson Lerma',   code: 'COL',    img: 'imgs/refri-cc12.png' }, // CC 12
   { name: 'Raúl Jiménez',      code: 'MEX'    }, // CC 13
   { name: 'Enner Valencia',    code: 'ECU'    }, // CC 14
 ];
@@ -986,6 +986,7 @@ function renderRefri() {
         <div class="refri-card__flag">${flagHtml(player.code, { size: '1.8em' })}</div>
         <div class="refri-card__name" style="color: ${checked ? 'white' : 'var(--color-text-primary)'};">${escapeHtml(player.name)}</div>
       </button>
+      ${player.img ? `<div class="refri-img-tooltip"><img src="${player.img}" alt="${escapeHtml(player.name)}" /></div>` : ''}
       ${!checked ? `<button id="wl-${safeKey}" onclick="toggleWishlist('${key}', event)" title="${inWishlist ? 'Remover da lista de desejos' : 'Adicionar à lista de desejos'}" style="position:absolute;bottom:2px;right:2px;background:none;border:none;cursor:pointer;font-size:10px;padding:2px;line-height:1;z-index:3;opacity:${inWishlist ? '1' : '0.55'};">${inWishlist ? '❤️' : '🤍'}</button>` : ''}
       ${checked ? `<span style="position:absolute;top:-6px;right:-6px;background:#E74C3C;color:white;border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:2px solid white;pointer-events:none;z-index:4;">${totalCount}</span>` : ''}
     </div>`;

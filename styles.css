@@ -460,6 +460,30 @@ button:active:not(:disabled) {
   word-break: break-word;
 }
 
+/* Refri player image tooltip (desktop hover) */
+.refri-img-tooltip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  pointer-events: none;
+  width: 120px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.40);
+}
+.refri-img-tooltip img {
+  display: block;
+  width: 100%;
+}
+@media (hover: hover) {
+  [data-sticker-wrapper]:hover .refri-img-tooltip {
+    display: block;
+  }
+}
+
 /* Cards */
 .card {
   background: var(--color-background-primary);
