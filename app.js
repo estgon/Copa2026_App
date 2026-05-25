@@ -172,7 +172,7 @@ const continentMap = {
   'JPN': 'Ásia', 'KOR': 'Ásia', 'AUS': 'Ásia', 'KSA': 'Ásia', 'IRN': 'Ásia', 'QAT': 'Ásia', 'IRQ': 'Ásia', 'UZB': 'Ásia', 'JOR': 'Ásia', 'NZL': 'Oceania'
 };
 
-const GEREN_TOTAL_ALBUM = 1127;
+const GEREN_TOTAL_ALBUM = 1033;
 const GEREN_FALTANTES_INICIAIS = 444;
 const GEREN_DUPLICATAS_INICIAIS = 320;
 const GEREN_FIGURINHAS_POR_PACOTE = 7;
@@ -1301,7 +1301,7 @@ function updateStats() {
   });
 
   collected = paises + refri + history + legends;
-  const total = 1127;
+  const total = 1033;
   const missing = total - collected;
   const percentage = Math.round((collected / total) * 100);
 
@@ -1362,7 +1362,7 @@ function calcularGerenciamento() {
   const eficiencia = parseInt(document.getElementById('eficiencia').value, 10) / 100;
   const parsedFaltantes = parseInt(document.getElementById('faltantes-iniciais').value, 10);
   const parsedDuplicatas = parseInt(document.getElementById('duplicatas-iniciais').value, 10);
-  const faltantesIniciais = Number.isNaN(parsedFaltantes) ? GEREN_FALTANTES_INICIAIS : Math.min(1127, Math.max(0, parsedFaltantes));
+  const faltantesIniciais = Number.isNaN(parsedFaltantes) ? GEREN_FALTANTES_INICIAIS : Math.min(1033, Math.max(0, parsedFaltantes));
   const duplicatasIniciais = Number.isNaN(parsedDuplicatas) ? GEREN_DUPLICATAS_INICIAIS : Math.max(0, parsedDuplicatas);
 
   document.getElementById('valFaltantesIniciais').innerText = faltantesIniciais;
@@ -1822,11 +1822,11 @@ function generateCompleteReport() {
     if (stickers[key]) totalDuplicates += qty || 0;
   });
 
-  const totalMissing = 1127 - totalCollected;
+  const totalMissing = 1033 - totalCollected;
 
   report += `\n📊 ESTATÍSTICAS GERAIS\n${'-'.repeat(30)}\n`;
-  report += `Figurinhas Coletadas: ${totalCollected}/1127 (${Math.round((totalCollected/1127)*100)}%)\n`;
-  report += `Figurinhas Faltantes: ${totalMissing}/1127\n`;
+  report += `Figurinhas Coletadas: ${totalCollected}/1033 (${Math.round((totalCollected/1033)*100)}%)\n`;
+  report += `Figurinhas Faltantes: ${totalMissing}/1033\n`;
   report += `Duplicatas Registradas: ${totalDuplicates}\n`;
   
   return report;
