@@ -45,7 +45,7 @@ const flagEmojis = {
 
 const iso3ToIso2 = {
   MEX: 'mx', RSA: 'za', KOR: 'kr', CZE: 'cz', CAN: 'ca', BIH: 'ba', QAT: 'qa', SUI: 'ch',
-  BRA: 'br', MAR: 'ma', HTI: 'ht', SCO: 'gb-sct', ENG: 'gb-eng', USA: 'us', PAR: 'py', AUS: 'au',
+  BRA: 'br', MAR: 'ma', HAI: 'ht', SCO: 'gb-sct', ENG: 'gb-eng', USA: 'us', PAR: 'py', AUS: 'au',
   TUR: 'tr', GER: 'de', CUW: 'cw', CIV: 'ci', ECU: 'ec', NED: 'nl', JPN: 'jp', SWE: 'se',
   TUN: 'tn', BEL: 'be', EGY: 'eg', IRN: 'ir', NZL: 'nz', ESP: 'es', CPV: 'cv', KSA: 'sa',
   URU: 'uy', FRA: 'fr', SEN: 'sn', IRQ: 'iq', NOR: 'no', ARG: 'ar', ALG: 'dz', AUT: 'at',
@@ -81,7 +81,7 @@ const playerData = {
   SUI:{1:'Suíça',2:'Gregor Kobel',3:'Yvon Mvogo',4:'Manuel Akanji',5:'Ricardo Rodriguez',6:'Nico Elvedi',7:'Aurèle Amenda',8:'Silvan Widmer',9:'Granit Xhaka',10:'Denis Zakaria',11:'Remo Freuler',12:'Fabian Rieder',14:'Ardon Jashari',15:'Johan Manzambi',16:'Michel Aebischer',17:'Breel Embolo',18:'Ruben Vargas',19:'Dan Ndoye',20:'Zeki Amdouni'},
   BRA:{1:'Brasil',2:'Alisson',3:'Bento',4:'Marquinhos',5:'Éder Militão',6:'Gabriel Magalhães',7:'Danilo',8:'Wesley',9:'Lucas Paquetá',10:'Casemiro',11:'Bruno Guimarães',12:'Luiz Henrique',14:'Vinícius Júnior',15:'Rodrygo',16:'João Pedro',17:'Matheus Cunha',18:'Gabriel Martinelli',19:'Raphinha',20:'Estêvão'},
   MAR:{1:'Marrocos',2:'Yassine Bounou',3:'Munir El Kajoui',4:'Achraf Hakimi',5:'Noussair Mazraoui',6:'Nayef Aguerd',7:'Romain Saïss',8:'Jawad El Yamiq',9:'Adam Masina',10:'Sofyan Amrabat',11:'Azzedine Ounahi',12:'Eliesse Ben Seghir',14:'Bilal El Khannouss',15:'Ismael Saibari',16:'Youssef En-Nesyri',17:'Abde Ezzalzouli',18:'Soufiane Rahimi',19:'Brahim Díaz',20:'Ayoub El Kaabi'},
-  HTI:{1:'Haiti',2:'Johny Placide',3:'Carlens Arcus',4:'Martin Expérience',5:'Jean-Kevin Duverne',6:'Ricardo Adé',7:'Duke Lacroix',8:'Garven Metusala',9:'Hannes Delcroix',10:'Leverton Pierre',11:'Danley Jean Jacques',12:'Jean-Ricner Bellegarde',14:'Christopher Attys',15:'Derrick Etienne Jr.',16:'Josué Casimir',17:'Ruben Providence',18:'Duckens Nazon',19:'Louicius Deedson',20:'Frantzdy Pierrot'},
+  HAI:{1:'Haiti',2:'Johny Placide',3:'Carlens Arcus',4:'Martin Expérience',5:'Jean-Kevin Duverne',6:'Ricardo Adé',7:'Duke Lacroix',8:'Garven Metusala',9:'Hannes Delcroix',10:'Leverton Pierre',11:'Danley Jean Jacques',12:'Jean-Ricner Bellegarde',14:'Christopher Attys',15:'Derrick Etienne Jr.',16:'Josué Casimir',17:'Ruben Providence',18:'Duckens Nazon',19:'Louicius Deedson',20:'Frantzdy Pierrot'},
   SCO:{1:'Escócia',2:'Angus Gunn',3:'Jack Hendry',4:'Kieran Tierney',5:'Aaron Hickey',6:'Andrew Robertson',7:'Scott McKenna',8:'John Souttar',9:'Anthony Ralston',10:'Grant Hanley',11:'Scott McTominay',12:'Billy Gilmour',14:'Lewis Ferguson',15:'Ryan Christie',16:'Kenny McLean',17:'John McGinn',18:'Lyndon Dykes',19:'Che Adams',20:'Ben Doak'},
   USA:{1:'Estados Unidos',2:'Matt Freese',3:'Chris Richards',4:'Tim Ream',5:'Mark McKenzie',6:'Alex Freeman',7:'Antonee Robinson',8:'Tyler Adams',9:'Tanner Tessmann',10:'Weston McKennie',11:'Christian Roldan',12:'Timothy Weah',14:'Diego Luna',15:'Malik Tillman',16:'Christian Pulisic',17:'Brenden Aaronson',18:'Ricardo Pepi',19:'Haji Wright',20:'Folarin Balogun'},
   PAR:{1:'Paraguai',2:'Roberto Fernández',3:'Orlando Gill',4:'Gustavo Gómez',5:'Fabián Balbuena',6:'Juan José Cáceres',7:'Omar Alderete',8:'Junior Alonso',9:'Mathías Villasanti',10:'Diego Gómez',11:'Damián Bobadilla',12:'Andrés Cubas',14:'Matías Galarza Fonda',15:'Julio Enciso'},
@@ -167,7 +167,7 @@ const legendStickerMap = (() => {
 const continentMap = {
   'BRA': 'América do Sul', 'ARG': 'América do Sul', 'URU': 'América do Sul', 'COL': 'América do Sul', 'ECU': 'América do Sul', 'PAR': 'América do Sul',
   'GER': 'Europa', 'ENG': 'Europa', 'FRA': 'Europa', 'ESP': 'Europa', 'POR': 'Europa', 'NED': 'Europa', 'BEL': 'Europa', 'CRO': 'Europa', 'SWE': 'Europa', 'SCO': 'Europa', 'AUT': 'Europa', 'CZE': 'Europa', 'TUR': 'Europa', 'NOR': 'Europa', 'BIH': 'Europa', 'SUI': 'Europa',
-  'USA': 'América do Norte', 'MEX': 'América do Norte', 'CAN': 'América do Norte', 'PAN': 'América do Norte', 'HTI': 'América do Norte', 'CUW': 'América do Norte',
+  'USA': 'América do Norte', 'MEX': 'América do Norte', 'CAN': 'América do Norte', 'PAN': 'América do Norte', 'HAI': 'América do Norte', 'CUW': 'América do Norte',
   'MAR': 'África', 'SEN': 'África', 'CIV': 'África', 'EGY': 'África', 'GHA': 'África', 'ALG': 'África', 'TUN': 'África', 'RSA': 'África', 'COD': 'África', 'CPV': 'África',
   'JPN': 'Ásia', 'KOR': 'Ásia', 'AUS': 'Ásia', 'KSA': 'Ásia', 'IRN': 'Ásia', 'QAT': 'Ásia', 'IRQ': 'Ásia', 'UZB': 'Ásia', 'JOR': 'Ásia', 'NZL': 'Oceania'
 };
@@ -178,7 +178,7 @@ const continentMap = {
 
 const legacyCountryCodeMap = {
   MX: 'MEX', ZA: 'RSA', KR: 'KOR', CZ: 'CZE', CA: 'CAN', BA: 'BIH', QA: 'QAT', CH: 'SUI',
-  BR: 'BRA', MA: 'MAR', HT: 'HTI', GB: 'SCO', 'GB-ENG': 'ENG', US: 'USA', PY: 'PAR', AU: 'AUS', TR: 'TUR',
+  BR: 'BRA', MA: 'MAR', HAI: 'HAI', GB: 'SCO', 'GB-ENG': 'ENG', US: 'USA', PY: 'PAR', AU: 'AUS', TR: 'TUR',
   DE: 'GER', CW: 'CUW', CI: 'CIV', EC: 'ECU', NL: 'NED', JP: 'JPN', SE: 'SWE', TN: 'TUN',
   BE: 'BEL', EG: 'EGY', IR: 'IRN', NZ: 'NZL', ES: 'ESP', CV: 'CPV', SA: 'KSA', UY: 'URU',
   FR: 'FRA', SN: 'SEN', IQ: 'IRQ', NO: 'NOR', AR: 'ARG', DZ: 'ALG', AT: 'AUT', JO: 'JOR',
@@ -2780,7 +2780,7 @@ Identifique TODOS os códigos de figurinha visíveis na imagem.
 Cada figurinha tem um código impresso: SIGLA DO PAÍS + NÚMERO (1 a 20). Exemplos: RSA1, BRA5, ENG14, KOR3.
 
 Siglas válidas dos países:
-MEX, RSA, KOR, CZE, CAN, BIH, QAT, SUI, BRA, MAR, HTI, SCO, USA, PAR, AUS, TUR, GER, CUW, CIV, ECU, NED, JPN, SWE, TUN, BEL, EGY, IRN, NZL, ESP, CPV, KSA, URU, FRA, SEN, IRQ, NOR, ARG, ALG, AUT, JOR, POR, COD, UZB, COL, ENG, CRO, GHA, PAN
+MEX, RSA, KOR, CZE, CAN, BIH, QAT, SUI, BRA, MAR, HAI, SCO, USA, PAR, AUS, TUR, GER, CUW, CIV, ECU, NED, JPN, SWE, TUN, BEL, EGY, IRN, NZL, ESP, CPV, KSA, URU, FRA, SEN, IRQ, NOR, ARG, ALG, AUT, JOR, POR, COD, UZB, COL, ENG, CRO, GHA, PAN
 
 Categorias especiais:
 - CC seguido de número 1-14 (ex: CC1, CC05) → figurinhas Refri/Coca-Cola

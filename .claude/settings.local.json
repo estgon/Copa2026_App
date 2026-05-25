@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c \"import fitz; print\\('PyMuPDF ok'\\)\")",
+      "Bash(python3 -c \"import PIL; print\\('Pillow ok'\\)\")",
+      "Bash(pdfimages -list \"/Volumes/macwindows/Copa2026_App/FWC 2026 STICKER CONTROL.pdf\")",
+      "Bash(find /Volumes/macwindows /tmp ~/Downloads ~/Desktop -name \"*.pdf\" -name \"*2026*\" 2>/dev/null | head -10)",
+      "Read(//Volumes/macwindows/**)",
+      "WebFetch(domain:www.coca-cola.com)",
+      "Bash(grep -n \"R\\\\${i}\\\\|Refri #\\\\|🥤\" /Volumes/macwindows/Copa2026_App/app.js)",
+      "Bash(node --input-type=module)",
+      "Bash(node -e \"require\\('fs'\\).readFileSync\\('/Volumes/macwindows/Copa2026_App/app.js','utf8'\\)\")",
+      "Bash(node --check /Volumes/macwindows/Copa2026_App/app.js)",
+      "Bash(/usr/local/bin/node --version)",
+      "Bash(/opt/homebrew/bin/node --version)",
+      "Bash(git -C /Volumes/macwindows/Copa2026_App status)",
+      "Bash(git -C /Volumes/macwindows/Copa2026_App diff --stat)",
+      "Bash(git -C /Volumes/macwindows/Copa2026_App log --oneline -3)",
+      "Bash(git -C /Volumes/macwindows/Copa2026_App add app.js index.html styles.css sw.js README.md)",
+      "Bash(git -C /Volumes/macwindows/Copa2026_App commit -m ' *)",
+      "Bash(git -C /Volumes/macwindows/Copa2026_App push origin main)",
+      "Bash(node --check app.js)",
+      "Bash(/usr/local/bin/node --check app.js)",
+      "Read(//usr/bin/**)",
+      "Read(//opt/homebrew/bin/**)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
+    ]
+  }
+}
