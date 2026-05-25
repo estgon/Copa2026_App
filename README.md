@@ -115,6 +115,20 @@
 }
 ```
 
+### 🧩 Nova aba de gerenciamento
+- Adicionada uma nova aba chamada **Gerenciamento** dentro do app.
+- Permite simular diferentes cenários de coleção com:
+  - saldo inicial de figurinhas faltantes editável
+  - duplicatas iniciais editáveis
+  - compra de até 150 pacotes
+  - eficiência de trocas ajustável
+- Resultados mostram:
+  - novas figurinhas esperadas por probabilidade
+  - saldo de faltantes após compra
+  - trocas bem-sucedidas estimadas
+  - figurinhas restantes após pedido à editora
+- A interface usa estilo de cartões semelhante aos do dashboard para manter a consistência visual.
+
 ---
 
 ## 📊 Comparativo de Métricas

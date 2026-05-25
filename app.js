@@ -1386,28 +1386,28 @@ function calcularGerenciamento() {
   const totalDuplicatasDisponiveis = Math.max(0, Math.round(duplicatasAtual));
   const trocasPossiveis = totalDuplicatasDisponiveis * eficiencia;
   const trocasRealizadas = Math.floor(Math.min(trocasPossiveis, faltantesPosCompra));
-  const lacunaFinal = Math.max(0, faltantesPosCompra - trocasRealizadas);
+  const figurinhasRestantes = Math.max(0, faltantesPosCompra - trocasRealizadas - meta);
 
   document.getElementById('resNovas').innerText = novasAdquiridasNaCompra;
   document.getElementById('resFaltantes').innerText = faltantesPosCompra;
   document.getElementById('resTrocas').innerText = trocasRealizadas;
-  document.getElementById('resLacuna').innerText = lacunaFinal;
+  document.getElementById('resLacuna').innerText = figurinhasRestantes;
 
   const statusBox = document.getElementById('statusBox');
   statusBox.className = 'status-box';
 
-  if (lacunaFinal === meta) {
+  if (figurinhasRestantes === 0) {
     statusBox.classList.add('status-success');
-    statusBox.innerHTML = '🎯 <strong>Precisão ideal!</strong> A lacuna final atinge exatamente a sua meta de pedido.';
-  } else if (lacunaFinal >= 20 && lacunaFinal <= 50) {
+    statusBox.innerHTML = '🎯 Meta de pedido atingida! Não restam figurinhas após aplicar pedidos à editora.';
+  } else if (figurinhasRestantes <= 20) {
     statusBox.classList.add('status-success');
-    statusBox.innerHTML = '✅ Boa estratégia! A lacuna final está dentro da faixa ideal para pedido direto.';
-  } else if (lacunaFinal > 50) {
+    statusBox.innerHTML = `✅ Muito próximo! Ainda restam ${figurinhasRestantes} figurinhas após pedidos e trocas.`;
+  } else if (figurinhasRestantes <= 50) {
     statusBox.classList.add('status-warning');
-    statusBox.innerHTML = `⚠️ A lacuna final está alta (${lacunaFinal}). Considere comprar mais pacotes ou melhorar a eficiência de trocas.`;
+    statusBox.innerHTML = `⚠️ Bom progresso, mas restam ${figurinhasRestantes} figurinhas. Ajuste pacotes ou trocas para alcançar a meta.`;
   } else {
     statusBox.classList.add('status-danger');
-    statusBox.innerHTML = `🛑 A lacuna final ficou em ${lacunaFinal}. Você pode estar acumulando duplicatas excessivas.`;
+    statusBox.innerHTML = `🛑 Restam ${figurinhasRestantes} figurinhas. Considere mais pacotes, trocas mais eficientes ou aumentar a meta de pedido.`;
   }
 }
 

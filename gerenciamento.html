@@ -173,7 +173,7 @@
                 <div class="result-value" id="resTrocas">0</div>
             </div>
             <div class="result-card bg-purple">
-                <div class="result-title">Lacuna Final (Para Pedido)</div>
+                <div class="result-title">Figurinhas Restantes</div>
                 <div class="result-value" id="resLacuna">0</div>
             </div>
         </div>
@@ -225,30 +225,30 @@
             const trocasRealizadas = Math.floor(Math.min(trocasPossiveis, faltantesPosCompra));
 
             // Resultado Final
-            const lacunaFinal = faltantesPosCompra - trocasRealizadas;
+            const figurinhasRestantes = Math.max(0, faltantesPosCompra - trocasRealizadas - meta);
 
             // Renderização no DOM
             document.getElementById('resNovas').innerText = novasAdquiridasNaCompra;
             document.getElementById('resFaltantes').innerText = faltantesPosCompra;
             document.getElementById('resTrocas').innerText = trocasRealizadas;
-            document.getElementById('resLacuna').innerText = lacunaFinal;
+            document.getElementById('resLacuna').innerText = figurinhasRestantes;
 
             // Avaliação de Status
             const statusBox = document.getElementById('statusBox');
             statusBox.className = 'status-box'; // reset classes
 
-            if (lacunaFinal === meta) {
+            if (figurinhasRestantes === 0) {
                 statusBox.classList.add('status-success');
-                statusBox.innerHTML = "🎯 <strong>Precisão Cirúrgica!</strong> A lacuna final atinge exatamente a sua meta de pedido direto.";
-            } else if (lacunaFinal >= 20 && lacunaFinal <= 50) {
+                statusBox.innerHTML = "🎯 Meta de pedido atingida! Não restam figurinhas após pedidos e trocas.";
+            } else if (figurinhasRestantes <= 20) {
                 statusBox.classList.add('status-success');
-                statusBox.innerHTML = "✅ <strong>Estratégia Otimizada:</strong> A lacuna final está dentro da janela ideal de pedidos à editora (20 a 50 figurinhas).";
-            } else if (lacunaFinal > 50) {
+                statusBox.innerHTML = `✅ Muito próximo! Ainda restam ${figurinhasRestantes} figurinhas.`;
+            } else if (figurinhasRestantes <= 50) {
                 statusBox.classList.add('status-warning');
-                statusBox.innerHTML = "⚠️ <strong>Atenção:</strong> A lacuna final (" + lacunaFinal + ") está alta. Considere comprar mais pacotes ou melhorar a eficiência nas trocas.";
+                statusBox.innerHTML = `⚠️ Bom progresso, mas restam ${figurinhasRestantes} figurinhas. Ajuste pacotes ou trocas para alcançar a meta.`;
             } else {
                 statusBox.classList.add('status-danger');
-                statusBox.innerHTML = "🛑 <strong>Desperdício Previsto:</strong> A lacuna caiu para " + lacunaFinal + ". Você terá um volume ocioso de duplicatas sem uso. Compre menos pacotes.";
+                statusBox.innerHTML = `🛑 Restam ${figurinhasRestantes} figurinhas. Considere mais pacotes, trocas mais eficientes ou aumentar a meta de pedido.`;
             }
         }
 
