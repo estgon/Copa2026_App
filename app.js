@@ -172,6 +172,11 @@ const continentMap = {
   'JPN': 'Ásia', 'KOR': 'Ásia', 'AUS': 'Ásia', 'KSA': 'Ásia', 'IRN': 'Ásia', 'QAT': 'Ásia', 'IRQ': 'Ásia', 'UZB': 'Ásia', 'JOR': 'Ásia', 'NZL': 'Oceania'
 };
 
+const GEREN_TOTAL_ALBUM = 1127;
+const GEREN_FALTANTES_INICIAIS = 444;
+const GEREN_DUPLICATAS_INICIAIS = 320;
+const GEREN_FIGURINHAS_POR_PACOTE = 7;
+
 // ============================================================================
 // APPLICATION STATE
 // ============================================================================
@@ -1331,6 +1336,7 @@ function switchTab(tab) {
   document.getElementById('dashboard-content').style.display = tab === 'dashboard' ? 'block' : 'none';
   document.getElementById('album-content').style.display = tab === 'album' ? 'block' : 'none';
   document.getElementById('comunidade-content').style.display = tab === 'comunidade' ? 'block' : 'none';
+  document.getElementById('gerenciamento-content').style.display = tab === 'gerenciamento' ? 'block' : 'none';
 
   document.querySelectorAll('[id^="tab-"]').forEach(btn => {
     btn.classList.remove('active');
@@ -1347,6 +1353,62 @@ function switchTab(tab) {
     renderLegends();
   }
   if (tab === 'dashboard') updateDashboardView();
+  if (tab === 'gerenciamento') calcularGerenciamento();
+}
+
+function calcularGerenciamento() {
+  const pacotes = parseInt(document.getElementById('pacotes').value, 10);
+  const meta = parseInt(document.getElementById('meta').value, 10);
+  const eficiencia = parseInt(document.getElementById('eficiencia').value, 10) / 100;
+  const parsedFaltantes = parseInt(document.getElementById('faltantes-iniciais').value, 10);
+  const parsedDuplicatas = parseInt(document.getElementById('duplicatas-iniciais').value, 10);
+  const faltantesIniciais = Number.isNaN(parsedFaltantes) ? GEREN_FALTANTES_INICIAIS : Math.min(1127, Math.max(0, parsedFaltantes));
+  const duplicatasIniciais = Number.isNaN(parsedDuplicatas) ? GEREN_DUPLICATAS_INICIAIS : Math.max(0, parsedDuplicatas);
+
+  document.getElementById('valFaltantesIniciais').innerText = faltantesIniciais;
+  document.getElementById('valDuplicatasIniciais').innerText = duplicatasIniciais;
+  document.getElementById('valPacotes').innerText = pacotes;
+  document.getElementById('valMeta').innerText = meta;
+  document.getElementById('valEficiencia').innerText = `${Math.round(eficiencia * 100)}%`;
+
+  const figurinhasCompradas = pacotes * GEREN_FIGURINHAS_POR_PACOTE;
+  let faltantesAtual = faltantesIniciais;
+  let duplicatasAtual = duplicatasIniciais;
+
+  for (let i = 0; i < figurinhasCompradas; i += 1) {
+    const probabilidadeInedita = faltantesAtual / GEREN_TOTAL_ALBUM;
+    faltantesAtual -= probabilidadeInedita;
+    duplicatasAtual += (1 - probabilidadeInedita);
+  }
+
+  const faltantesPosCompra = Math.max(0, Math.round(faltantesAtual));
+  const novasAdquiridasNaCompra = Math.max(0, Math.round(GEREN_FALTANTES_INICIAIS - faltantesPosCompra));
+  const totalDuplicatasDisponiveis = Math.max(0, Math.round(duplicatasAtual));
+  const trocasPossiveis = totalDuplicatasDisponiveis * eficiencia;
+  const trocasRealizadas = Math.floor(Math.min(trocasPossiveis, faltantesPosCompra));
+  const lacunaFinal = Math.max(0, faltantesPosCompra - trocasRealizadas);
+
+  document.getElementById('resNovas').innerText = novasAdquiridasNaCompra;
+  document.getElementById('resFaltantes').innerText = faltantesPosCompra;
+  document.getElementById('resTrocas').innerText = trocasRealizadas;
+  document.getElementById('resLacuna').innerText = lacunaFinal;
+
+  const statusBox = document.getElementById('statusBox');
+  statusBox.className = 'status-box';
+
+  if (lacunaFinal === meta) {
+    statusBox.classList.add('status-success');
+    statusBox.innerHTML = '🎯 <strong>Precisão ideal!</strong> A lacuna final atinge exatamente a sua meta de pedido.';
+  } else if (lacunaFinal >= 20 && lacunaFinal <= 50) {
+    statusBox.classList.add('status-success');
+    statusBox.innerHTML = '✅ Boa estratégia! A lacuna final está dentro da faixa ideal para pedido direto.';
+  } else if (lacunaFinal > 50) {
+    statusBox.classList.add('status-warning');
+    statusBox.innerHTML = `⚠️ A lacuna final está alta (${lacunaFinal}). Considere comprar mais pacotes ou melhorar a eficiência de trocas.`;
+  } else {
+    statusBox.classList.add('status-danger');
+    statusBox.innerHTML = `🛑 A lacuna final ficou em ${lacunaFinal}. Você pode estar acumulando duplicatas excessivas.`;
+  }
 }
 
 // ============================================================================
@@ -1880,7 +1942,16 @@ function importData() {
 function handleImportFile(event) {
   const file = event.target.files && event.target.files[0];
   if (!file) return;
-  
+
+  const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+  if (isPdf) {
+    importFromPdf(file).catch((error) => {
+      console.error('Falha ao importar PDF:', error);
+      alert('Não foi possível importar o PDF. Verifique se o arquivo contém figurinhas válidas.');
+    });
+    return;
+  }
+
   const reader = new FileReader();
   reader.onload = () => {
     try {
@@ -1916,6 +1987,161 @@ function handleImportFile(event) {
     alert('Não foi possível ler o arquivo. Tente novamente.');
   };
   reader.readAsText(file, 'UTF-8');
+}
+
+async function importFromPdf(file) {
+  if (!window.pdfjsLib) {
+    throw new Error('Biblioteca PDF.js não encontrada.');
+  }
+
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.39/pdf.worker.min.js';
+  const rawText = await readPdfText(file);
+  const parsed = parseStickerText(rawText);
+
+  if (!parsed.stickers.size) {
+    alert('Nenhuma figurinha válida encontrada no PDF. Verifique o conteúdo do arquivo.');
+    return;
+  }
+
+  const shouldMerge = window.confirm(
+    'Deseja mesclar as figurinhas importadas do PDF com os dados atuais?\n\nOK: Mesclar\nCancelar: Substituir'
+  );
+
+  if (shouldMerge) {
+    parsed.stickers.forEach((key) => {
+      stickers[key] = true;
+    });
+    parsed.duplicates.forEach((qty, key) => {
+      const currentQty = duplicates[key] || 0;
+      duplicates[key] = Math.max(currentQty, qty);
+      if (!stickers[key]) stickers[key] = true;
+    });
+  } else {
+    if (!window.confirm('A importação substituirá os dados atuais. Deseja continuar?')) {
+      return;
+    }
+    stickers = {};
+    duplicates = {};
+    parsed.stickers.forEach((key) => {
+      stickers[key] = true;
+    });
+    parsed.duplicates.forEach((qty, key) => {
+      duplicates[key] = qty;
+    });
+  }
+
+  saveData();
+  renderPaises();
+  renderRefri();
+  renderHistory();
+  renderTrocas();
+  alert(`Importação do PDF concluída: ${parsed.stickers.size} figurinhas adicionadas.`);
+}
+
+async function readPdfText(file) {
+  const arrayBuffer = await file.arrayBuffer();
+  const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+  const pdf = await loadingTask.promise;
+  let text = '';
+
+  for (let pageNum = 1; pageNum <= pdf.numPages; pageNum += 1) {
+    const page = await pdf.getPage(pageNum);
+    const content = await page.getTextContent();
+    const pageText = content.items.map((item) => item.str).join(' ');
+    text += `${pageText}\n`;
+  }
+
+  return text;
+}
+
+const pdfCountryNameMap = (() => {
+  const map = new Map();
+  const normalizeName = (value) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9\s-]/g, ' ').trim().replace(/\s+/g, ' ');
+
+  const addName = (name, code) => {
+    const normalized = normalizeName(name);
+    if (normalized) map.set(normalized, code);
+  };
+
+  Object.values(countries).forEach((items) => {
+    items.forEach(([name, code]) => addName(name, code));
+  });
+
+  Object.entries(playerData).forEach(([code, players]) => {
+    if (players[1]) addName(players[1], code);
+  });
+
+  addName('républica tcheca', 'CZE');
+  addName('república tcheca', 'CZE');
+  addName('coreia do sul', 'KOR');
+  addName('estados unidos', 'USA');
+  return map;
+})();
+
+function normalizeText(value) {
+  return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+}
+
+function parseStickerText(rawText) {
+  const stickersFound = new Set();
+  const duplicatesFound = new Map();
+  const text = rawText.replace(/\u00A0/g, ' ');
+  const lines = text.split(/\r?\n/);
+
+  lines.forEach((line) => {
+    const lineText = line.trim();
+    if (!lineText) return;
+
+    let quantity = 1;
+    const dupMatch = lineText.match(/\b(?:x|×)\s*([1-9][0-9]?)\b/);
+    if (dupMatch) quantity = Number(dupMatch[1]);
+
+    const codeRegex = /\b([A-Za-z]{2,3})[-\s]*(\d{1,2})\b/g;
+    let hasCode = false;
+    let match;
+
+    while ((match = codeRegex.exec(lineText)) !== null) {
+      const rawCode = match[1].toUpperCase();
+      const number = Number(match[2]);
+      const code = legacyCountryCodeMap[rawCode] || rawCode;
+      if (playerData[code]) {
+        stickersFound.add(`${code}-${number}`);
+        if (quantity > 1) duplicatesFound.set(`${code}-${number}`, Math.max(duplicatesFound.get(`${code}-${number}`) || 0, quantity));
+        hasCode = true;
+      }
+    }
+
+    if (hasCode) return;
+
+    const normalizedLine = normalizeText(lineText).replace(/[^a-z0-9\s]/g, ' ');
+    const tokens = normalizedLine.split(/\s+/).filter(Boolean);
+    for (let i = 0; i < tokens.length; i += 1) {
+      for (let len = 4; len > 0; len -= 1) {
+        const phrase = tokens.slice(i, i + len).join(' ');
+        const code = pdfCountryNameMap.get(phrase);
+        if (code) {
+          const nextToken = tokens[i + len];
+          if (nextToken && /^\d{1,2}$/.test(nextToken)) {
+            const number = Number(nextToken);
+            stickersFound.add(`${code}-${number}`);
+            if (quantity > 1) duplicatesFound.set(`${code}-${number}`, Math.max(duplicatesFound.get(`${code}-${number}`) || 0, quantity));
+          }
+        }
+      }
+    }
+  });
+
+  const refriRegex = /\b(?:CC|refri|refresco)\b[-\s]*0*([1-9]|1[0-4])\b/gi;
+  let refriMatch;
+  while ((refriMatch = refriRegex.exec(text)) !== null) {
+    const number = Number(refriMatch[1]);
+    stickersFound.add(`refri-${number}`);
+  }
+
+  return {
+    stickers: stickersFound,
+    duplicates: duplicatesFound,
+  };
 }
 
 /**

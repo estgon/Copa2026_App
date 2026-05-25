@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Ponto de Equilíbrio - Coleção</title>
+    <style>
+        :root {
+            --primary: #8a2be2; /* Roxo semelhante à imagem */
+            --secondary: #00d2ff; /* Azul ciano */
+            --tertiary: #ff416c; /* Rosa/Vermelho */
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-dark: #2c3e50;
+            --text-muted: #7f8c8d;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            padding: 20px;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            padding: 24px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h2 {
+            margin-top: 0;
+            font-size: 1.4rem;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .controls {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            border: 1px solid #e9ecef;
+        }
+
+        .control-group {
+            margin-bottom: 16px;
+        }
+
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .value-badge {
+            background: var(--primary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+        }
+
+        input[type=range] {
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .result-card {
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .bg-purple { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .bg-blue { background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%); }
+        .bg-pink { background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%); }
+        .bg-orange { background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); }
+
+        .result-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .result-value {
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .status-box {
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border: 2px solid transparent;
+        }
+
+        .status-success { background-color: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; }
+        .status-warning { background-color: #fff8e1; color: #f57f17; border-color: #ffecb3; }
+        .status-danger { background-color: #ffebee; color: #c62828; border-color: #ffcdd2; }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Simulador Estratégico de Pacotes</h2>
+
+        <div class="controls">
+            <div class="control-group">
+                <div class="control-header">
+                    <label for="pacotes">Pacotes Adicionais a Comprar</label>
+                    <span class="value-badge" id="valPacotes">20</span>
+                </div>
+                <input type="range" id="pacotes" min="0" max="50" value="20" step="1" oninput="calcular()">
+            </div>
+
+            <div class="control-group">
+                <div class="control-header">
+                    <label for="meta">Meta de Pedido à Editora (Faltantes)</label>
+                    <span class="value-badge" id="valMeta">30</span>
+                </div>
+                <input type="range" id="meta" min="20" max="50" value="30" step="1" oninput="calcular()">
+            </div>
+
+            <div class="control-group">
+                <div class="control-header">
+                    <label for="eficiencia">Eficiência das Trocas (1 para 1)</label>
+                    <span class="value-badge" id="valEficiencia">100%</span>
+                </div>
+                <input type="range" id="eficiencia" min="50" max="100" value="100" step="5" oninput="calcular()">
+            </div>
+        </div>
+
+        <div class="results-grid">
+            <div class="result-card bg-blue">
+                <div class="result-title">Novas por Probabilidade</div>
+                <div class="result-value" id="resNovas">0</div>
+            </div>
+            <div class="result-card bg-pink">
+                <div class="result-title">Novo Saldo de Faltantes</div>
+                <div class="result-value" id="resFaltantes">444</div>
+            </div>
+            <div class="result-card bg-orange">
+                <div class="result-title">Trocas Bem-Sucedidas</div>
+                <div class="result-value" id="resTrocas">0</div>
+            </div>
+            <div class="result-card bg-purple">
+                <div class="result-title">Lacuna Final (Para Pedido)</div>
+                <div class="result-value" id="resLacuna">0</div>
+            </div>
+        </div>
+
+        <div id="statusBox" class="status-box status-warning">
+            Ajuste os parâmetros para simular o cenário.
+        </div>
+    </div>
+
+    <script>
+        // Variáveis de estado inicial baseadas no cenário
+        const TOTAL_ALBUM = 1127;
+        const FALTANTES_INICIAIS = 444;
+        const DUPLICATAS_INICIAIS = 320;
+        const FIGURINHAS_POR_PACOTE = 5;
+
+        function calcular() {
+            // Coleta de inputs
+            const pacotes = parseInt(document.getElementById('pacotes').value);
+            const meta = parseInt(document.getElementById('meta').value);
+            const eficiencia = parseInt(document.getElementById('eficiencia').value) / 100;
+
+            // Atualização visual dos badges
+            document.getElementById('valPacotes').innerText = pacotes;
+            document.getElementById('valMeta').innerText = meta;
+            document.getElementById('valEficiencia').innerText = (eficiencia * 100) + '%';
+
+            // Lógica de cálculo estocástico (Esperança Matemática)
+            const figurinhasCompradas = pacotes * FIGURINHAS_POR_PACOTE;
+            let faltantesAtual = FALTANTES_INICIAIS;
+            let duplicatasAtual = DUPLICATAS_INICIAIS;
+
+            // Simulação iterativa para precisão probabilística
+            for(let i = 0; i < figurinhasCompradas; i++) {
+                let probabilidadeInedita = faltantesAtual / TOTAL_ALBUM;
+                faltantesAtual -= probabilidadeInedita;
+                duplicatasAtual += (1 - probabilidadeInedita);
+            }
+
+            // Arredondamentos para exibição
+            const faltantesPosCompra = Math.round(faltantesAtual);
+            const duplicatasPosCompra = Math.round(duplicatasAtual);
+            const novasAdquiridasNaCompra = FALTANTES_INICIAIS - faltantesPosCompra;
+
+            // Lógica de Trocas
+            const totalDuplicatasDisponiveis = duplicatasPosCompra;
+            const trocasPossiveis = totalDuplicatasDisponiveis * eficiencia;
+            // O máximo de trocas é limitado pela quantidade de figurinhas que ainda faltam
+            const trocasRealizadas = Math.floor(Math.min(trocasPossiveis, faltantesPosCompra));
+
+            // Resultado Final
+            const lacunaFinal = faltantesPosCompra - trocasRealizadas;
+
+            // Renderização no DOM
+            document.getElementById('resNovas').innerText = novasAdquiridasNaCompra;
+            document.getElementById('resFaltantes').innerText = faltantesPosCompra;
+            document.getElementById('resTrocas').innerText = trocasRealizadas;
+            document.getElementById('resLacuna').innerText = lacunaFinal;
+
+            // Avaliação de Status
+            const statusBox = document.getElementById('statusBox');
+            statusBox.className = 'status-box'; // reset classes
+
+            if (lacunaFinal === meta) {
+                statusBox.classList.add('status-success');
+                statusBox.innerHTML = "🎯 <strong>Precisão Cirúrgica!</strong> A lacuna final atinge exatamente a sua meta de pedido direto.";
+            } else if (lacunaFinal >= 20 && lacunaFinal <= 50) {
+                statusBox.classList.add('status-success');
+                statusBox.innerHTML = "✅ <strong>Estratégia Otimizada:</strong> A lacuna final está dentro da janela ideal de pedidos à editora (20 a 50 figurinhas).";
+            } else if (lacunaFinal > 50) {
+                statusBox.classList.add('status-warning');
+                statusBox.innerHTML = "⚠️ <strong>Atenção:</strong> A lacuna final (" + lacunaFinal + ") está alta. Considere comprar mais pacotes ou melhorar a eficiência nas trocas.";
+            } else {
+                statusBox.classList.add('status-danger');
+                statusBox.innerHTML = "🛑 <strong>Desperdício Previsto:</strong> A lacuna caiu para " + lacunaFinal + ". Você terá um volume ocioso de duplicatas sem uso. Compre menos pacotes.";
+            }
+        }
+
+        // Executar no carregamento inicial
+        window.onload = calcular;
+    </script>
+</body>
+</html>

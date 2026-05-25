@@ -233,6 +233,140 @@ button:active:not(:disabled) {
   border-bottom: 3px solid var(--color-primary);
 }
 
+.management-panel {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-tertiary);
+  border-radius: 20px;
+  padding: 1.6rem;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+}
+
+.management-panel h2 {
+  margin-bottom: 0.5rem;
+  font-size: 1.4rem;
+  color: var(--color-primary);
+}
+
+.management-intro {
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+}
+
+.management-controls {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.control-group {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.control-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.value-badge {
+  background: var(--color-primary);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  min-width: 60px;
+  text-align: center;
+}
+
+.management-controls input[type="range"] {
+  width: 100%;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.result-card {
+  padding: 1.4rem 1.2rem;
+  border-radius: 16px;
+  text-align: center;
+  color: white;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.12);
+  min-height: 140px;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  gap: 0.8rem;
+}
+
+.result-card .result-title {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  opacity: 0.9;
+  margin: 0;
+  font-weight: 700;
+}
+
+.result-card .result-value {
+  font-size: 2.2rem;
+  font-weight: 900;
+  line-height: 1.05;
+}
+
+.result-card.bg-blue {
+  background: linear-gradient(135deg, #4FACFE 0%, #0052D4 100%);
+}
+
+.result-card.bg-pink {
+  background: linear-gradient(135deg, #F093FB 0%, #F5576C 100%);
+}
+
+.result-card.bg-orange {
+  background: linear-gradient(135deg, #F6D365 0%, #FDA085 100%);
+}
+
+.result-card.bg-purple {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.status-box {
+  padding: 1.2rem 1.25rem;
+  border-radius: 18px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: 2px solid transparent;
+}
+
+.status-success {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border-color: #c8e6c9;
+}
+
+.status-warning {
+  background-color: #fff8e1;
+  color: #f57f17;
+  border-color: #ffecb3;
+}
+
+.status-danger {
+  background-color: #ffebee;
+  color: #c62828;
+  border-color: #ffcdd2;
+}
+
 /* Country/Item Grid */
 .sticker-grid {
   display: grid;
@@ -255,6 +389,88 @@ button:active:not(:disabled) {
   .history-grid {
     grid-template-columns: repeat(4, 1fr);
     gap: 5px;
+  }
+}
+
+.management-panel {
+  padding: 1.5rem;
+  border-radius: 16px;
+  background: var(--color-background-primary);
+  border: 1px solid var(--color-border-tertiary);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.management-panel h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-primary-dark);
+}
+
+.management-intro {
+  margin-bottom: 1.5rem;
+  font-size: 0.96rem;
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+}
+
+.management-controls {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.control-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.7rem;
+}
+
+.control-group {
+  background: var(--color-background-secondary);
+  border: 1px solid var(--color-border-tertiary);
+  border-radius: 16px;
+  padding: 1rem;
+}
+
+.control-header label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.management-controls input[type="range"],
+.management-controls input[type="number"] {
+  width: 100%;
+  cursor: pointer;
+}
+
+.management-controls input[type="range"] {
+  accent-color: var(--color-primary);
+}
+
+.management-controls input[type="number"] {
+  padding: 0.85rem 0.9rem;
+  border: 1px solid var(--color-border-tertiary);
+  border-radius: 12px;
+  background: var(--color-background-primary);
+  color: var(--color-text-primary);
+  font-size: 0.95rem;
+}
+
+.management-controls input[type="number"]:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.12);
+}
+
+@media (max-width: 640px) {
+  .management-controls {
+    gap: 0.9rem;
+  }
+  .results-grid {
+    grid-template-columns: 1fr;
   }
 }
 
