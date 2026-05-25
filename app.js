@@ -10,7 +10,7 @@
 const countries = {
   'A': [['México', 'MEX'], ['África do Sul', 'RSA'], ['Coreia do Sul', 'KOR'], ['Rep. Tcheca', 'CZE']],
   'B': [['Canadá', 'CAN'], ['Bósnia', 'BIH'], ['Catar', 'QAT'], ['Suíça', 'SUI']],
-  'C': [['Brasil', 'BRA'], ['Marrocos', 'MAR'], ['Haiti', 'HTI'], ['Escócia', 'SCO']],
+  'C': [['Brasil', 'BRA'], ['Marrocos', 'MAR'], ['Haiti', 'HAI'], ['Escócia', 'SCO']],
   'D': [['Estados Unidos', 'USA'], ['Paraguai', 'PAR'], ['Austrália', 'AUS'], ['Turquia', 'TUR']],
   'E': [['Alemanha', 'GER'], ['Curaçau', 'CUW'], ['Costa do Marfim', 'CIV'], ['Equador', 'ECU']],
   'F': [['Holanda', 'NED'], ['Japão', 'JPN'], ['Suécia', 'SWE'], ['Tunísia', 'TUN']],
@@ -27,7 +27,7 @@ const countryColors = {
   'GER': '#DC241F', 'ENG': '#E71930', 'FRA': '#003DA5', 'ESP': '#E74C3C', 'POR': '#E74C3C', 'NED': '#FF8C00',
   'BEL': '#8B0000', 'CRO': '#DC143C', 'SWE': '#FFD700', 'SCO': '#003DA5', 'AUT': '#E74C3C',
   'CZE': '#E74C3C', 'TUR': '#E60000', 'NOR': '#E74C3C', 'BIH': '#0055CC',
-  'USA': '#B22234', 'MEX': '#006C42', 'CAN': '#FF0000', 'PAN': '#FF0000', 'HTI': '#0055CC', 'CUW': '#0055CC',
+  'USA': '#B22234', 'MEX': '#006C42', 'CAN': '#FF0000', 'PAN': '#FF0000', 'HAI': '#0055CC', 'CUW': '#0055CC',
   'MAR': '#E74C3C', 'SEN': '#CE1126', 'CIV': '#FF8C00', 'EGY': '#E74C3C', 'GHA': '#CE1126', 'ALG': '#CE1126',
   'TUN': '#E74C3C', 'RSA': '#FFD700', 'COD': '#87CEEB', 'CPV': '#0055CC',
   'JPN': '#BC002D', 'KOR': '#FF0000', 'AUS': '#FFB800', 'KSA': '#006C4E', 'IRN': '#CE1126', 'QAT': '#800020',
@@ -36,7 +36,7 @@ const countryColors = {
 
 const flagEmojis = {
   'MEX': '🇲🇽', 'RSA': '🇿🇦', 'KOR': '🇰🇷', 'CZE': '🇨🇿', 'CAN': '🇨🇦', 'BIH': '🇧🇦', 'QAT': '🇶🇦', 'SUI': '🇨🇭',
-  'BRA': '🇧🇷', 'MAR': '🇲🇦', 'HTI': '🇭🇹', 'SCO': '🏴󠁧󠁢󠁳󠁣󠁴󠁿', 'ENG': '🏴', 'USA': '🇺🇸', 'PAR': '🇵🇾', 'AUS': '🇦🇺',
+  'BRA': '🇧🇷', 'MAR': '🇲🇦', 'HAI': '🇭🇹', 'SCO': '🏴󠁧󠁢󠁳󠁣󠁴󠁿', 'ENG': '🏴', 'USA': '🇺🇸', 'PAR': '🇵🇾', 'AUS': '🇦🇺',
   'TUR': '🇹🇷', 'GER': '🇩🇪', 'CUW': '🇨🇼', 'CIV': '🇨🇮', 'ECU': '🇪🇨', 'NED': '🇳🇱', 'JPN': '🇯🇵', 'SWE': '🇸🇪',
   'TUN': '🇹🇳', 'BEL': '🇧🇪', 'EGY': '🇪🇬', 'IRN': '🇮🇷', 'NZL': '🇳🇿', 'ESP': '🇪🇸', 'CPV': '🇨🇻', 'KSA': '🇸🇦',
   'URU': '🇺🇾', 'FRA': '🇫🇷', 'SEN': '🇸🇳', 'IRQ': '🇮🇶', 'NOR': '🇳🇴', 'ARG': '🇦🇷', 'ALG': '🇩🇿', 'AUT': '🇦🇹',
@@ -476,10 +476,12 @@ function stickerClick(key, type) {
     duplicates[key] = (duplicates[key] || 0) + 1;
   }
   saveData();
-  if (type === 'country') renderPaises();
-  else if (type === 'refri') renderRefri();
-  else if (type === 'history') renderHistory();
-  else if (type === 'legend') renderLegends();
+  if (!patchStickerDOM(key, type)) {
+    if (type === 'country') renderPaises();
+    else if (type === 'refri') renderRefri();
+    else if (type === 'history') renderHistory();
+    else if (type === 'legend') renderLegends();
+  }
   renderTrocas();
 }
 
@@ -511,10 +513,12 @@ function closeCountModal() {
   }
   if (stickers[key] && wishlist.has(key)) { wishlist.delete(key); saveWishlist(); }
   saveData();
-  if (type === 'country') renderPaises();
-  else if (type === 'refri') renderRefri();
-  else if (type === 'history') renderHistory();
-  else if (type === 'legend') renderLegends();
+  if (!patchStickerDOM(key, type)) {
+    if (type === 'country') renderPaises();
+    else if (type === 'refri') renderRefri();
+    else if (type === 'history') renderHistory();
+    else if (type === 'legend') renderLegends();
+  }
   renderTrocas();
 }
 
@@ -604,6 +608,199 @@ function shouldShowNumber(num, code) {
   }
   if (!searchFilter.number) return true;
   return searchFilter.number === num;
+}
+
+// ============================================================================
+// STICKER DOM BUILDERS (Package D — targeted patch)
+// ============================================================================
+
+function buildCountryStickerWrapperHtml(code, num) {
+  const key = `${code}-${num}`;
+  const checked = stickers[key];
+  const dupCount = duplicates[key] || 0;
+  const playerName = playerData[code]?.[num];
+  const legendPlayer = legendStickerMap.get(key);
+  const inWishlist = wishlist.has(key);
+  const safeKey = key.replace(/[^a-zA-Z0-9]/g, '-');
+  const totalCount = checked ? 1 + dupCount : 0;
+  const countryColor = countryColors[code] || '#667eea';
+  const textColor = ['#F5F5F5', '#FFFFFF'].includes(countryColor) ? '#000000' : 'white';
+
+  let btnBg, btnColor, btnBorder, btnShadow, btnContent, btnStyle;
+  if (legendPlayer) {
+    btnBg     = checked ? 'linear-gradient(135deg, #F1C40F 0%, #E67E22 100%)' : 'var(--color-background-secondary)';
+    btnColor  = checked ? '#1a1200' : 'var(--color-text-primary)';
+    btnBorder = `1.5px solid ${checked ? '#F1C40F' : '#F1C40F80'}`;
+    btnShadow = checked ? '0 4px 16px #F1C40F60' : '0 0 0 0 transparent';
+    const nameOpacity = checked ? '1' : '0.6';
+    btnContent = `<span style="display:block;font-size:9px;opacity:0.75;font-weight:600;letter-spacing:0.3px;line-height:1;">${code} <strong style="font-size:11px;">${num}</strong></span>`
+               + (playerName ? `<span style="display:block;font-size:7px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;opacity:${nameOpacity};margin-top:2px;line-height:1.1;">${escapeHtml(playerName)}</span>` : '');
+    btnStyle  = 'display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:46px;';
+  } else {
+    btnBg     = checked ? countryColor : 'var(--color-background-secondary)';
+    btnColor  = checked ? textColor : 'var(--color-text-primary)';
+    btnBorder = '';
+    btnShadow = checked ? `0 4px 12px ${countryColor}40` : 'none';
+    const showName = checked && playerName;
+    btnContent = showName
+      ? `<span style="display:block;font-size:9px;font-weight:600;letter-spacing:0.3px;line-height:1;opacity:0.85;">${code} <strong style="font-size:11px;">${num}</strong></span><span style="display:block;font-size:7.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;opacity:0.92;margin-top:3px;line-height:1.1;">${escapeHtml(playerName)}</span>`
+      : `<span style="font-size:8px;opacity:0.6;font-weight:600;letter-spacing:0.3px;">${code}</span> <strong style="font-size:12px;">${num}</strong>`;
+    btnStyle  = showName ? 'display:flex;flex-direction:column;align-items:center;justify-content:center;' : '';
+  }
+  const borderPart = btnBorder ? `border:${btnBorder};` : '';
+
+  return `<div data-sticker-wrapper="1" data-key="${key}" style="position:relative;${!checked && inWishlist ? 'outline:1.5px solid #E74C3C60;border-radius:6px;' : ''}">
+          <button
+            onpointerdown="stickerPointerDown('${key}','country',event)"
+            onpointermove="stickerPointerMove(event)"
+            onpointerup="stickerPointerUp()"
+            onpointercancel="stickerPointerCancel()"
+            onclick="stickerClick('${key}','country')"
+            oncontextmenu="return false"
+            class="sticker-button ${checked ? 'checked' : ''}" style="-webkit-user-select:none;user-select:none;touch-action:manipulation;${btnStyle}${borderPart}background:${btnBg};color:${btnColor};box-shadow:${btnShadow};">${btnContent}</button>
+          ${legendPlayer ? `<div title="${escapeHtml(legendPlayer.name)} – Legend" style="position:absolute;top:-5px;left:-5px;background:linear-gradient(135deg,#F1C40F,#E67E22);color:#1a1200;border-radius:50%;width:14px;height:14px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;border:1.5px solid white;box-shadow:0 1px 6px #F1C40F80;pointer-events:none;z-index:2;">★</div>` : ''}
+          ${!checked ? `<button id="wl-${safeKey}" onclick="toggleWishlist('${key}', event)" title="${inWishlist ? 'Remover da lista de desejos' : 'Adicionar à lista de desejos'}" style="position:absolute;bottom:1px;right:1px;background:none;border:none;cursor:pointer;font-size:9px;padding:2px;line-height:1;z-index:3;opacity:${inWishlist ? '1' : '0.55'};">${inWishlist ? '❤️' : '🤍'}</button>` : ''}
+          ${checked ? `<span style="position:absolute;top:-6px;right:-6px;background:#E74C3C;color:white;border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:2px solid white;pointer-events:none;z-index:4;">${totalCount}</span>` : ''}
+        </div>`;
+}
+
+function buildRefriStickerWrapperHtml(key) {
+  const i = parseInt(key.split('-')[1]);
+  const checked = stickers[key];
+  const dupCount = duplicates[key] || 0;
+  const player = refriPlayers[i];
+  const label = `CC ${String(i).padStart(2, '0')}`;
+  const inWishlist = wishlist.has(key);
+  const safeKey = key.replace(/[^a-zA-Z0-9]/g, '-');
+  const totalCount = checked ? 1 + dupCount : 0;
+
+  return `<div data-sticker-wrapper="1" data-key="${key}" style="position:relative;${!checked && inWishlist ? 'outline:1.5px solid #E74C3C60;border-radius:14px;' : ''}">
+      <button
+        onpointerdown="stickerPointerDown('${key}','refri',event)"
+        onpointermove="stickerPointerMove(event)"
+        onpointerup="stickerPointerUp()"
+        onpointercancel="stickerPointerCancel()"
+        onclick="stickerClick('${key}','refri')"
+        oncontextmenu="return false"
+        class="refri-card ${checked ? 'checked' : ''}" style="-webkit-user-select:none;user-select:none;touch-action:manipulation;background: ${checked ? '#E74C3C' : 'var(--color-background-secondary)'}; box-shadow: ${checked ? '0 4px 14px #E74C3C50' : 'none'};">
+        <div class="refri-card__number" style="color: ${checked ? 'rgba(255,255,255,0.65)' : 'var(--color-text-secondary)'};">${label}</div>
+        <div class="refri-card__flag">${flagHtml(player.code, { size: '1.8em' })}</div>
+        <div class="refri-card__name" style="color: ${checked ? 'white' : 'var(--color-text-primary)'};">${escapeHtml(player.name)}</div>
+      </button>
+      ${player.img ? `<div class="refri-img-tooltip"><img src="${player.img}" alt="${escapeHtml(player.name)}" /></div>` : ''}
+      ${!checked ? `<button id="wl-${safeKey}" onclick="toggleWishlist('${key}', event)" title="${inWishlist ? 'Remover da lista de desejos' : 'Adicionar à lista de desejos'}" style="position:absolute;bottom:2px;right:2px;background:none;border:none;cursor:pointer;font-size:10px;padding:2px;line-height:1;z-index:3;opacity:${inWishlist ? '1' : '0.55'};">${inWishlist ? '❤️' : '🤍'}</button>` : ''}
+      ${checked ? `<span style="position:absolute;top:-6px;right:-6px;background:#E74C3C;color:white;border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:2px solid white;pointer-events:none;z-index:4;">${totalCount}</span>` : ''}
+    </div>`;
+}
+
+function buildHistoryStickerWrapperHtml(key) {
+  const i = parseInt(key.split('-')[1]);
+  const checked = stickers[key];
+  const dupCount = duplicates[key] || 0;
+  const inWishlist = wishlist.has(key);
+  const safeKey = key.replace(/[^a-zA-Z0-9]/g, '-');
+  const totalCount = checked ? 1 + dupCount : 0;
+
+  return `<div data-sticker-wrapper="1" data-key="${key}" style="position:relative;${!checked && inWishlist ? 'outline:1.5px solid #E74C3C60;border-radius:6px;' : ''}">
+      <button
+        onpointerdown="stickerPointerDown('${key}','history',event)"
+        onpointermove="stickerPointerMove(event)"
+        onpointerup="stickerPointerUp()"
+        onpointercancel="stickerPointerCancel()"
+        onclick="stickerClick('${key}','history')"
+        oncontextmenu="return false"
+        class="sticker-button ${checked ? 'checked' : ''}" style="-webkit-user-select:none;user-select:none;touch-action:manipulation;background: ${checked ? '#3498DB' : 'var(--color-background-secondary)'}; color: ${checked ? 'white' : 'var(--color-text-primary)'}; box-shadow: ${checked ? '0 4px 12px #3498DB40' : 'none'};">FWC${i}</button>
+      ${!checked ? `<button id="wl-${safeKey}" onclick="toggleWishlist('${key}', event)" title="${inWishlist ? 'Remover da lista de desejos' : 'Adicionar à lista de desejos'}" style="position:absolute;bottom:1px;right:1px;background:none;border:none;cursor:pointer;font-size:9px;padding:2px;line-height:1;z-index:3;opacity:${inWishlist ? '1' : '0.55'};">${inWishlist ? '❤️' : '🤍'}</button>` : ''}
+      ${checked ? `<span style="position:absolute;top:-6px;right:-6px;background:#3498DB;color:white;border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:2px solid white;pointer-events:none;z-index:4;">${totalCount}</span>` : ''}
+    </div>`;
+}
+
+function buildLegendStickerWrapperHtml(key) {
+  const parts = key.split('-');
+  const idx = parseInt(parts[1]);
+  const rarityId = parts.slice(2).join('-');
+  const rarity = legendRarities.find(r => r.id === rarityId);
+  if (!rarity) return '';
+  const checked = stickers[key];
+  const dupCount = duplicates[key] || 0;
+  const inWishlist = wishlist.has(key);
+  const safeKey = key.replace(/[^a-zA-Z0-9]/g, '-');
+  const totalCount = checked ? 1 + dupCount : 0;
+
+  let html = `<div data-sticker-wrapper="1" data-key="${key}" style="position:relative;${!checked && inWishlist ? 'outline:1.5px solid #E74C3C60;border-radius:8px;' : ''}">`;
+  html += `<button
+        onpointerdown="stickerPointerDown('${key}','legend',event)"
+        onpointermove="stickerPointerMove(event)"
+        onpointerup="stickerPointerUp()"
+        onpointercancel="stickerPointerCancel()"
+        onclick="stickerClick('${key}','legend')"
+        oncontextmenu="return false"
+        style="-webkit-user-select:none;user-select:none;touch-action:manipulation;width:100%;padding:10px 4px;border:2px solid ${rarity.color};border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;text-align:center;background:${checked ? rarity.color : 'var(--color-background-primary)'};color:${checked ? rarity.textColor : rarity.color};transition:all 0.2s;">${rarity.label}</button>`;
+  if (!checked) {
+    html += `<button id="wl-${safeKey}" onclick="toggleWishlist('${key}', event)" title="${inWishlist ? 'Remover da lista de desejos' : 'Adicionar à lista de desejos'}" style="position:absolute;bottom:2px;right:2px;background:none;border:none;cursor:pointer;font-size:9px;padding:2px;line-height:1;z-index:3;opacity:${inWishlist ? '1' : '0.55'};">${inWishlist ? '❤️' : '🤍'}</button>`;
+  }
+  if (checked) {
+    html += `<span style="position:absolute;top:-6px;right:-6px;background:${rarity.color};color:${rarity.textColor || 'white'};border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:2px solid white;pointer-events:none;z-index:4;">${totalCount}</span>`;
+  }
+  html += `</div>`;
+  return html;
+}
+
+function patchStickerDOM(key, type) {
+  const wrapper = document.querySelector(`[data-sticker-wrapper][data-key="${CSS.escape(key)}"]`);
+  if (!wrapper) return false;
+
+  if (type === 'country') {
+    const parts = key.split('-');
+    const num = parseInt(parts.pop());
+    const code = parts.join('-');
+    wrapper.outerHTML = buildCountryStickerWrapperHtml(code, num);
+    const ccSpan = document.getElementById(`cc-${code}`);
+    if (ccSpan) {
+      let collected = 0;
+      for (let i = 1; i <= 20; i++) { if (stickers[`${code}-${i}`]) collected++; }
+      ccSpan.textContent = `(${collected}/20)`;
+    }
+  } else if (type === 'refri') {
+    wrapper.outerHTML = buildRefriStickerWrapperHtml(key);
+  } else if (type === 'history') {
+    wrapper.outerHTML = buildHistoryStickerWrapperHtml(key);
+  } else if (type === 'legend') {
+    wrapper.outerHTML = buildLegendStickerWrapperHtml(key);
+  }
+  return true;
+}
+
+// ============================================================================
+// SEARCH INDICATOR (Package C)
+// ============================================================================
+
+function updateSearchIndicator() {
+  const bar = document.getElementById('search-active-bar');
+  if (!bar) return;
+  const hasFilter = searchFilter.group || searchFilter.country || searchFilter.number || searchFilter.playerMatches;
+  if (!hasFilter) { bar.style.display = 'none'; return; }
+
+  let label = '';
+  if (searchFilter.country) label = searchFilter.country;
+  else if (searchFilter.group) label = `Grupo ${searchFilter.group}`;
+  if (searchFilter.playerMatches) label = `${searchFilter.playerMatches.size} jogador${searchFilter.playerMatches.size !== 1 ? 'es' : ''}`;
+  if (searchFilter.number) label += (label ? ' · ' : '') + `#${searchFilter.number}`;
+
+  bar.innerHTML = `<span style="font-size:12px;color:var(--color-text-secondary);">Filtrando:</span>
+    <span style="display:inline-flex;align-items:center;background:rgba(102,126,234,0.15);color:#667eea;border-radius:20px;padding:3px 10px;font-size:12px;font-weight:600;">${label}</span>
+    <button onclick="clearSearch()" style="background:none;border:none;color:var(--color-text-secondary);cursor:pointer;font-size:12px;padding:3px 8px;border-radius:8px;">✕ Limpar</button>`;
+  bar.style.display = 'flex';
+}
+
+function clearSearch() {
+  const sp = document.getElementById('search-paises');
+  const sn = document.getElementById('search-number');
+  if (sp) sp.value = '';
+  if (sn) sn.value = '';
+  searchFilter = { group: null, country: null, number: null, playerMatches: null };
+  renderPaises();
+  updateSearchIndicator();
 }
 
 // ============================================================================
@@ -927,63 +1124,14 @@ function renderPaises() {
         <div style="font-size: 14px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; color: var(--color-text-primary); flex-wrap: wrap;">
           ${flagHtml(code, { size: '1.5em', title: name })}
           <span>${escapeHtml(name)}</span>
-          <span style="font-size: 12px; font-weight: 600; color: var(--color-text-secondary);">(${collected}/20)</span>
+          <span id="cc-${code}" style="font-size: 12px; font-weight: 600; color: var(--color-text-secondary);">(${collected}/20)</span>
           ${hasLegends ? `<span style="display:inline-flex;align-items:center;gap:3px;background:linear-gradient(135deg,#F1C40F,#E67E22);color:#1a1200;border-radius:12px;padding:2px 8px;font-size:10px;font-weight:800;letter-spacing:0.3px;box-shadow:0 2px 6px #F1C40F40;">★ ${legendsInCountry.length} Legend${legendsInCountry.length > 1 ? 's' : ''}</span>` : ''}
         </div>
         <div class="sticker-grid">`;
 
       for (let i = 1; i <= 20; i++) {
         if (!shouldShowNumber(i, code)) continue;
-
-        const checked = stickers[code + '-' + i];
-        const dupCount = duplicates[code + '-' + i] || 0;
-        const playerName = playerData[code]?.[i];
-        const legendPlayer = legendStickerMap.get(`${code}-${i}`);
-
-        let btnBg, btnColor, btnBorder, btnShadow, btnContent, btnStyle;
-
-        if (legendPlayer) {
-          // ── Legend player ──────────────────────────────────────────
-          btnBg     = checked ? 'linear-gradient(135deg, #F1C40F 0%, #E67E22 100%)' : 'var(--color-background-secondary)';
-          btnColor  = checked ? '#1a1200' : 'var(--color-text-primary)';
-          btnBorder = `1.5px solid ${checked ? '#F1C40F' : '#F1C40F80'}`;
-          btnShadow = checked ? '0 4px 16px #F1C40F60' : '0 0 0 0 transparent';
-          const nameOpacity = checked ? '1' : '0.6';
-          btnContent = `<span style="display:block;font-size:9px;opacity:0.75;font-weight:600;letter-spacing:0.3px;line-height:1;">${code} <strong style="font-size:11px;">${i}</strong></span>`
-                     + (playerName ? `<span style="display:block;font-size:7px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;opacity:${nameOpacity};margin-top:2px;line-height:1.1;">${escapeHtml(playerName)}</span>` : '');
-          btnStyle  = 'display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:46px;';
-        } else {
-          // ── Normal player ──────────────────────────────────────────
-          btnBg     = checked ? countryColor : 'var(--color-background-secondary)';
-          btnColor  = checked ? textColor : 'var(--color-text-primary)';
-          btnBorder = '';
-          btnShadow = checked ? `0 4px 12px ${countryColor}40` : 'none';
-          const showName = checked && playerName;
-          btnContent = showName
-            ? `<span style="display:block;font-size:9px;font-weight:600;letter-spacing:0.3px;line-height:1;opacity:0.85;">${code} <strong style="font-size:11px;">${i}</strong></span><span style="display:block;font-size:7.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;opacity:0.92;margin-top:3px;line-height:1.1;">${escapeHtml(playerName)}</span>`
-            : `<span style="font-size:8px;opacity:0.6;font-weight:600;letter-spacing:0.3px;">${code}</span> <strong style="font-size:12px;">${i}</strong>`;
-          btnStyle  = showName ? 'display:flex;flex-direction:column;align-items:center;justify-content:center;' : '';
-        }
-
-        const borderPart = btnBorder ? `border:${btnBorder};` : '';
-        const key = `${code}-${i}`;
-        const inWishlist = wishlist.has(key);
-        const safeKey = key.replace(/[^a-zA-Z0-9]/g, '-');
-        const totalCount = checked ? 1 + (duplicates[key] || 0) : 0;
-
-        groupHtml += `<div data-sticker-wrapper="1" style="position:relative;${!checked && inWishlist ? 'outline:1.5px solid #E74C3C60;border-radius:6px;' : ''}">
-          <button
-            onpointerdown="stickerPointerDown('${key}','country',event)"
-            onpointermove="stickerPointerMove(event)"
-            onpointerup="stickerPointerUp()"
-            onpointercancel="stickerPointerCancel()"
-            onclick="stickerClick('${key}','country')"
-            oncontextmenu="return false"
-            class="sticker-button ${checked ? 'checked' : ''}" style="-webkit-user-select:none;user-select:none;touch-action:manipulation;${btnStyle}${borderPart}background:${btnBg};color:${btnColor};box-shadow:${btnShadow};">${btnContent}</button>
-          ${legendPlayer ? `<div title="${escapeHtml(legendPlayer.name)} – Legend" style="position:absolute;top:-5px;left:-5px;background:linear-gradient(135deg,#F1C40F,#E67E22);color:#1a1200;border-radius:50%;width:14px;height:14px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;border:1.5px solid white;box-shadow:0 1px 6px #F1C40F80;pointer-events:none;z-index:2;">★</div>` : ''}
-          ${!checked ? `<button id="wl-${safeKey}" onclick="toggleWishlist('${key}', event)" title="${inWishlist ? 'Remover da lista de desejos' : 'Adicionar à lista de desejos'}" style="position:absolute;bottom:1px;right:1px;background:none;border:none;cursor:pointer;font-size:9px;padding:2px;line-height:1;z-index:3;opacity:${inWishlist ? '1' : '0.55'};">${inWishlist ? '❤️' : '🤍'}</button>` : ''}
-          ${checked ? `<span style="position:absolute;top:-6px;right:-6px;background:#E74C3C;color:white;border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:2px solid white;pointer-events:none;z-index:4;">${totalCount}</span>` : ''}
-        </div>`;
+        groupHtml += buildCountryStickerWrapperHtml(code, i);
       }
 
       groupHtml += `</div></div>`;
@@ -1010,32 +1158,7 @@ function renderPaises() {
 function renderRefri() {
   let html = '';
   for (let i = 1; i <= 14; i++) {
-    const key = 'refri-' + i;
-    const checked = stickers[key];
-    const dupCount = duplicates[key] || 0;
-    const player = refriPlayers[i];
-    const label = `CC ${String(i).padStart(2, '0')}`;
-    const inWishlist = wishlist.has(key);
-    const safeKey = key.replace(/[^a-zA-Z0-9]/g, '-');
-
-    const totalCount = checked ? 1 + dupCount : 0;
-    html += `<div data-sticker-wrapper="1" style="position:relative;${!checked && inWishlist ? 'outline:1.5px solid #E74C3C60;border-radius:14px;' : ''}">
-      <button
-        onpointerdown="stickerPointerDown('${key}','refri',event)"
-        onpointermove="stickerPointerMove(event)"
-        onpointerup="stickerPointerUp()"
-        onpointercancel="stickerPointerCancel()"
-        onclick="stickerClick('${key}','refri')"
-        oncontextmenu="return false"
-        class="refri-card ${checked ? 'checked' : ''}" style="-webkit-user-select:none;user-select:none;touch-action:manipulation;background: ${checked ? '#E74C3C' : 'var(--color-background-secondary)'}; box-shadow: ${checked ? '0 4px 14px #E74C3C50' : 'none'};">
-        <div class="refri-card__number" style="color: ${checked ? 'rgba(255,255,255,0.65)' : 'var(--color-text-secondary)'};">${label}</div>
-        <div class="refri-card__flag">${flagHtml(player.code, { size: '1.8em' })}</div>
-        <div class="refri-card__name" style="color: ${checked ? 'white' : 'var(--color-text-primary)'};">${escapeHtml(player.name)}</div>
-      </button>
-      ${player.img ? `<div class="refri-img-tooltip"><img src="${player.img}" alt="${escapeHtml(player.name)}" /></div>` : ''}
-      ${!checked ? `<button id="wl-${safeKey}" onclick="toggleWishlist('${key}', event)" title="${inWishlist ? 'Remover da lista de desejos' : 'Adicionar à lista de desejos'}" style="position:absolute;bottom:2px;right:2px;background:none;border:none;cursor:pointer;font-size:10px;padding:2px;line-height:1;z-index:3;opacity:${inWishlist ? '1' : '0.55'};">${inWishlist ? '❤️' : '🤍'}</button>` : ''}
-      ${checked ? `<span style="position:absolute;top:-6px;right:-6px;background:#E74C3C;color:white;border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:2px solid white;pointer-events:none;z-index:4;">${totalCount}</span>` : ''}
-    </div>`;
+    html += buildRefriStickerWrapperHtml('refri-' + i);
   }
   document.getElementById('refri-list').innerHTML = html;
 }
@@ -1046,24 +1169,7 @@ function renderRefri() {
 function renderHistory() {
   let html = '';
   for (let i = 0; i <= 19; i++) {
-    const key = 'history-' + i;
-    const checked = stickers[key];
-    const dupCount = duplicates[key] || 0;
-    const inWishlist = wishlist.has(key);
-    const safeKey = key.replace(/[^a-zA-Z0-9]/g, '-');
-    const totalCount = checked ? 1 + dupCount : 0;
-    html += `<div data-sticker-wrapper="1" style="position:relative;${!checked && inWishlist ? 'outline:1.5px solid #E74C3C60;border-radius:6px;' : ''}">
-      <button
-        onpointerdown="stickerPointerDown('${key}','history',event)"
-        onpointermove="stickerPointerMove(event)"
-        onpointerup="stickerPointerUp()"
-        onpointercancel="stickerPointerCancel()"
-        onclick="stickerClick('${key}','history')"
-        oncontextmenu="return false"
-        class="sticker-button ${checked ? 'checked' : ''}" style="-webkit-user-select:none;user-select:none;touch-action:manipulation;background: ${checked ? '#3498DB' : 'var(--color-background-secondary)'}; color: ${checked ? 'white' : 'var(--color-text-primary)'}; box-shadow: ${checked ? '0 4px 12px #3498DB40' : 'none'};">FWC${i}</button>
-      ${!checked ? `<button id="wl-${safeKey}" onclick="toggleWishlist('${key}', event)" title="${inWishlist ? 'Remover da lista de desejos' : 'Adicionar à lista de desejos'}" style="position:absolute;bottom:1px;right:1px;background:none;border:none;cursor:pointer;font-size:9px;padding:2px;line-height:1;z-index:3;opacity:${inWishlist ? '1' : '0.55'};">${inWishlist ? '❤️' : '🤍'}</button>` : ''}
-      ${checked ? `<span style="position:absolute;top:-6px;right:-6px;background:#3498DB;color:white;border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:2px solid white;pointer-events:none;z-index:4;">${totalCount}</span>` : ''}
-    </div>`;
+    html += buildHistoryStickerWrapperHtml('history-' + i);
   }
   document.getElementById('history-list').innerHTML = html;
 }
@@ -1078,28 +1184,7 @@ function renderLegends() {
     html += `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">${flag}<span style="font-size:13px;font-weight:700;color:var(--color-text-primary);">${escapeHtml(player.name)}</span></div>`;
     html += `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">`;
     legendRarities.forEach(rarity => {
-      const key = `legend-${idx}-${rarity.id}`;
-      const checked = stickers[key];
-      const dupCount = duplicates[key] || 0;
-      const inWishlist = wishlist.has(key);
-      const safeKey = key.replace(/[^a-zA-Z0-9]/g, '-');
-      const totalCount = checked ? 1 + dupCount : 0;
-      html += `<div data-sticker-wrapper="1" style="position:relative;${!checked && inWishlist ? 'outline:1.5px solid #E74C3C60;border-radius:8px;' : ''}">`;
-      html += `<button
-        onpointerdown="stickerPointerDown('${key}','legend',event)"
-        onpointermove="stickerPointerMove(event)"
-        onpointerup="stickerPointerUp()"
-        onpointercancel="stickerPointerCancel()"
-        onclick="stickerClick('${key}','legend')"
-        oncontextmenu="return false"
-        style="-webkit-user-select:none;user-select:none;touch-action:manipulation;width:100%;padding:10px 4px;border:2px solid ${rarity.color};border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;text-align:center;background:${checked ? rarity.color : 'var(--color-background-primary)'};color:${checked ? rarity.textColor : rarity.color};transition:all 0.2s;">${rarity.label}</button>`;
-      if (!checked) {
-        html += `<button id="wl-${safeKey}" onclick="toggleWishlist('${key}', event)" title="${inWishlist ? 'Remover da lista de desejos' : 'Adicionar à lista de desejos'}" style="position:absolute;bottom:2px;right:2px;background:none;border:none;cursor:pointer;font-size:9px;padding:2px;line-height:1;z-index:3;opacity:${inWishlist ? '1' : '0.55'};">${inWishlist ? '❤️' : '🤍'}</button>`;
-      }
-      if (checked) {
-        html += `<span style="position:absolute;top:-6px;right:-6px;background:${rarity.color};color:${rarity.textColor || 'white'};border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:2px solid white;pointer-events:none;z-index:4;">${totalCount}</span>`;
-      }
-      html += `</div>`;
+      html += buildLegendStickerWrapperHtml(`legend-${idx}-${rarity.id}`);
     });
     html += `</div></div>`;
   });
@@ -2234,6 +2319,10 @@ function renderProfileCard() {
           ${communityProfile.contact ? `<div style="font-size:12px;color:var(--color-text-secondary);">📱 ${escapeHtml(communityProfile.contact)}</div>` : ''}
         </div>
         <button onclick="startEditProfile()" style="flex-shrink:0;padding:8px 12px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;color:var(--color-text-primary);">✏️ Editar</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px;">
+        <button onclick="exportData()" style="padding: 12px 16px; background: #3498DB; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 600;">📤 Exportar dados</button>
+        <button onclick="importData()" style="padding: 12px 16px; background: #27AE60; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 600;">📥 Importar dados</button>
       </div>`;
     cardEl.style.display = 'block';
     formEl.style.display = 'none';
@@ -3011,11 +3100,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const searchNumber = document.getElementById('search-number');
   
   if (searchPaises && searchNumber) {
+    let _searchDebounce = null;
     const updateFilter = () => {
-      searchFilter = parseSearch(searchPaises.value, searchNumber.value);
-      renderPaises();
+      clearTimeout(_searchDebounce);
+      _searchDebounce = setTimeout(() => {
+        searchFilter = parseSearch(searchPaises.value, searchNumber.value);
+        renderPaises();
+        updateSearchIndicator();
+      }, 300);
     };
-    
     searchPaises.addEventListener('input', updateFilter);
     searchNumber.addEventListener('input', updateFilter);
   }
