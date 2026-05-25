@@ -1936,6 +1936,174 @@ function importData() {
   }
 }
 
+function openTextImportModal() {
+  const modal = document.getElementById('text-import-modal');
+  const textarea = document.getElementById('text-import-area');
+  if (textarea) textarea.value = '';
+  if (modal) modal.style.display = 'block';
+}
+
+function closeTextImportModal() {
+  const modal = document.getElementById('text-import-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+function normalizeCountryName(name) {
+  return String(name || '')
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9 ]/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+}
+
+function buildCountryNameMap() {
+  const map = new Map();
+  Object.values(countries).flat().forEach(([name, code]) => {
+    map.set(normalizeCountryName(name), code);
+    map.set(normalizeCountryName(code), code);
+  });
+  return map;
+}
+
+function parseTextStickerImport(rawText) {
+  const countryMap = buildCountryNameMap();
+  const parsed = {};
+  const warnings = [];
+  const lines = rawText.split(/\r?\n/);
+
+  function expandTokens(tokens) {
+    const nums = [];
+    for (const t of tokens) {
+      const range = t.match(/^(\d+)\s*[-–]\s*(\d+)$/);
+      if (range) {
+        const from = parseInt(range[1], 10);
+        const to = parseInt(range[2], 10);
+        for (let n = Math.min(from, to); n <= Math.max(from, to); n++) nums.push(n);
+      } else {
+        const n = parseInt(t.replace(/[^0-9]/g, ''), 10);
+        if (!isNaN(n)) nums.push(n);
+      }
+    }
+    return nums;
+  }
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    if (!line || /^grupo\b/i.test(line) || /^[-\s]+$/.test(line)) continue;
+
+    const colonIdx = line.indexOf(':');
+    if (colonIdx === -1) continue;
+
+    const sectionName = line.slice(0, colonIdx).trim();
+    const tokens = line.slice(colonIdx + 1).split(/[;,]+/).map(s => s.trim()).filter(Boolean);
+    const nums = expandTokens(tokens);
+    const normalized = normalizeCountryName(sectionName);
+
+    if (/^(refri|cc|coca.cola)/.test(normalized)) {
+      for (const num of nums) {
+        if (num >= 1 && num <= 14) {
+          const key = `refri-${num}`;
+          parsed[key] = (parsed[key] || 0) + 1;
+        }
+      }
+      continue;
+    }
+
+    if (/^(history|historia|copa|world.cup|fwc)/.test(normalized)) {
+      for (const num of nums) {
+        if (num >= 1 && num <= 20) {
+          const key = `history-${num - 1}`;
+          parsed[key] = (parsed[key] || 0) + 1;
+        }
+      }
+      continue;
+    }
+
+    const code = countryMap.get(normalized);
+    if (!code) {
+      warnings.push(sectionName);
+      continue;
+    }
+
+    for (const num of nums) {
+      if (num >= 1 && num <= 20) {
+        const key = `${code}-${num}`;
+        parsed[key] = (parsed[key] || 0) + 1;
+      }
+    }
+  }
+
+  return { parsed, warnings };
+}
+
+function processTextImport() {
+  const rawText = document.getElementById('text-import-area')?.value || '';
+  if (!rawText.trim()) {
+    alert('Cole os dados antes de importar.');
+    return;
+  }
+
+  try {
+    const { parsed: importedStickers, warnings } = parseTextStickerImport(rawText);
+
+    if (Object.keys(importedStickers).length === 0) {
+      const warnMsg = warnings.length
+        ? `Nenhuma figurinha válida encontrada.\n\nLinhas não reconhecidas:\n• ${warnings.join('\n• ')}`
+        : 'Nenhuma figurinha válida foi encontrada no texto colado.';
+      alert(warnMsg);
+      return;
+    }
+
+    let newCount = 0, dupCount = 0;
+    Object.entries(importedStickers).forEach(([key, count]) => {
+      if (!stickers[key]) { newCount += 1; dupCount += count - 1; }
+      else { dupCount += count; }
+    });
+
+    const warnText = warnings.length
+      ? `\n\n⚠️ Não reconhecidos (ignorados):\n• ${warnings.join('\n• ')}`
+      : '';
+    const summary = `📋 Resumo da importação:\n• ${newCount} figurinha${newCount !== 1 ? 's' : ''} nova${newCount !== 1 ? 's' : ''}\n• ${dupCount} duplicata${dupCount !== 1 ? 's' : ''}${warnText}`;
+
+    const hasCurrentData = Object.keys(stickers).length > 0 || Object.keys(duplicates).length > 0;
+    let merge = true;
+    if (hasCurrentData) {
+      merge = window.confirm(`${summary}\n\nDeseja mesclar com os dados atuais?\n\nOK: Mesclar  |  Cancelar: Substituir tudo`);
+    } else {
+      if (!window.confirm(`${summary}\n\nDeseja importar?`)) return;
+    }
+
+    if (!merge) {
+      if (!window.confirm('A importação substituirá todos os dados atuais. Deseja continuar?')) return;
+      stickers = {};
+      duplicates = {};
+    }
+
+    Object.entries(importedStickers).forEach(([key, count]) => {
+      if (!stickers[key]) {
+        stickers[key] = true;
+        if (count > 1) duplicates[key] = (duplicates[key] || 0) + (count - 1);
+      } else {
+        duplicates[key] = (duplicates[key] || 0) + count;
+      }
+    });
+
+    saveData();
+    renderPaises();
+    renderRefri();
+    renderHistory();
+    renderTrocas();
+    updateStats();
+    closeTextImportModal();
+    alert(`✅ Importação concluída!\n• ${newCount} figurinha${newCount !== 1 ? 's' : ''} nova${newCount !== 1 ? 's' : ''} adicionada${newCount !== 1 ? 's' : ''}\n• ${dupCount} duplicata${dupCount !== 1 ? 's' : ''} registrada${dupCount !== 1 ? 's' : ''}`);
+  } catch (error) {
+    console.error('Falha ao importar texto:', error);
+    alert(error.message || 'Não foi possível importar o texto. Verifique o formato.');
+  }
+}
+
 /**
  * Processa o arquivo JSON importado
  */
